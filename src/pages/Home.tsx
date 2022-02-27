@@ -1,12 +1,20 @@
-import { isLoggedInVar } from "../apollo";
+import { isDarkModeVar, isLoggedInVar } from "../apollo";
+import styled from "styled-components";
+
+const Container = styled.div`
+  background-color: ${(props) => props.theme.backgroundColor};
+  color: ${(props) => props.theme.textColor};
+`;
 
 const Home = () => {
-  console.log("cc");
   return (
-    <div>
+    <Container>
       <h1>Home</h1>
       <button onClick={() => isLoggedInVar(false)}>Logout now...</button>
-    </div>
+
+      <button onClick={() => isDarkModeVar(true)}>Dark Mode True</button>
+      <button onClick={() => isDarkModeVar(false)}>Dark Mode False</button>
+    </Container>
   );
 };
 
