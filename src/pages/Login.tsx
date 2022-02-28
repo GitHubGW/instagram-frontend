@@ -4,7 +4,6 @@ import { isLoggedInVar } from "../apollo";
 import routes from "../routes";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
-import Logo from "../shared/Logo";
 import Separator from "../shared/Separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
@@ -18,6 +17,11 @@ const Container = styled.section`
 const FormContent = styled.div`
   padding: 20px 40px 20px 40px;
   border: 1px solid ${(props) => props.theme.borderColor};
+
+  img {
+    width: 175px;
+    margin-bottom: 30px;
+  }
 `;
 
 const AccountContent = styled.div`
@@ -72,7 +76,7 @@ const Login = () => {
   return (
     <Container>
       <FormContent>
-        <Logo src="/images/instagram_logo.png" alt="instagram_logo" />
+        <img src="/images/instagram_logo.png" alt="instagram_logo" />
         <Input placeholder="사용자 이름" />
         <Input placeholder="비밀번호" />
         <Button onClick={() => isLoggedInVar(true)} type="button">

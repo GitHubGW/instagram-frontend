@@ -4,7 +4,6 @@ import { isLoggedInVar } from "../apollo";
 import routes from "../routes";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
-import Logo from "../shared/Logo";
 import Separator from "../shared/Separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
@@ -19,6 +18,10 @@ const FormContent = styled.div`
   padding: 20px 40px 20px 40px;
   border: 1px solid ${(props) => props.theme.borderColor};
 
+  img {
+    width: 175px;
+    margin-bottom: 30px;
+  }
   h1 {
     font-size: 15px;
     margin-bottom: 20px;
@@ -81,7 +84,7 @@ const SignUp = () => {
   return (
     <Container>
       <FormContent>
-        <Logo src="/images/instagram_logo.png" alt="instagram_logo" />
+        <img src="/images/instagram_logo.png" alt="instagram_logo" />
         <h1>친구들의 사진과 동영상을 보려면 가입하세요.</h1>
         <FacebookLogin>
           <FontAwesomeIcon icon={faFacebookSquare} />
