@@ -18,6 +18,12 @@ const Container = styled.section`
 const FormContent = styled.div`
   padding: 20px 40px 20px 40px;
   border: 1px solid ${(props) => props.theme.borderColor};
+
+  h1 {
+    font-size: 15px;
+    margin-bottom: 20px;
+    color: ${(props) => props.theme.grayTextColor};
+  }
 `;
 
 const AccountContent = styled.div`
@@ -57,7 +63,10 @@ const AppContent = styled.div`
 `;
 
 const FacebookLogin = styled.div`
-  color: #385285;
+  background-color: ${(props) => props.theme.activeColor};
+  color: white;
+  padding: 7px;
+  border-radius: 3px;
   cursor: pointer;
   font-size: 18px;
 
@@ -68,25 +77,28 @@ const FacebookLogin = styled.div`
   }
 `;
 
-const Login = () => {
+const SignUp = () => {
   return (
     <Container>
       <FormContent>
         <Logo src="/images/instagram_logo.png" alt="instagram_logo" />
-        <Input placeholder="사용자 이름" />
-        <Input placeholder="비밀번호" />
-        <Button onClick={() => isLoggedInVar(true)} type="button">
-          로그인
-        </Button>
-        <Separator />
+        <h1>친구들의 사진과 동영상을 보려면 가입하세요.</h1>
         <FacebookLogin>
           <FontAwesomeIcon icon={faFacebookSquare} />
           <span>Facebook으로 로그인</span>
         </FacebookLogin>
+        <Separator />
+        <Input placeholder="이메일 주소" />
+        <Input placeholder="성명" />
+        <Input placeholder="사용자 이름" />
+        <Input placeholder="비밀번호" />
+        <Button onClick={() => isLoggedInVar(true)} type="button">
+          가입
+        </Button>
       </FormContent>
       <AccountContent>
         <h1>
-          계정이 없으신가요? <Link to={routes.signup}>가입하기</Link>
+          계정이 있으신가요? <Link to={routes.login}>로그인</Link>
         </h1>
       </AccountContent>
       <AppContent>
@@ -104,4 +116,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;
