@@ -7,8 +7,8 @@ export const lightTheme: DefaultTheme = {
   inactiveColor: "#B2DFFC",
   textBoldColor: "#979797",
   borderColor: "#DBDBDB",
-  inputBgColor: "#E1E1E1",
-  inputTextColor: "#8F8F8F",
+  inputBgColor: "#fafafa",
+  grayTextColor: "#8F8F8F",
 };
 
 export const darkTheme: DefaultTheme = {
@@ -18,6 +18,6 @@ export const darkTheme: DefaultTheme = {
   inactiveColor: "#B2DFFC",
   textBoldColor: "#979797",
   borderColor: "#DBDBDB",
-  inputBgColor: "#E1E1E1",
-  inputTextColor: "#8F8F8F",
+  inputBgColor: "#fafafa",
+  grayTextColor: "#8F8F8F",
 };
