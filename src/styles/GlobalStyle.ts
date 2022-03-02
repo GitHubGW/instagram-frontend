@@ -7,6 +7,9 @@ const GlobalStyle: GlobalStyleComponent<{}, DefaultTheme> = createGlobalStyle`
   *{
     box-sizing:border-box;
   }
+  body{
+    background-color: #FAFAFA;
+  }
   input{
     outline:none;
     border:none;

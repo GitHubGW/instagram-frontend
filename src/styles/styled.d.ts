@@ -10,5 +10,6 @@ declare module "styled-components" {
     borderColor: string;
     inputBgColor: string;
     grayTextColor: string;
+    errorColor: string;
   }
 }

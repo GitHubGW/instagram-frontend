@@ -9,6 +9,7 @@ export const lightTheme: DefaultTheme = {
   borderColor: "#DBDBDB",
   inputBgColor: "#fafafa",
   grayTextColor: "#8F8F8F",
+  errorColor: "#ed4956",
 };
 
 export const darkTheme: DefaultTheme = {
@@ -20,4 +21,5 @@ export const darkTheme: DefaultTheme = {
   borderColor: "#DBDBDB",
   inputBgColor: "#fafafa",
   grayTextColor: "#8F8F8F",
+  errorColor: "#ed4956",
 };
