@@ -7,6 +7,8 @@ import Input from "../shared/Input";
 import Separator from "../shared/Separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
+import AuthLayout from "../shared/AuthLayout";
+import PageTitle from "../components/PageTitle";
 
 const Container = styled.section`
   max-width: 350px;
@@ -74,37 +76,40 @@ const FacebookLogin = styled.div`
 
 const Login = () => {
   return (
-    <Container>
-      <FormContent>
-        <img src="/images/instagram_logo.png" alt="instagram_logo" />
-        <Input placeholder="사용자 이름" />
-        <Input placeholder="비밀번호" />
-        <Button onClick={() => isLoggedInVar(true)} type="button">
-          로그인
-        </Button>
-        <Separator />
-        <FacebookLogin>
-          <FontAwesomeIcon icon={faFacebookSquare} />
-          <span>Facebook으로 로그인</span>
-        </FacebookLogin>
-      </FormContent>
-      <AccountContent>
-        <h1>
-          계정이 없으신가요? <Link to={routes.signup}>가입하기</Link>
-        </h1>
-      </AccountContent>
-      <AppContent>
-        <h1>앱을 다운로드하세요.</h1>
-        <div>
-          <a href="https://apps.apple.com/app/instagram/id389801252?vt=lo" target="_blank" rel="noreferrer">
-            <img src="/images/apple_store_download.png" alt="apple_store_download" />
-          </a>
-          <a href="https://play.google.com/store/apps/details?id=com.instagram.android" target="_blank" rel="noreferrer">
-            <img src="/images/google_play_download.png" alt="google_play_download" />
-          </a>
-        </div>
-      </AppContent>
-    </Container>
+    <AuthLayout>
+      <PageTitle title="로그인" />
+      <Container>
+        <FormContent>
+          <img src="/images/instagram_logo.png" alt="instagram_logo" />
+          <Input placeholder="사용자 이름" />
+          <Input placeholder="비밀번호" />
+          <Button onClick={() => isLoggedInVar(true)} type="button">
+            로그인
+          </Button>
+          <Separator />
+          <FacebookLogin>
+            <FontAwesomeIcon icon={faFacebookSquare} />
+            <span>Facebook으로 로그인</span>
+          </FacebookLogin>
+        </FormContent>
+        <AccountContent>
+          <h1>
+            계정이 없으신가요? <Link to={routes.signup}>가입하기</Link>
+          </h1>
+        </AccountContent>
+        <AppContent>
+          <h1>앱을 다운로드하세요.</h1>
+          <div>
+            <a href="https://apps.apple.com/app/instagram/id389801252?vt=lo" target="_blank" rel="noreferrer">
+              <img src="/images/apple_store_download.png" alt="apple_store_download" />
+            </a>
+            <a href="https://play.google.com/store/apps/details?id=com.instagram.android" target="_blank" rel="noreferrer">
+              <img src="/images/google_play_download.png" alt="google_play_download" />
+            </a>
+          </div>
+        </AppContent>
+      </Container>
+    </AuthLayout>
   );
 };
 
