@@ -9,6 +9,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 import AuthLayout from "../shared/AuthLayout";
 import PageTitle from "../components/PageTitle";
+import { useForm } from "react-hook-form";
+import FormError from "../shared/FormError";
+
+interface FormData {
+  email: string;
+  name: string;
+  username: string;
+  password: string;
+}
 
 const Container = styled.section`
   max-width: 350px;
@@ -16,9 +25,10 @@ const Container = styled.section`
   text-align: center;
 `;
 
-const FormContent = styled.div`
+const FormContent = styled.form`
   padding: 20px 40px 20px 40px;
   border: 1px solid ${(props) => props.theme.borderColor};
+  background-color: white;
 
   img {
     width: 175px;
@@ -36,6 +46,7 @@ const AccountContent = styled.div`
   padding: 25px 0;
   text-align: center;
   border: 1px solid ${(props) => props.theme.borderColor};
+  background-color: white;
 
   h1 {
     font-size: 14px;
@@ -83,11 +94,23 @@ const FacebookLogin = styled.div`
 `;
 
 const SignUp = () => {
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors, isValid },
+  } = useForm<FormData>({ mode: "onChange" });
+
+  const onValid = (): void => {
+    const formData: FormData = getValues();
+    console.log("formData", formData);
+  };
+
   return (
     <AuthLayout>
       <PageTitle title="회원가입" />
       <Container>
-        <FormContent>
+        <FormContent onSubmit={handleSubmit(onValid)}>
           <img src="/images/instagram_logo.png" alt="instagram_logo" />
           <h1>친구들의 사진과 동영상을 보려면 가입하세요.</h1>
           <FacebookLogin>
@@ -95,11 +118,53 @@ const SignUp = () => {
             <span>Facebook으로 로그인</span>
           </FacebookLogin>
           <Separator />
-          <Input placeholder="이메일 주소" />
-          <Input placeholder="성명" />
-          <Input placeholder="사용자 이름" />
-          <Input placeholder="비밀번호" />
-          <Button onClick={() => isLoggedInVar(true)} type="button">
+          <Input
+            {...register("email", {
+              required: "이메일을 입력하세요.",
+              pattern: {
+                message: "한글, 특수문자를 제외한 영문 이메일 형식만 사용 가능합니다.",
+                value: /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/gi,
+              },
+              maxLength: 30,
+            })}
+            hasError={Boolean(errors?.email?.message)}
+            type="email"
+            maxLength={30}
+            placeholder="이메일 주소"
+          />
+          <FormError message={errors?.email?.message} />
+          <Input
+            {...register("name", {
+              required: "성명을 입력하세요.",
+              maxLength: 15,
+            })}
+            hasError={Boolean(errors?.name?.message)}
+            type="text"
+            maxLength={15}
+            placeholder="성명"
+          />
+          <FormError message={errors?.name?.message} />
+          <Input
+            {...register("username", {
+              required: "사용자 이름을 입력하세요.",
+              pattern: { message: "한글, 특수문자를 제외한 1~15자 이내 영문만 사용 가능합니다.", value: /^[a-z0-9]{1,15}$/g },
+              maxLength: 15,
+            })}
+            hasError={Boolean(errors?.username?.message)}
+            type="text"
+            maxLength={15}
+            placeholder="사용자 이름"
+          />
+          <FormError message={errors?.username?.message} />
+          <Input
+            {...register("password", { required: "비밀번호를 입력하세요.", maxLength: 15 })}
+            hasError={Boolean(errors?.password?.message)}
+            type="password"
+            maxLength={15}
+            placeholder="비밀번호"
+          />
+          <FormError message={errors?.password?.message} />
+          <Button disabled={!isValid} type="submit">
             가입
           </Button>
         </FormContent>

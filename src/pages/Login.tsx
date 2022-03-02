@@ -9,6 +9,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 import AuthLayout from "../shared/AuthLayout";
 import PageTitle from "../components/PageTitle";
+import { useForm } from "react-hook-form";
+import FormError from "../shared/FormError";
+
+interface FormData {
+  username: string;
+  password: string;
+}
 
 const Container = styled.section`
   max-width: 350px;
@@ -16,9 +23,10 @@ const Container = styled.section`
   text-align: center;
 `;
 
-const FormContent = styled.div`
+const FormContent = styled.form`
   padding: 20px 40px 20px 40px;
   border: 1px solid ${(props) => props.theme.borderColor};
+  background-color: white;
 
   img {
     width: 175px;
@@ -31,6 +39,7 @@ const AccountContent = styled.div`
   padding: 25px 0;
   text-align: center;
   border: 1px solid ${(props) => props.theme.borderColor};
+  background-color: white;
 
   h1 {
     font-size: 14px;
@@ -75,15 +84,47 @@ const FacebookLogin = styled.div`
 `;
 
 const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors, isValid },
+  } = useForm<FormData>({ mode: "onChange" });
+
+  const onValid = (): void => {
+    const formData: FormData = getValues();
+  };
+
   return (
     <AuthLayout>
       <PageTitle title="로그인" />
       <Container>
-        <FormContent>
+        <FormContent onSubmit={handleSubmit(onValid)}>
           <img src="/images/instagram_logo.png" alt="instagram_logo" />
-          <Input placeholder="사용자 이름" />
-          <Input placeholder="비밀번호" />
-          <Button onClick={() => isLoggedInVar(true)} type="button">
+          <Input
+            {...register("username", {
+              required: "사용자 이름을 입력하세요.",
+              pattern: { message: "한글, 특수문자를 제외한 1~15자 이내 영문만 사용 가능합니다.", value: /^[a-z0-9]{1,15}$/g },
+              maxLength: 15,
+              validate: (value) => {
+                return true;
+              },
+            })}
+            hasError={Boolean(errors?.username?.message)}
+            type="text"
+            maxLength={15}
+            placeholder="사용자 이름"
+          />
+          <FormError message={errors?.username?.message} />
+          <Input
+            {...register("password", { required: "비밀번호를 입력하세요.", maxLength: 15 })}
+            hasError={Boolean(errors?.password?.message)}
+            type="password"
+            maxLength={15}
+            placeholder="비밀번호"
+          />
+          <FormError message={errors?.password?.message} />
+          <Button disabled={!isValid} type="submit">
             로그인
           </Button>
           <Separator />
