@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
-import { isLoggedInVar } from "../apollo";
+import { handleLogin, isLoggedInVar } from "../apollo";
 import routes from "../routes";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
@@ -11,11 +11,24 @@ import AuthLayout from "../shared/AuthLayout";
 import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import FormError from "../shared/FormError";
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/client";
 
 interface FormData {
   username: string;
   password: string;
+  loginResult?: string;
 }
+
+const LOGIN = gql`
+  mutation Login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      ok
+      message
+      token
+    }
+  }
+`;
 
 const Container = styled.section`
   max-width: 350px;
@@ -84,15 +97,40 @@ const FacebookLogin = styled.div`
 `;
 
 const Login = () => {
+  const navigate: NavigateFunction = useNavigate();
   const {
     register,
     handleSubmit,
     getValues,
+    setError,
+    clearErrors,
     formState: { errors, isValid },
   } = useForm<FormData>({ mode: "onChange" });
+  const [loginMutation, { loading: loginLoading }] = useMutation(LOGIN, {
+    onCompleted: (data: any) => {
+      console.log("data", data);
+      const {
+        login: { ok, message, token },
+      } = data;
+
+      if (ok === false) {
+        return setError("loginResult", { message });
+      }
+      if (ok === true && token) {
+        handleLogin(token);
+        navigate(routes.home);
+      }
+    },
+  });
 
   const onValid = (): void => {
-    const formData: FormData = getValues();
+    const { username, password }: FormData = getValues();
+
+    if (loginLoading === true) {
+      return;
+    }
+
+    loginMutation({ variables: { username, password } });
   };
 
   return (
@@ -110,6 +148,7 @@ const Login = () => {
                 return true;
               },
             })}
+            onFocus={() => clearErrors("loginResult")}
             hasError={Boolean(errors?.username?.message)}
             type="text"
             maxLength={15}
@@ -118,15 +157,17 @@ const Login = () => {
           <FormError message={errors?.username?.message} />
           <Input
             {...register("password", { required: "비밀번호를 입력하세요.", maxLength: 15 })}
+            onKeyDown={() => clearErrors("loginResult")}
             hasError={Boolean(errors?.password?.message)}
             type="password"
             maxLength={15}
             placeholder="비밀번호"
           />
           <FormError message={errors?.password?.message} />
-          <Button disabled={!isValid} type="submit">
-            로그인
+          <Button disabled={!isValid || loginLoading === true} type="submit">
+            {loginLoading === true ? "로딩중" : "로그인"}
           </Button>
+          <FormError message={errors?.loginResult?.message} />
           <Separator />
           <FacebookLogin>
             <FontAwesomeIcon icon={faFacebookSquare} />

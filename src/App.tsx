@@ -9,6 +9,7 @@ import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import GlobalStyle from "./styles/GlobalStyle";
 import { HelmetProvider } from "react-helmet-async";
+import routes from "./routes";
 
 const App = () => {
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
@@ -23,9 +24,9 @@ const App = () => {
           <GlobalStyle />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={isLoggedIn === true ? <Home /> : <Login />} />
-              {isLoggedIn === false && <Route path="/login" element={<Login />} />}
-              {isLoggedIn === false && <Route path="/signup" element={<SignUp />} />}
+              <Route path={routes.home} element={<Home />} />
+              {isLoggedIn === false && <Route path={routes.login} element={<Login />} />}
+              {isLoggedIn === false && <Route path={routes.signup} element={<SignUp />} />}
               <Route path="/*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
