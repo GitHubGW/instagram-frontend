@@ -1,6 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
-import { isLoggedInVar } from "../apollo";
 import routes from "../routes";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
@@ -11,17 +10,19 @@ import AuthLayout from "../shared/AuthLayout";
 import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import FormError from "../shared/FormError";
+import { useCreateAccountMutation } from "../generated/graphql";
 
 interface FormData {
   email: string;
   name: string;
   username: string;
   password: string;
+  createAccountResult?: string;
 }
 
 const Container = styled.section`
   max-width: 350px;
-  width: 100%;
+  width: 350px;
   text-align: center;
 `;
 
@@ -94,16 +95,30 @@ const FacebookLogin = styled.div`
 `;
 
 const SignUp = () => {
+  const navigate: NavigateFunction = useNavigate();
   const {
     register,
     handleSubmit,
     getValues,
+    setError,
     formState: { errors, isValid },
   } = useForm<FormData>({ mode: "onChange" });
+  const [createAccountMutation, { loading: createAccountLoading }] = useCreateAccountMutation({
+    onCompleted: ({ createAccount: { ok, message } }) => {
+      if (ok === false) {
+        return setError("createAccountResult", { message });
+      }
+      const { username, password } = getValues();
+      navigate(routes.login, { state: { username, password, message: "회원가입에 성공하였습니다. 로그인하세요." } });
+    },
+  });
 
   const onValid = (): void => {
-    const formData: FormData = getValues();
-    console.log("formData", formData);
+    const { email, name, username, password }: FormData = getValues();
+    if (createAccountLoading === true) {
+      return;
+    }
+    createAccountMutation({ variables: { email, name, username, password } });
   };
 
   return (
@@ -164,8 +179,8 @@ const SignUp = () => {
             placeholder="비밀번호"
           />
           <FormError message={errors?.password?.message} />
-          <Button disabled={!isValid} type="submit">
-            가입
+          <Button disabled={!isValid || createAccountLoading === true} type="submit">
+            {createAccountLoading === true ? "로딩중" : "가입"}
           </Button>
         </FormContent>
         <AccountContent>

@@ -6,7 +6,7 @@ const Container = styled.div`
   justify-items: center;
   align-items: center;
   width: 100%;
-  margin: 20px auto;
+  margin: 17px auto;
 
   div {
     width: 100%;
