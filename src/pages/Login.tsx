@@ -1,6 +1,6 @@
-import { Link, useNavigate, NavigateFunction } from "react-router-dom";
+import { Link, useNavigate, NavigateFunction, useLocation, Location } from "react-router-dom";
 import styled from "styled-components";
-import { handleLogin, isLoggedInVar } from "../apollo";
+import { handleLogin } from "../apollo";
 import routes from "../routes";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
@@ -11,8 +11,7 @@ import AuthLayout from "../shared/AuthLayout";
 import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import FormError from "../shared/FormError";
-import gql from "graphql-tag";
-import { useMutation } from "@apollo/client";
+import { LoginMutation, useLoginMutation } from "../generated/graphql";
 
 interface FormData {
   username: string;
@@ -20,19 +19,9 @@ interface FormData {
   loginResult?: string;
 }
 
-const LOGIN = gql`
-  mutation Login($username: String!, $password: String!) {
-    login(username: $username, password: $password) {
-      ok
-      message
-      token
-    }
-  }
-`;
-
 const Container = styled.section`
   max-width: 350px;
-  width: 100%;
+  width: 350px;
   text-align: center;
 `;
 
@@ -96,8 +85,24 @@ const FacebookLogin = styled.div`
   }
 `;
 
+const Notification = styled.h4`
+  color: ${(props) => props.theme.activeColor};
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 12px;
+`;
+
+interface LoginState {
+  username?: string;
+  password?: string;
+  message?: string;
+}
+
 const Login = () => {
   const navigate: NavigateFunction = useNavigate();
+  const location: Location = useLocation();
+  const state = location.state as LoginState | null;
+
   const {
     register,
     handleSubmit,
@@ -105,14 +110,9 @@ const Login = () => {
     setError,
     clearErrors,
     formState: { errors, isValid },
-  } = useForm<FormData>({ mode: "onChange" });
-  const [loginMutation, { loading: loginLoading }] = useMutation(LOGIN, {
-    onCompleted: (data: any) => {
-      console.log("data", data);
-      const {
-        login: { ok, message, token },
-      } = data;
-
+  } = useForm<FormData>({ mode: "onChange", defaultValues: { username: state?.username, password: state?.password } });
+  const [loginMutation, { loading: loginLoading }] = useLoginMutation({
+    onCompleted: ({ login: { ok, message, token } }: LoginMutation) => {
       if (ok === false) {
         return setError("loginResult", { message });
       }
@@ -125,11 +125,9 @@ const Login = () => {
 
   const onValid = (): void => {
     const { username, password }: FormData = getValues();
-
     if (loginLoading === true) {
       return;
     }
-
     loginMutation({ variables: { username, password } });
   };
 
@@ -139,12 +137,13 @@ const Login = () => {
       <Container>
         <FormContent onSubmit={handleSubmit(onValid)}>
           <img src="/images/instagram_logo.png" alt="instagram_logo" />
+          {state?.message && <Notification>{state?.message}</Notification>}
           <Input
             {...register("username", {
               required: "사용자 이름을 입력하세요.",
               pattern: { message: "한글, 특수문자를 제외한 1~15자 이내 영문만 사용 가능합니다.", value: /^[a-z0-9]{1,15}$/g },
               maxLength: 15,
-              validate: (value) => {
+              validate: (value: string) => {
                 return true;
               },
             })}
