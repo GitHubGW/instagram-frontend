@@ -4,7 +4,7 @@ const TOKEN: string = "TOKEN";
 const DARK_MODE: string = "DARK_MODE";
 
 export const isLoggedInVar = makeVar<boolean>(Boolean(localStorage.getItem(TOKEN)));
-export const isDarkModeVar = makeVar<boolean>(false);
+export const isDarkModeVar = makeVar<boolean>(Boolean(localStorage.getItem(DARK_MODE) === "true"));
 
 export const handleLogin = (token: string): void => {
   localStorage.setItem(TOKEN, token);
@@ -14,6 +14,16 @@ export const handleLogin = (token: string): void => {
 export const handleLogout = (): void => {
   localStorage.removeItem(TOKEN);
   isLoggedInVar(false);
+};
+
+export const handleEnableDarkMode = (): void => {
+  localStorage.setItem(DARK_MODE, "true");
+  isDarkModeVar(true);
+};
+
+export const handleDisableDarkMode = (): void => {
+  localStorage.setItem(DARK_MODE, "false");
+  isDarkModeVar(false);
 };
 
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({

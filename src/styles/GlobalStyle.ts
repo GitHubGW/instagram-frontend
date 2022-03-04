@@ -8,7 +8,8 @@ const GlobalStyle: GlobalStyleComponent<{}, DefaultTheme> = createGlobalStyle`
     box-sizing:border-box;
   }
   body{
-    background-color: #FAFAFA;
+    background-color: ${(props) => props.theme.bgColor};
+    color:${(props) => props.theme.textColor};
   }
   input{
     outline:none;
