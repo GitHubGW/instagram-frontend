@@ -12,11 +12,18 @@ import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import FormError from "../shared/FormError";
 import { LoginMutation, useLoginMutation } from "../generated/graphql";
+import Notification from "../shared/Notification";
 
 interface FormData {
   username: string;
   password: string;
   loginResult?: string;
+}
+
+interface LoginState {
+  username?: string;
+  password?: string;
+  message?: string;
 }
 
 const Container = styled.section`
@@ -85,19 +92,6 @@ const FacebookLogin = styled.div`
   }
 `;
 
-const Notification = styled.h4`
-  color: ${(props) => props.theme.activeColor};
-  font-weight: bold;
-  font-size: 13px;
-  margin-bottom: 12px;
-`;
-
-interface LoginState {
-  username?: string;
-  password?: string;
-  message?: string;
-}
-
 const Login = () => {
   const navigate: NavigateFunction = useNavigate();
   const location: Location = useLocation();
@@ -137,7 +131,7 @@ const Login = () => {
       <Container>
         <FormContent onSubmit={handleSubmit(onValid)}>
           <img src="/images/instagram_logo.png" alt="instagram_logo" />
-          {state?.message && <Notification>{state?.message}</Notification>}
+          {state?.message && <Notification message={state.message} />}
           <Input
             {...register("username", {
               required: "사용자 이름을 입력하세요.",
