@@ -4,6 +4,7 @@ declare module "styled-components" {
   export interface DefaultTheme {
     textColor: string;
     bgColor: string;
+    headerColor: string;
     activeColor: string;
     inactiveColor: string;
     textBoldColor: string;
@@ -11,5 +12,7 @@ declare module "styled-components" {
     inputBgColor: string;
     grayTextColor: string;
     errorColor: string;
+    formMaxWidth: string;
+    containerMaxWidth: string;
   }
 }
