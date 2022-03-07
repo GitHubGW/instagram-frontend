@@ -1,0 +1,30 @@
+import gql from "graphql-tag";
+
+gql`
+  query SeeFeed($cursor: Int) {
+    seeFeed(cursor: $cursor) {
+      ok
+      message
+      photos {
+        id
+        photoUrl
+        caption
+        totalLikes
+        totalComments
+        isMe
+        isLiked
+        createdAt
+        user {
+          id
+          name
+          username
+          avatarUrl
+        }
+        hashtags {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
