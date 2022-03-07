@@ -4,35 +4,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { handleDisableDarkMode, handleEnableDarkMode, isDarkModeVar, isLoggedInVar } from "../apollo";
 import styled from "styled-components";
 import routes from "../routes";
-import {
-  faSun,
-  faMoon,
-  faPaperPlane as faPaperPlaneRegular,
-  faSquarePlus as faSquarePlusRegular,
-  faCompass as faCompassRegular,
-  faHeart as faHeartRegular,
-  faUser,
-} from "@fortawesome/free-regular-svg-icons";
-import {
-  faHouse,
-  faHouseCrack,
-  faPaperPlane as faPaperPlaneSolid,
-  faSquarePlus as faSquarePlusSolid,
-  faCompass as faCompassSolid,
-  faHeart as faHeartSolid,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-regular-svg-icons";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Avatar from "../shared/Avatar";
+import { FaRegCompass, FaCompass } from "react-icons/fa";
+import { IoHomeOutline, IoHomeSharp, IoPaperPlaneOutline, IoPaperPlaneSharp } from "react-icons/io5";
+import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icons/bs";
+import { FiSun, FiMoon } from "react-icons/fi";
 
 const Container = styled.header`
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
   background-color: ${(props) => props.theme.headerColor};
+  width: 100%;
+  position: fixed;
+  z-index: 100;
 `;
 
 const Content = styled.div`
   margin: 0 auto;
-  max-width: ${(props) => props.theme.containerMaxWidth};
-  width: ${(props) => props.theme.containerMaxWidth};
+  max-width: ${(props) => props.theme.contentMaxWidth};
+  width: ${(props) => props.theme.contentMaxWidth};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -57,7 +48,6 @@ const SearchBar = styled.div`
     background-color: #efefef;
     padding: 11px 15px;
     border-radius: 8px;
-
     &::placeholder {
       font-size: 14px;
       color: ${(props) => props.theme.grayTextColor};
@@ -70,7 +60,7 @@ const LoginNav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 22px;
+  font-size: 24px;
 
   a {
     color: inherit;
@@ -98,9 +88,10 @@ const DarkModeButton = styled.button`
   outline: none;
   background-color: transparent;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 24px;
   margin: 0;
   padding: 0;
+  display: flex;
   color: ${(props) => props.theme.textColor};
 `;
 
@@ -141,24 +132,14 @@ const Header = () => {
         </SearchBar>
         {isLoggedIn === true ? (
           <LoginNav>
-            <Link to={"/"}>
-              <FontAwesomeIcon icon={location.pathname === "/" ? faHouse : faHouseCrack} />
-            </Link>
-            <Link to={"/"}>
-              <FontAwesomeIcon icon={location.pathname === "/" ? faPaperPlaneSolid : faPaperPlaneRegular} />
-            </Link>
-            <Link to={"/"}>
-              <FontAwesomeIcon icon={location.pathname === "/" ? faSquarePlusSolid : faSquarePlusRegular} />
-            </Link>
-            <Link to={"/"}>
-              <FontAwesomeIcon icon={location.pathname === "/" ? faCompassSolid : faCompassRegular} />
-            </Link>
-            <Link to={"/"}>
-              <FontAwesomeIcon icon={location.pathname === "/" ? faHeartSolid : faHeartRegular} />
-            </Link>
+            <Link to={routes.home}>{location.pathname === routes.home ? <IoHomeSharp /> : <IoHomeOutline />}</Link>
+            <Link to={"/"}>{location.pathname === routes.home ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link>
+            <Link to={"/"}>{location.pathname === routes.home ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
+            <Link to={"/"}>{location.pathname === routes.home ? <FaCompass /> : <FaRegCompass />}</Link>
+            <Link to={"/"}>{location.pathname === routes.home ? <BsHeartFill /> : <BsHeart />}</Link>
             <Link to={"/"}>{isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl} /> : <FontAwesomeIcon icon={faUser} />}</Link>
             <DarkModeButton onClick={isDarkMode === true ? handleDisableDarkMode : handleEnableDarkMode} type="button">
-              <FontAwesomeIcon icon={isDarkMode === true ? faSun : faMoon} />
+              {isDarkMode === true ? <FiSun /> : <FiMoon />}
             </DarkModeButton>
           </LoginNav>
         ) : (
