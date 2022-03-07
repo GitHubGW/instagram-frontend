@@ -76,7 +76,6 @@ const Login = () => {
   const navigate: NavigateFunction = useNavigate();
   const location: Location = useLocation();
   const state = location.state as LoginState | null;
-
   const {
     register,
     handleSubmit,

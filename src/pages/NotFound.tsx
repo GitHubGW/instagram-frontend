@@ -1,11 +1,12 @@
 import PageTitle from "../components/PageTitle";
+import MainLayout from "../shared/MainLayout";
 
 const NotFound = () => {
   return (
-    <div>
+    <MainLayout>
       <PageTitle title="페이지를 찾을 수 없습니다" />
       <h1>NotFound</h1>
-    </div>
+    </MainLayout>
   );
 };
 
