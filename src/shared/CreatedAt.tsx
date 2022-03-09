@@ -8,7 +8,8 @@ interface CreatedAtProps {
 
 const Container = styled.span`
   color: ${(props) => props.theme.grayTextColor};
-  font-size: 12px;
+  font-size: 11px;
+  padding: 12px;
 `;
 
 const CreatedAt = ({ createdAt = "" }: CreatedAtProps) => {

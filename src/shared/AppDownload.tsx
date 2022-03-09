@@ -21,7 +21,7 @@ const Container = styled.div`
   }
 `;
 
-const AppContent = () => {
+const AppDownload = () => {
   return (
     <Container>
       <h1>앱을 다운로드하세요.</h1>
@@ -37,4 +37,4 @@ const AppContent = () => {
   );
 };
 
-export default AppContent;
+export default AppDownload;
