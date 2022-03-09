@@ -16,6 +16,7 @@ const GlobalStyle: GlobalStyleComponent<{}, DefaultTheme> = createGlobalStyle`
     border:none;
   }
   a{
+    color:inherit;
     text-decoration: none;
   }
 `;
