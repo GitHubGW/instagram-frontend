@@ -32,9 +32,10 @@ const Content = styled.div`
 
 const Logo = styled(Link)`
   width: 250px;
+  display: flex;
 
   img {
-    width: 100px;
+    width: 105px;
     cursor: pointer;
   }
 `;
@@ -44,8 +45,8 @@ const SearchBar = styled.div`
 
   input {
     width: 100%;
-    background-color: ${(props) => props.theme.grayTextColor};
-    background-color: #efefef;
+    background-color: ${(props) => props.theme.searchBgColor};
+    color: ${(props) => props.theme.grayTextColor};
     padding: 11px 15px;
     border-radius: 8px;
     &::placeholder {
@@ -125,7 +126,7 @@ const Header = () => {
     <Container>
       <Content>
         <Logo to={routes.home}>
-          <img src="/images/instagram_logo.png" alt="instagram_logo" />
+          <img src="/images/instagram_logo.svg" alt="instagram_logo" />
         </Logo>
         <SearchBar>
           <input name="keyword" type="text" placeholder="검색" />
