@@ -12,7 +12,7 @@ import Avatar from "../shared/Avatar";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
-import PhotoContainer from "../components/PhotoContainer";
+import Photo from "../components/Photo";
 
 const sliderSettings = {
   infinite: true,
@@ -178,8 +178,6 @@ const Home = () => {
   const loggedInUser = useLoggedInUser();
   const { data: seeFeedData } = useSeeFeedQuery();
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: loggedInUser?.username || "" } });
-  console.log("seeFeedData", seeFeedData);
-  console.log("seeFollowingData", seeFollowingData);
 
   return (
     <FeedLayout>
@@ -197,7 +195,7 @@ const Home = () => {
             </Slider>
           </FollowingContainer>
           {seeFeedData?.seeFeed.photos?.map((photo) => (
-            <PhotoContainer key={photo?.id} {...photo} />
+            <Photo key={photo?.id} {...photo} />
           ))}
         </LeftContainer>
         <RightContainer>

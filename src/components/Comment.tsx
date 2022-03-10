@@ -13,12 +13,12 @@ interface CommentProps {
 
 const Container = styled.div`
   padding-left: 12px;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
 `;
 
 const Text = styled.span`
-  margin-left: 10px;
-  font-size: 14px;
+  margin-left: 5px;
+  font-size: 15px;
 `;
 
 const Comment = ({ id, text, user, isMe, createdAt }: CommentProps) => {

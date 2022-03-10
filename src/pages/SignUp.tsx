@@ -93,10 +93,10 @@ const SignUp = () => {
   });
 
   const onValid = (): void => {
-    const { email, name, username, password }: FormData = getValues();
     if (createAccountLoading === true) {
       return;
     }
+    const { email, name, username, password }: FormData = getValues();
     createAccountMutation({ variables: { email, name, username, password } });
   };
 

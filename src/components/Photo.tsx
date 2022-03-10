@@ -11,7 +11,7 @@ import PhotoIcons from "./PhotoIcons";
 import PhotoAuthor from "./PhotoAuthor";
 import PhotoImage from "./PhotoImage";
 
-interface PhotoContainerProps {
+interface PhotoProps {
   id?: number;
   user?: { name?: string | null; username: string; avatarUrl?: string | null };
   photoUrl?: string;
@@ -36,7 +36,7 @@ const CaptionContainer = styled.div`
 `;
 
 const Caption = styled.span`
-  margin-left: 10px;
+  margin-left: 5px;
 
   a {
     color: ${(props) => props.theme.hashtagColor};
@@ -48,7 +48,7 @@ const Caption = styled.span`
   }
 `;
 
-const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption, comments, createdAt }: PhotoContainerProps) => {
+const Photo = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption, comments, createdAt }: PhotoProps) => {
   return (
     <Container>
       <PhotoAuthor name={user?.name} username={user?.username} avatarUrl={user?.avatarUrl} />
@@ -78,9 +78,9 @@ const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments
       <TotalComments totalComments={totalComments} />
       <Comments comments={comments} />
       <CreatedAt createdAt={createdAt} />
-      <CommentForm />
+      <CommentForm photoId={id} />
     </Container>
   );
 };
 
-export default PhotoContainer;
+export default Photo;

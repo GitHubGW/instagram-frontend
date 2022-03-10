@@ -14,16 +14,16 @@ import Notification from "../shared/Notification";
 import AppDownload from "../shared/AppDownload";
 import { Button, Input } from "../shared/shared";
 
-interface FormData {
-  username: string;
-  password: string;
-  loginResult?: string;
-}
-
 interface LoginState {
   username?: string;
   password?: string;
   message?: string;
+}
+
+interface FormData {
+  username: string;
+  password: string;
+  loginResult?: string;
 }
 
 const Container = styled.section`
@@ -96,10 +96,10 @@ const Login = () => {
   });
 
   const onValid = (): void => {
-    const { username, password }: FormData = getValues();
     if (loginLoading === true) {
       return;
     }
+    const { username, password }: FormData = getValues();
     loginMutation({ variables: { username, password } });
   };
 
