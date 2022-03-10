@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import styled, { keyframes } from "styled-components";
 import { IoPaperPlaneOutline } from "react-icons/io5";
 import { FaRegBookmark } from "react-icons/fa";
@@ -70,26 +69,11 @@ const PhotoIcons = ({ id, isLiked }: PhotoIconsProps) => {
         return;
       }
 
-      const cachedFragment: any = cache.readFragment({
+      cache.modify({
         id: `Photo:${id}`,
-        fragment: gql`
-          fragment photo on Photo {
-            isLiked
-            totalLikes
-          }
-        `,
-      });
-      cache.writeFragment({
-        id: `Photo:${id}`,
-        fragment: gql`
-          fragment photo on Photo {
-            isLiked
-            totalLikes
-          }
-        `,
-        data: {
-          isLiked: !cachedFragment.isLiked,
-          totalLikes: cachedFragment.isLiked === true ? cachedFragment.totalLikes - 1 : cachedFragment.totalLikes + 1,
+        fields: {
+          isLiked: (isLiked: boolean): boolean => !isLiked,
+          totalLikes: (totalLikes: number): number => (isLiked === true ? totalLikes - 1 : totalLikes + 1),
         },
       });
     },
