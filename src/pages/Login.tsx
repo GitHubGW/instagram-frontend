@@ -2,8 +2,6 @@ import { Link, useNavigate, NavigateFunction, useLocation, Location } from "reac
 import styled from "styled-components";
 import { handleLogin } from "../apollo";
 import routes from "../routes";
-import Button from "../shared/Button";
-import Input from "../shared/Input";
 import Separator from "../shared/Separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
@@ -13,7 +11,8 @@ import { useForm } from "react-hook-form";
 import FormError from "../shared/FormError";
 import { LoginMutation, useLoginMutation } from "../generated/graphql";
 import Notification from "../shared/Notification";
-import AppContent from "../shared/AppContent";
+import AppDownload from "../shared/AppDownload";
+import { Button, Input } from "../shared/shared";
 
 interface FormData {
   username: string;
@@ -36,7 +35,7 @@ const Container = styled.section`
 const FormContent = styled.form`
   padding: 20px 40px 20px 40px;
   border: 1px solid ${(props) => props.theme.borderColor};
-  background-color: white;
+  background-color: ${(props) => props.theme.inputBgColor};
 
   img {
     width: 175px;
@@ -49,7 +48,7 @@ const AccountContent = styled.div`
   padding: 25px 0;
   text-align: center;
   border: 1px solid ${(props) => props.theme.borderColor};
-  background-color: white;
+  background-color: ${(props) => props.theme.inputBgColor};
 
   h1 {
     font-size: 14px;
@@ -151,7 +150,7 @@ const Login = () => {
             계정이 없으신가요? <Link to={routes.signup}>가입하기</Link>
           </h1>
         </AccountContent>
-        <AppContent />
+        <AppDownload />
       </Container>
     </AuthLayout>
   );

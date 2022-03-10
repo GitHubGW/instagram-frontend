@@ -1,8 +1,7 @@
 import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
 import routes from "../routes";
-import Button from "../shared/Button";
-import Input from "../shared/Input";
+import { Button, Input } from "../shared/shared";
 import Separator from "../shared/Separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
@@ -11,7 +10,7 @@ import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import FormError from "../shared/FormError";
 import { useCreateAccountMutation } from "../generated/graphql";
-import AppContent from "../shared/AppContent";
+import AppDownload from "../shared/AppDownload";
 
 interface FormData {
   email: string;
@@ -30,7 +29,7 @@ const Container = styled.section`
 const FormContent = styled.form`
   padding: 20px 40px 20px 40px;
   border: 1px solid ${(props) => props.theme.borderColor};
-  background-color: white;
+  background-color: ${(props) => props.theme.inputBgColor};
 
   img {
     width: 175px;
@@ -48,7 +47,7 @@ const AccountContent = styled.div`
   padding: 25px 0;
   text-align: center;
   border: 1px solid ${(props) => props.theme.borderColor};
-  background-color: white;
+  background-color: ${(props) => props.theme.inputBgColor};
 
   h1 {
     font-size: 14px;
@@ -168,7 +167,7 @@ const SignUp = () => {
             계정이 있으신가요? <Link to={routes.login}>로그인</Link>
           </h1>
         </AccountContent>
-        <AppContent />
+        <AppDownload />
       </Container>
     </AuthLayout>
   );
