@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import CreatedAt from "../shared/CreatedAt";
@@ -36,6 +37,15 @@ const CaptionContainer = styled.div`
 
 const Caption = styled.span`
   margin-left: 10px;
+
+  a {
+    color: ${(props) => props.theme.hashtagColor};
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption, comments, createdAt }: PhotoContainerProps) => {
@@ -49,7 +59,21 @@ const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments
         <Link to={`/users/${user?.username}`}>
           <Username username={user?.username} size="15px" />
         </Link>
-        <Caption>{caption}</Caption>
+        <Caption>
+          {caption?.split(" ").map((word: string, index: number) =>
+            /#[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|\w]+/g.test(word) === true ? (
+              <Link key={index} to={`/hashtags/${word.replace("#", "")}`}>
+                {word}{" "}
+              </Link>
+            ) : /@[ㄱ-ㅎ|ㅏ-ㅣ|가-힣|\w]+/g.test(word) === true ? (
+              <Link key={index} to={`/users/${word.replace("@", "")}`}>
+                {word}{" "}
+              </Link>
+            ) : (
+              <React.Fragment key={index}>{word} </React.Fragment>
+            )
+          )}
+        </Caption>
       </CaptionContainer>
       <TotalComments totalComments={totalComments} />
       <Comments comments={comments} />

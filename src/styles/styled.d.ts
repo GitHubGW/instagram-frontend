@@ -12,6 +12,7 @@ declare module "styled-components" {
     borderColor: string;
     inputBgColor: string;
     searchBgColor: string;
+    hashtagColor: string;
     grayTextColor: string;
     lightGrayTextColor: string;
     errorColor: string;
