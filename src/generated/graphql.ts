@@ -29,6 +29,7 @@ export type Comment = {
 
 export type CommonResult = {
   __typename?: 'CommonResult';
+  id?: Maybe<Scalars['Int']>;
   message: Scalars['String'];
   ok: Scalars['Boolean'];
 };
@@ -467,7 +468,7 @@ export type CreateCommentMutationVariables = Exact<{
 }>;
 
 
-export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'CommonResult', ok: boolean, message: string } };
+export type CreateCommentMutation = { __typename?: 'Mutation', createComment: { __typename?: 'CommonResult', ok: boolean, message: string, id?: number | null } };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -552,6 +553,7 @@ export const CreateCommentDocument = gql`
   createComment(photoId: $photoId, text: $text) {
     ok
     message
+    id
   }
 }
     `;

@@ -5,6 +5,7 @@ gql`
     createComment(photoId: $photoId, text: $text) {
       ok
       message
+      id
     }
   }
 `;

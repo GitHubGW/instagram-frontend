@@ -1,9 +1,20 @@
+import gql from "graphql-tag";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { VscSmiley } from "react-icons/vsc";
+import { useCreateCommentMutation } from "../generated/graphql";
+import { ApolloCache, Reference } from "@apollo/client";
+
+interface CommentFormProps {
+  photoId?: number;
+}
 
 interface FormData {
   text: string;
+}
+
+interface SeeMeFragmentType {
+  seeMe: { __typename: string; user: { __ref: string } };
 }
 
 const Form = styled.form`
@@ -48,17 +59,70 @@ const Button = styled.button`
   padding: 0;
 `;
 
-const CommentForm = () => {
+const CommentForm = ({ photoId }: CommentFormProps) => {
   const {
     register,
     handleSubmit,
     getValues,
+    setValue,
     formState: { isValid },
   } = useForm<FormData>({ mode: "onChange", defaultValues: { text: "" } });
+  const [createCommentMutation, { loading: createCommentLoading }] = useCreateCommentMutation({
+    update: (cache: ApolloCache<any>, { data }) => {
+      if (data?.createComment.ok === false) {
+        return;
+      }
+
+      const { text } = getValues();
+      setValue("text", "");
+
+      const seeMeFragmentType: SeeMeFragmentType | null = cache.readFragment({
+        id: "ROOT_QUERY",
+        fragment: gql`
+          fragment query on Query {
+            seeMe {
+              user
+            }
+          }
+        `,
+      });
+      const commentReference: Reference | undefined = cache.writeFragment({
+        fragment: gql`
+          fragment comment on Comment {
+            id
+            text
+            user
+            isMe
+            createdAt
+          }
+        `,
+        data: {
+          __typename: "Comment",
+          id: data?.createComment.id,
+          text,
+          user: seeMeFragmentType?.seeMe.user,
+          isMe: true,
+          createdAt: String(Date.now()),
+        },
+      });
+      cache.modify({
+        id: `Photo:${photoId}`,
+        fields: {
+          comments: (comments) => [...comments, commentReference],
+          totalComments: (totalComments: number): number => totalComments + 1,
+        },
+      });
+    },
+  });
 
   const onValid = () => {
-    const { text } = getValues();
-    console.log("text", text);
+    if (createCommentLoading === true) {
+      return;
+    }
+    if (photoId) {
+      const { text } = getValues();
+      createCommentMutation({ variables: { photoId, text } });
+    }
   };
 
   return (
@@ -67,7 +131,7 @@ const CommentForm = () => {
         <VscSmiley />
       </Emoji>
       <Input {...register("text", { required: "댓글을 입력해주세요.", minLength: 1, maxLength: 70 })} type="text" minLength={1} maxLength={70} placeholder="댓글 달기..." />
-      <Button type="submit" disabled={!isValid}>
+      <Button onClick={handleSubmit(onValid)} type="submit" disabled={!isValid}>
         게시
       </Button>
     </Form>
