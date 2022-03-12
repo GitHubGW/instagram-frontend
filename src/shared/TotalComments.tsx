@@ -15,7 +15,7 @@ const Container = styled.div`
 `;
 
 const TotalComments = ({ totalComments }: TotalCommentsProps) => {
-  return <Container>댓글 {totalComments?.toLocaleString("ko-KR")}개</Container>;
+  return <Container>댓글 {totalComments?.toLocaleString("ko-KR")}개 모두 보기</Container>;
 };
 
 export default TotalComments;
