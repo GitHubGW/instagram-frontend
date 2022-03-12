@@ -3,16 +3,17 @@ import { Comment } from "../generated/graphql";
 import CommentContent from "./Comment";
 
 interface CommentsProps {
+  photoId?: number;
   comments: Comment[];
 }
 
 const Container = styled.div``;
 
-const Comments = ({ comments }: CommentsProps) => {
+const Comments = ({ photoId, comments }: CommentsProps) => {
   return (
     <Container>
       {comments.map((comment: Comment) => (
-        <CommentContent key={comment.id} {...comment} />
+        <CommentContent key={comment.id} photoId={photoId} {...comment} />
       ))}
     </Container>
   );

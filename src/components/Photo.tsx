@@ -76,7 +76,7 @@ const Photo = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption
         </Caption>
       </CaptionContainer>
       <TotalComments totalComments={totalComments} />
-      <Comments comments={comments} />
+      <Comments photoId={id} comments={comments} />
       <CreatedAt createdAt={createdAt} />
       <CommentForm photoId={id} />
     </Container>
