@@ -1,10 +1,10 @@
+import styled from "styled-components";
 import { ApolloCache } from "@apollo/client";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 import { useDeleteCommentMutation, User } from "../generated/graphql";
 import Username from "../shared/Username";
 
-interface CommentProps {
+interface CommentContentProps {
   photoId?: number;
   id: number;
   text: string;
@@ -16,14 +16,26 @@ interface CommentProps {
 const Container = styled.div`
   padding-left: 12px;
   margin-bottom: 5px;
+  display: flex;
 `;
 
 const Text = styled.span`
   margin-left: 5px;
   font-size: 15px;
+  margin-right: auto;
 `;
 
-const Comment = ({ photoId, id, text, user, isMe, createdAt }: CommentProps) => {
+const DeleteCommentButton = styled.button`
+  border: none;
+  outline: none;
+  cursor: pointer;
+  margin-right: 12px;
+  background-color: transparent;
+  color: ${(props) => props.theme.textColor};
+  font-size: 13px;
+`;
+
+const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentContentProps) => {
   const [deleteCommentMutation, { loading: deleteCommentLoading }] = useDeleteCommentMutation({
     variables: { commentId: id },
     update: (cache: ApolloCache<any>, { data }) => {
@@ -54,10 +66,14 @@ const Comment = ({ photoId, id, text, user, isMe, createdAt }: CommentProps) => 
       <Link to={`/users/${user.username}`}>
         <Username username={user.username} size="15px" />
       </Link>
-      <Text>{text}</Text>
-      {isMe === true && <button onClick={handleDeleteComment}>✕</button>}
+      <Text>{text.length < 50 ? text : `${text.slice(0, 60)}...`}</Text>
+      {isMe === true && (
+        <DeleteCommentButton onClick={handleDeleteComment} type="button">
+          ✕
+        </DeleteCommentButton>
+      )}
     </Container>
   );
 };
 
-export default Comment;
+export default CommentContent;

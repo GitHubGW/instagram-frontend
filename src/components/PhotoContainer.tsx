@@ -5,13 +5,13 @@ import CreatedAt from "../shared/CreatedAt";
 import Username from "../shared/Username";
 import TotalLikes from "../shared/TotalLikes";
 import TotalComments from "../shared/TotalComments";
-import Comments from "./Comments";
+import CommentsContainer from "./CommentsContainer";
 import CommentForm from "./CommentForm";
 import PhotoIcons from "./PhotoIcons";
 import PhotoAuthor from "./PhotoAuthor";
 import PhotoImage from "./PhotoImage";
 
-interface PhotoProps {
+interface PhotoContainerProps {
   id?: number;
   user?: { name?: string | null; username: string; avatarUrl?: string | null };
   photoUrl?: string;
@@ -48,7 +48,7 @@ const Caption = styled.span`
   }
 `;
 
-const Photo = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption, comments, createdAt }: PhotoProps) => {
+const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption, comments, createdAt }: PhotoContainerProps) => {
   return (
     <Container>
       <PhotoAuthor name={user?.name} username={user?.username} avatarUrl={user?.avatarUrl} />
@@ -76,11 +76,11 @@ const Photo = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption
         </Caption>
       </CaptionContainer>
       <TotalComments totalComments={totalComments} />
-      <Comments photoId={id} comments={comments} />
+      <CommentsContainer photoId={id} comments={comments} />
       <CreatedAt createdAt={createdAt} />
       <CommentForm photoId={id} />
     </Container>
   );
 };
 
-export default Photo;
+export default PhotoContainer;

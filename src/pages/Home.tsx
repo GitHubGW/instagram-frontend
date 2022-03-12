@@ -2,17 +2,15 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
-import { isLoggedInVar } from "../apollo";
 import styled from "styled-components";
 import PageTitle from "../components/PageTitle";
-import { useReactiveVar } from "@apollo/client";
 import { useSeeFeedQuery, useSeeFollowingQuery } from "../generated/graphql";
 import FeedLayout from "../shared/FeedLayout";
 import Avatar from "../shared/Avatar";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
-import Photo from "../components/Photo";
+import PhotoContainer from "../components/PhotoContainer";
 
 const sliderSettings = {
   infinite: true,
@@ -174,7 +172,6 @@ const FollowingContainer = styled.div`
 `;
 
 const Home = () => {
-  const isLoggedIn = useReactiveVar(isLoggedInVar);
   const loggedInUser = useLoggedInUser();
   const { data: seeFeedData } = useSeeFeedQuery();
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: loggedInUser?.username || "" } });
@@ -195,7 +192,7 @@ const Home = () => {
             </Slider>
           </FollowingContainer>
           {seeFeedData?.seeFeed.photos?.map((photo) => (
-            <Photo key={photo?.id} {...photo} />
+            <PhotoContainer key={photo?.id} {...photo} />
           ))}
         </LeftContainer>
         <RightContainer>

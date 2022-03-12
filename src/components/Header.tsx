@@ -1,12 +1,12 @@
+import styled from "styled-components";
+import routes from "../routes";
+import useLoggedInUser from "../hooks/useLoggedInUser";
+import Avatar from "../shared/Avatar";
 import { Link, useLocation, Location } from "react-router-dom";
 import { useReactiveVar } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { handleDisableDarkMode, handleEnableDarkMode, isDarkModeVar, isLoggedInVar } from "../apollo";
-import styled from "styled-components";
-import routes from "../routes";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
-import useLoggedInUser from "../hooks/useLoggedInUser";
-import Avatar from "../shared/Avatar";
 import { FaRegCompass, FaCompass } from "react-icons/fa";
 import { IoHomeOutline, IoHomeSharp, IoPaperPlaneOutline, IoPaperPlaneSharp } from "react-icons/io5";
 import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icons/bs";
