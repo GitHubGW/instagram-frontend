@@ -436,6 +436,7 @@ export type User = {
   photos?: Maybe<Array<Maybe<Photo>>>;
   totalFollowers: Scalars['Int'];
   totalFollowing: Scalars['Int'];
+  totalPhotos: Scalars['Int'];
   updatedAt: Scalars['String'];
   username: Scalars['String'];
 };
@@ -513,12 +514,20 @@ export type SeeFollowingQueryVariables = Exact<{
 }>;
 
 
-export type SeeFollowingQuery = { __typename?: 'Query', seeFollowing: { __typename?: 'SeeFollowingResult', ok: boolean, message: string, following?: Array<{ __typename?: 'User', username: string, avatarUrl?: string | null } | null> | null } };
+export type SeeFollowingQuery = { __typename?: 'Query', seeFollowing: { __typename?: 'SeeFollowingResult', ok: boolean, message: string, following?: Array<{ __typename?: 'User', id: number, username: string, avatarUrl?: string | null } | null> | null } };
 
 export type SeeMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type SeeMeQuery = { __typename?: 'Query', seeMe: { __typename?: 'seeMeResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string, email: string, avatarUrl?: string | null, bio?: string | null, isMe: boolean } | null } };
+
+export type SeeProfileQueryVariables = Exact<{
+  username: Scalars['String'];
+  cursor?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type SeeProfileQuery = { __typename?: 'Query', seeProfile: { __typename?: 'SeeProfileResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string, bio?: string | null, avatarUrl?: string | null, totalFollowing: number, totalFollowers: number, totalPhotos: number, isFollowing: boolean, isMe: boolean, photos?: Array<{ __typename?: 'Photo', id: number, photoUrl: string, totalLikes: number, totalComments: number } | null> | null, following?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null, followers?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null } | null } };
 
 
 export const CreateAccountDocument = gql`
@@ -745,14 +754,19 @@ export const SeeFeedDocument = gql`
     message
     photos {
       id
+      photoUrl
+      caption
+      totalLikes
+      totalComments
+      isMe
+      isLiked
+      createdAt
       user {
         id
         name
         username
         avatarUrl
       }
-      photoUrl
-      caption
       hashtags {
         id
         name
@@ -760,19 +774,14 @@ export const SeeFeedDocument = gql`
       comments {
         id
         text
+        isMe
+        createdAt
         user {
           id
           username
           avatarUrl
         }
-        isMe
-        createdAt
       }
-      totalLikes
-      totalComments
-      isMe
-      isLiked
-      createdAt
     }
   }
 }
@@ -811,6 +820,7 @@ export const SeeFollowingDocument = gql`
     ok
     message
     following {
+      id
       username
       avatarUrl
     }
@@ -890,3 +900,72 @@ export function useSeeMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SeeM
 export type SeeMeQueryHookResult = ReturnType<typeof useSeeMeQuery>;
 export type SeeMeLazyQueryHookResult = ReturnType<typeof useSeeMeLazyQuery>;
 export type SeeMeQueryResult = Apollo.QueryResult<SeeMeQuery, SeeMeQueryVariables>;
+export const SeeProfileDocument = gql`
+    query SeeProfile($username: String!, $cursor: Int) {
+  seeProfile(username: $username) {
+    ok
+    message
+    user {
+      id
+      name
+      username
+      bio
+      avatarUrl
+      totalFollowing
+      totalFollowers
+      totalPhotos
+      isFollowing
+      isMe
+      photos(cursor: $cursor) {
+        id
+        photoUrl
+        totalLikes
+        totalComments
+      }
+      following {
+        id
+        name
+        username
+        avatarUrl
+        isFollowing
+      }
+      followers {
+        id
+        name
+        username
+        avatarUrl
+        isFollowing
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useSeeProfileQuery__
+ *
+ * To run a query within a React component, call `useSeeProfileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSeeProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSeeProfileQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useSeeProfileQuery(baseOptions: Apollo.QueryHookOptions<SeeProfileQuery, SeeProfileQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SeeProfileQuery, SeeProfileQueryVariables>(SeeProfileDocument, options);
+      }
+export function useSeeProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SeeProfileQuery, SeeProfileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SeeProfileQuery, SeeProfileQueryVariables>(SeeProfileDocument, options);
+        }
+export type SeeProfileQueryHookResult = ReturnType<typeof useSeeProfileQuery>;
+export type SeeProfileLazyQueryHookResult = ReturnType<typeof useSeeProfileLazyQuery>;
+export type SeeProfileQueryResult = Apollo.QueryResult<SeeProfileQuery, SeeProfileQueryVariables>;
