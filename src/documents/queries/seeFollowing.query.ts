@@ -6,6 +6,7 @@ gql`
       ok
       message
       following {
+        id
         username
         avatarUrl
       }

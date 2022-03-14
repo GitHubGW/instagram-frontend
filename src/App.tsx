@@ -10,12 +10,11 @@ import NotFound from "./pages/NotFound";
 import GlobalStyle from "./styles/GlobalStyle";
 import { HelmetProvider } from "react-helmet-async";
 import routes from "./routes";
+import Profile from "./pages/Profile";
 
 const App = () => {
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
   const isDarkMode: boolean = useReactiveVar(isDarkModeVar);
-
-  console.log("isLoggedIn", isLoggedIn);
 
   return (
     <ApolloProvider client={client}>
@@ -27,6 +26,7 @@ const App = () => {
               <Route path={routes.home} element={<Home />} />
               {isLoggedIn === false && <Route path={routes.login} element={<Login />} />}
               {isLoggedIn === false && <Route path={routes.signup} element={<SignUp />} />}
+              <Route path={`/users/:username`} element={<Profile />} />
               <Route path="/*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

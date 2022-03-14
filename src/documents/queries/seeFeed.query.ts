@@ -7,14 +7,19 @@ gql`
       message
       photos {
         id
+        photoUrl
+        caption
+        totalLikes
+        totalComments
+        isMe
+        isLiked
+        createdAt
         user {
           id
           name
           username
           avatarUrl
         }
-        photoUrl
-        caption
         hashtags {
           id
           name
@@ -22,19 +27,14 @@ gql`
         comments {
           id
           text
+          isMe
+          createdAt
           user {
             id
             username
             avatarUrl
           }
-          isMe
-          createdAt
         }
-        totalLikes
-        totalComments
-        isMe
-        isLiked
-        createdAt
       }
     }
   }
