@@ -138,7 +138,9 @@ const Header = () => {
             <Link to={"/"}>{location.pathname === routes.home ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
             <Link to={"/"}>{location.pathname === routes.home ? <FaCompass /> : <FaRegCompass />}</Link>
             <Link to={"/"}>{location.pathname === routes.home ? <BsHeartFill /> : <BsHeart />}</Link>
-            <Link to={"/"}>{isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl} /> : <FontAwesomeIcon icon={faUser} />}</Link>
+            <Link to={`/users/${loggedInUser?.username}`}>
+              {isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} /> : <FontAwesomeIcon icon={faUser} />}
+            </Link>
             <DarkModeButton onClick={isDarkMode === true ? handleDisableDarkMode : handleEnableDarkMode} type="button">
               {isDarkMode === true ? <FiSun /> : <FiMoon />}
             </DarkModeButton>
