@@ -95,7 +95,7 @@ const ProfileMain = styled.div`
   width: 940px;
   flex-wrap: wrap;
   gap: 20px;
-  padding-top: 30px;
+  padding: 30px 0px;
 `;
 
 const ProfilePhoto = styled.div`
@@ -212,6 +212,9 @@ const Profile = () => {
       <PageTitle title={seeProfileLoading === true ? "로딩중" : username || "페이지를 찾을 수 없습니다."} />
       {seeProfileLoading === false ? (
         <Container>
+          {/* <button onClick={handleLogout} type="button">
+            로그아웃
+          </button> */}
           <ProfileHeader>
             <ProfileImage>
               <Avatar avatarUrl={seeProfileData?.seeProfile.user?.avatarUrl || "/images/basic_user.jpeg"} size="155px" />
