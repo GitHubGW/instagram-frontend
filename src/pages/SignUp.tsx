@@ -9,7 +9,7 @@ import AuthLayout from "../shared/AuthLayout";
 import PageTitle from "../components/PageTitle";
 import { useForm } from "react-hook-form";
 import FormError from "../shared/FormError";
-import { useCreateAccountMutation } from "../generated/graphql";
+import { CreateAccountMutation, useCreateAccountMutation } from "../generated/graphql";
 import AppDownload from "../shared/AppDownload";
 
 interface FormData {
@@ -83,7 +83,7 @@ const SignUp = () => {
     formState: { errors, isValid },
   } = useForm<FormData>({ mode: "onChange" });
   const [createAccountMutation, { loading: createAccountLoading }] = useCreateAccountMutation({
-    onCompleted: ({ createAccount: { ok, message } }) => {
+    onCompleted: ({ createAccount: { ok, message } }: CreateAccountMutation) => {
       if (ok === false) {
         return setError("createAccountResult", { message });
       }

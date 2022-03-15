@@ -228,30 +228,6 @@ const Home = () => {
                   </UserInfo>
                   <FollowButton type="button">팔로우</FollowButton>
                 </RecommandContent>
-                <RecommandContent>
-                  <Link to={`/users/${loggedInUser?.username}`}>
-                    <Avatar size="32px" avatarUrl={loggedInUser?.avatarUrl} />
-                  </Link>
-                  <UserInfo>
-                    <Link to={`/users/${loggedInUser?.username}`}>
-                      <Username username={loggedInUser?.username} size="14px" />
-                    </Link>
-                    <Name name={loggedInUser?.name} size="12px" />
-                  </UserInfo>
-                  <FollowButton type="button">팔로우</FollowButton>
-                </RecommandContent>
-                <RecommandContent>
-                  <Link to={`/users/${loggedInUser?.username}`}>
-                    <Avatar size="32px" avatarUrl={loggedInUser?.avatarUrl} />
-                  </Link>
-                  <UserInfo>
-                    <Link to={`/users/${loggedInUser?.username}`}>
-                      <Username username={loggedInUser?.username} size="14px" />
-                    </Link>
-                    <Name name={loggedInUser?.name} size="12px" />
-                  </UserInfo>
-                  <FollowButton type="button">팔로우</FollowButton>
-                </RecommandContent>
               </AsideMainInner>
             </AsideMain>
             <NavContent>
