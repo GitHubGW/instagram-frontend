@@ -34,6 +34,13 @@ export type CommonResult = {
   ok: Scalars['Boolean'];
 };
 
+export type FollowUserResult = {
+  __typename?: 'FollowUserResult';
+  message: Scalars['String'];
+  ok: Scalars['Boolean'];
+  user?: Maybe<User>;
+};
+
 export type Hashtag = {
   __typename?: 'Hashtag';
   createdAt: Scalars['String'];
@@ -87,12 +94,12 @@ export type Mutation = {
   editComment: CommonResult;
   editPhoto: CommonResult;
   editProfile: CommonResult;
-  followUser: CommonResult;
+  followUser: FollowUserResult;
   login: LoginResult;
   readMessage: CommonResult;
   sendMessage: SendMessageResult;
   toggleLikePhoto: CommonResult;
-  unfollowUser: CommonResult;
+  unfollowUser: UnfollowUserResult;
   uploadPhoto: UploadPhotoResult;
 };
 
@@ -414,6 +421,13 @@ export type SubscriptionMessageUpdatesArgs = {
   roomId: Scalars['Int'];
 };
 
+export type UnfollowUserResult = {
+  __typename?: 'UnfollowUserResult';
+  message: Scalars['String'];
+  ok: Scalars['Boolean'];
+  user?: Maybe<User>;
+};
+
 export type UploadPhotoResult = {
   __typename?: 'UploadPhotoResult';
   message: Scalars['String'];
@@ -510,7 +524,7 @@ export type FollowUserMutationVariables = Exact<{
 }>;
 
 
-export type FollowUserMutation = { __typename?: 'Mutation', followUser: { __typename?: 'CommonResult', ok: boolean, message: string } };
+export type FollowUserMutation = { __typename?: 'Mutation', followUser: { __typename?: 'FollowUserResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string } | null } };
 
 export type LoginMutationVariables = Exact<{
   username: Scalars['String'];
@@ -532,7 +546,7 @@ export type UnfollowUserMutationVariables = Exact<{
 }>;
 
 
-export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'CommonResult', ok: boolean, message: string } };
+export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'UnfollowUserResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string } | null } };
 
 export type SeeFeedQueryVariables = Exact<{
   cursor?: InputMaybe<Scalars['Int']>;
@@ -541,13 +555,21 @@ export type SeeFeedQueryVariables = Exact<{
 
 export type SeeFeedQuery = { __typename?: 'Query', seeFeed: { __typename?: 'SeeFeedResult', ok: boolean, message: string, photos?: Array<{ __typename?: 'Photo', id: number, photoUrl: string, caption?: string | null, totalLikes: number, totalComments: number, isMe: boolean, isLiked: boolean, createdAt: string, user: { __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null }, hashtags?: Array<{ __typename?: 'Hashtag', id: number, name: string } | null> | null, comments?: Array<{ __typename?: 'Comment', id: number, text: string, isMe: boolean, createdAt: string, user: { __typename?: 'User', id: number, username: string, avatarUrl?: string | null } } | null> | null } | null> | null } };
 
+export type SeeFollowersQueryVariables = Exact<{
+  username: Scalars['String'];
+  cursor?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type SeeFollowersQuery = { __typename?: 'Query', seeFollowers: { __typename?: 'SeeFollowersResult', ok: boolean, message: string, followers?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean, isMe: boolean } | null> | null } };
+
 export type SeeFollowingQueryVariables = Exact<{
   username: Scalars['String'];
   cursor?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type SeeFollowingQuery = { __typename?: 'Query', seeFollowing: { __typename?: 'SeeFollowingResult', ok: boolean, message: string, following?: Array<{ __typename?: 'User', id: number, username: string, avatarUrl?: string | null } | null> | null } };
+export type SeeFollowingQuery = { __typename?: 'Query', seeFollowing: { __typename?: 'SeeFollowingResult', ok: boolean, message: string, following?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean, isMe: boolean } | null> | null } };
 
 export type SeeMeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -795,6 +817,11 @@ export const FollowUserDocument = gql`
   followUser(username: $username) {
     ok
     message
+    user {
+      id
+      name
+      username
+    }
   }
 }
     `;
@@ -899,6 +926,11 @@ export const UnfollowUserDocument = gql`
   unfollowUser(username: $username) {
     ok
     message
+    user {
+      id
+      name
+      username
+    }
   }
 }
     `;
@@ -995,6 +1027,51 @@ export function useSeeFeedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Se
 export type SeeFeedQueryHookResult = ReturnType<typeof useSeeFeedQuery>;
 export type SeeFeedLazyQueryHookResult = ReturnType<typeof useSeeFeedLazyQuery>;
 export type SeeFeedQueryResult = Apollo.QueryResult<SeeFeedQuery, SeeFeedQueryVariables>;
+export const SeeFollowersDocument = gql`
+    query SeeFollowers($username: String!, $cursor: String) {
+  seeFollowers(username: $username, cursor: $cursor) {
+    ok
+    message
+    followers {
+      id
+      name
+      username
+      avatarUrl
+      isFollowing
+      isMe
+    }
+  }
+}
+    `;
+
+/**
+ * __useSeeFollowersQuery__
+ *
+ * To run a query within a React component, call `useSeeFollowersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSeeFollowersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSeeFollowersQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useSeeFollowersQuery(baseOptions: Apollo.QueryHookOptions<SeeFollowersQuery, SeeFollowersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SeeFollowersQuery, SeeFollowersQueryVariables>(SeeFollowersDocument, options);
+      }
+export function useSeeFollowersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SeeFollowersQuery, SeeFollowersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SeeFollowersQuery, SeeFollowersQueryVariables>(SeeFollowersDocument, options);
+        }
+export type SeeFollowersQueryHookResult = ReturnType<typeof useSeeFollowersQuery>;
+export type SeeFollowersLazyQueryHookResult = ReturnType<typeof useSeeFollowersLazyQuery>;
+export type SeeFollowersQueryResult = Apollo.QueryResult<SeeFollowersQuery, SeeFollowersQueryVariables>;
 export const SeeFollowingDocument = gql`
     query SeeFollowing($username: String!, $cursor: String) {
   seeFollowing(username: $username, cursor: $cursor) {
@@ -1002,8 +1079,11 @@ export const SeeFollowingDocument = gql`
     message
     following {
       id
+      name
       username
       avatarUrl
+      isFollowing
+      isMe
     }
   }
 }

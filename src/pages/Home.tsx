@@ -183,8 +183,8 @@ const Home = () => {
         <LeftContainer>
           <FollowingContainer>
             <Slider {...sliderSettings}>
-              {seeFollowingData?.seeFollowing.following?.map((following) => (
-                <Link key={following?.username} to={`/users/${following?.username}`}>
+              {seeFollowingData?.seeFollowing?.following?.map((following) => (
+                <Link key={following?.id} to={`/users/${following?.username}`}>
                   <Avatar size="65px" avatarUrl={following?.avatarUrl} />
                   <h1>{following?.username}</h1>
                 </Link>

@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { useFollowUserMutation, useSeeProfileQuery, useUnfollowUserMutation } from "../generated/graphql";
 import PageTitle from "../components/PageTitle";
 import Avatar from "../shared/Avatar";
 import MainLayout from "../shared/MainLayout";
@@ -10,6 +9,14 @@ import { BsHeartFill } from "react-icons/bs";
 import { FaComment } from "react-icons/fa";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import { ApolloCache, useApolloClient } from "@apollo/client";
+import Modal from "react-modal";
+import { useState } from "react";
+import Username from "../shared/Username";
+import Name from "../shared/Name";
+import Loading from "../shared/Loading";
+import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
+import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
+import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeFollowersQuery, useSeeFollowingQuery, useSeeProfileQuery, useUnfollowUserMutation } from "../generated/graphql";
 
 type ProfileParams = {
   username: string;
@@ -71,9 +78,15 @@ const ProfilePost = styled.div`
   justify-content: space-between;
   max-width: 280px;
 
-  strong {
-    font-weight: 700;
+  span {
     cursor: pointer;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+  span:first-child {
+    cursor: auto;
   }
 `;
 
@@ -148,22 +161,118 @@ const ProfilePhotoIcons = styled.div`
   }
 `;
 
+const ModalBox = styled(Modal)`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  box-sizing: border-box;
+  outline: none;
+  border-radius: 15px;
+  border: 1px solid ${(props) => props.theme.borderColor};
+  background-color: ${(props) => props.theme.bgContainerColor};
+  overflow: hidden;
+`;
+
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
+  padding: 12px 0;
+
+  h1 {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  button {
+    position: absolute;
+    top: 5px;
+    right: 4px;
+    font-size: 22px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: ${(props) => props.theme.bgContainerColor};
+    color: ${(props) => props.theme.textColor};
+  }
+`;
+
+const ModalMain = styled.div`
+  padding: 10px 18px;
+  padding-bottom: 0;
+  overflow-y: scroll;
+  height: 355px;
+`;
+
+const ModalMainContent = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+`;
+
+const ModalMainUser = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+
+  a {
+    display: flex;
+    align-items: center;
+  }
+`;
+
+const ModalMainUserInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 13px;
+`;
+
+const FollowButton = styled(Button)<{ isFollowing: boolean | undefined }>`
+  width: 60px;
+  height: 32px;
+  text-align: center;
+  background-color: ${(props) => (props.isFollowing === true ? "white" : props.theme.activeColor)};
+  color: ${(props) => (props.isFollowing === true ? "gray" : "white")};
+  border: 1px solid ${(props) => (props.isFollowing === true ? props.theme.borderColor : "transparent")};
+`;
+
 const Profile = () => {
   const loggedInUser = useLoggedInUser();
   const { username } = useParams<ProfileParams>();
+  const [modalState, setModalState] = useState<string>("");
+  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const { data: seeProfileData, loading: seeProfileLoading } = useSeeProfileQuery({ variables: { username: username || "" } });
-  const [followUserMutation, { loading: followUserLoading }] = useFollowUserMutation({
+  const [seeFollowersLazyQuery] = useSeeFollowersLazyQuery();
+  const { data: seeFollowersData } = useSeeFollowersQuery({ variables: { username: username || "" } });
+  const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: username || "" } });
+  const [followUserMutation, { data: followUserData, loading: followUserLoading }] = useFollowUserMutation({
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.followUser.ok === false) {
         return;
       }
-      cache.modify({
-        id: `User:${seeProfileData?.seeProfile.user?.id}`,
-        fields: {
-          isFollowing: (isFollowing: boolean) => true,
-          totalFollowers: (totalFollowers: number) => totalFollowers + 1,
-        },
-      });
+
+      if (data?.followUser.user?.username === username) {
+        cache.modify({
+          id: `User:${seeProfileData?.seeProfile.user?.id}`,
+          fields: {
+            isFollowing: (isFollowing: boolean) => true,
+            totalFollowers: (totalFollowers: number) => totalFollowers + 1,
+          },
+        });
+      } else {
+        seeFollowersLazyQuery({ variables: { username: data?.followUser.user?.username as string } });
+        cache.modify({
+          id: `User:${data?.followUser.user?.id}`,
+          fields: {
+            isFollowing: (isFollowing: boolean) => true,
+            totalFollowers: (totalFollowers: number) => totalFollowers + 1,
+          },
+        });
+      }
+
       cache.modify({
         id: `User:${loggedInUser?.id}`,
         fields: {
@@ -171,19 +280,36 @@ const Profile = () => {
         },
       });
     },
+    refetchQueries: [
+      { query: SEE_FOLLOWERS, variables: { username } },
+      { query: SEE_FOLLOWING, variables: { username: loggedInUser?.username } },
+    ],
   });
-  const [unfollowUserMutation, { loading: unfollowUserLoading }] = useUnfollowUserMutation({
+  const [unfollowUserMutation, { data: unfollowUserData, loading: unfollowUserLoading }] = useUnfollowUserMutation({
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.unfollowUser.ok === false) {
         return;
       }
-      cache.modify({
-        id: `User:${seeProfileData?.seeProfile.user?.id}`,
-        fields: {
-          isFollowing: (isFollowing: boolean) => false,
-          totalFollowers: (totalFollowers: number) => totalFollowers - 1,
-        },
-      });
+
+      if (data?.unfollowUser.user?.username === username) {
+        cache.modify({
+          id: `User:${seeProfileData?.seeProfile.user?.id}`,
+          fields: {
+            isFollowing: (isFollowing: boolean) => false,
+            totalFollowers: (totalFollowers: number) => totalFollowers - 1,
+          },
+        });
+      } else {
+        seeFollowersLazyQuery({ variables: { username: data?.unfollowUser.user?.username as string } });
+        cache.modify({
+          id: `User:${data?.unfollowUser.user?.id}`,
+          fields: {
+            isFollowing: (isFollowing: boolean) => false,
+            totalFollowers: (totalFollowers: number) => totalFollowers - 1,
+          },
+        });
+      }
+
       cache.modify({
         id: `User:${loggedInUser?.id}`,
         fields: {
@@ -191,6 +317,10 @@ const Profile = () => {
         },
       });
     },
+    refetchQueries: [
+      { query: SEE_FOLLOWERS, variables: { username } },
+      { query: SEE_FOLLOWING, variables: { username: loggedInUser?.username } },
+    ],
   });
 
   const handleFollowUser = (): void => {
@@ -207,14 +337,98 @@ const Profile = () => {
     unfollowUserMutation({ variables: { username: username as string } });
   };
 
+  const handleSeeFollowers = (): void => {
+    document.body.style.overflow = "hidden";
+    setModalState("follower");
+    setModalIsOpen(true);
+  };
+
+  const handleSeeFollowing = (): void => {
+    document.body.style.overflow = "hidden";
+    setModalState("following");
+    setModalIsOpen(true);
+  };
+
+  const handleToggleFollow = (isFollowing: boolean | undefined, username: string | undefined) => {
+    if (isFollowing === false) {
+      followUserMutation({ variables: { username: username as string } });
+    } else if (isFollowing === true) {
+      unfollowUserMutation({ variables: { username: username as string } });
+    }
+  };
+
+  const handleAfterOpenModal = () => {};
+
+  const handleCloseModal = (): void => {
+    document.body.style.overflow = "auto";
+    setModalIsOpen(false);
+  };
+
+  // <button onClick={handleLogout} type="button">로그아웃</button>
+
   return (
     <MainLayout>
+      <ModalBox ariaHideApp={false} isOpen={modalIsOpen} onAfterOpen={handleAfterOpenModal} onRequestClose={handleCloseModal} contentLabel="Example Modal">
+        <ModalHeader>
+          <h1>{modalState === "follower" ? "팔로워" : "팔로잉"}</h1>
+          <button onClick={handleCloseModal}>✕</button>
+        </ModalHeader>
+        <ModalMain>
+          {modalState === "follower" &&
+            seeFollowersData?.seeFollowers.followers?.map((follower) => (
+              <ModalMainContent key={follower?.id}>
+                <ModalMainUser>
+                  <Link to={`/users/${follower?.username}`} onClick={() => setModalIsOpen(false)}>
+                    <Avatar size="38px" avatarUrl={follower?.avatarUrl} />
+                    <ModalMainUserInfo>
+                      <Username size="15px" username={follower?.username} />
+                      <Name size="14px" name={follower?.name} />
+                    </ModalMainUserInfo>
+                  </Link>
+                </ModalMainUser>
+                {follower?.isMe === false && (
+                  <FollowButton isFollowing={follower?.isFollowing} onClick={() => handleToggleFollow(follower?.isFollowing, follower?.username)} type="button">
+                    {followUserLoading === true && followUserData?.followUser.user?.username === follower?.username ? (
+                      <Loading size="12px" />
+                    ) : follower?.isFollowing === true ? (
+                      "팔로잉"
+                    ) : (
+                      "팔로우"
+                    )}
+                  </FollowButton>
+                )}
+              </ModalMainContent>
+            ))}
+          {modalState === "following" &&
+            seeFollowingData?.seeFollowing.following?.map((following) => (
+              <ModalMainContent key={following?.id}>
+                <ModalMainUser>
+                  <Link to={`/users/${following?.username}`} onClick={() => setModalIsOpen(false)}>
+                    <Avatar size="38px" avatarUrl={following?.avatarUrl} />
+                    <ModalMainUserInfo>
+                      <Username size="15px" username={following?.username} />
+                      <Name size="14px" name={following?.name} />
+                    </ModalMainUserInfo>
+                  </Link>
+                </ModalMainUser>
+                {following?.isMe === false && (
+                  <FollowButton isFollowing={following?.isFollowing} onClick={() => handleToggleFollow(following?.isFollowing, following?.username)} type="button">
+                    {followUserLoading === true && followUserData?.followUser.user?.username === following?.username ? (
+                      <Loading size="12px" />
+                    ) : following?.isFollowing === true ? (
+                      "팔로잉"
+                    ) : (
+                      "팔로우"
+                    )}
+                  </FollowButton>
+                )}
+              </ModalMainContent>
+            ))}
+        </ModalMain>
+      </ModalBox>
       <PageTitle title={seeProfileLoading === true ? "로딩중" : username || "페이지를 찾을 수 없습니다."} />
       {seeProfileLoading === false ? (
         <Container>
-          {/* <button onClick={handleLogout} type="button">
-            로그아웃
-          </button> */}
           <ProfileHeader>
             <ProfileImage>
               <Avatar avatarUrl={seeProfileData?.seeProfile.user?.avatarUrl || "/images/basic_user.jpeg"} size="155px" />
@@ -226,12 +440,12 @@ const Profile = () => {
                 {seeProfileData?.seeProfile.user?.isMe === false && seeProfileData.seeProfile.user.isFollowing === true && <Link to="/">메세지 보내기</Link>}
                 {seeProfileData?.seeProfile.user?.isMe === false && seeProfileData.seeProfile.user.isFollowing === true && (
                   <Button onClick={handleUnfollowUser} type="button">
-                    팔로우 취소
+                    {unfollowUserLoading === true && unfollowUserData?.unfollowUser.user?.username === username ? <Loading size="12px" /> : "팔로우 취소"}
                   </Button>
                 )}
                 {seeProfileData?.seeProfile.user?.isMe === false && seeProfileData.seeProfile.user.isFollowing === false && (
                   <Button onClick={handleFollowUser} type="button">
-                    팔로우
+                    {followUserLoading === true && followUserData?.followUser.user?.username === username ? <Loading size="12px" /> : "팔로우"}
                   </Button>
                 )}
               </ProfileUser>
@@ -239,10 +453,10 @@ const Profile = () => {
                 <span>
                   게시물 <strong>{seeProfileData?.seeProfile.user?.totalPhotos}</strong>
                 </span>
-                <span>
+                <span onClick={handleSeeFollowers}>
                   팔로워 <strong>{seeProfileData?.seeProfile.user?.totalFollowers}</strong>
                 </span>
-                <span>
+                <span onClick={handleSeeFollowing}>
                   팔로우 <strong>{seeProfileData?.seeProfile.user?.totalFollowing}</strong>
                 </span>
               </ProfilePost>
