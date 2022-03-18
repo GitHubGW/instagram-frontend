@@ -1,15 +1,15 @@
 import styled from "styled-components";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 import PageTitle from "../components/PageTitle";
 import Avatar from "../shared/Avatar";
 import MainLayout from "../shared/MainLayout";
-import { Button } from "../shared/shared";
+import { Button, ModalBackground, ScrollBox } from "../shared/shared";
 import { BsHeartFill } from "react-icons/bs";
 import { FaComment } from "react-icons/fa";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import { ApolloCache, useApolloClient } from "@apollo/client";
-import Modal from "react-modal";
 import { useState } from "react";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
@@ -20,6 +20,12 @@ import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeFollowersQuery, 
 
 type ProfileParams = {
   username: string;
+};
+
+const modalVariants: Variants = {
+  start: { opacity: 0, scale: 0.95, translateX: "-50%", translateY: "-50%" },
+  end: { opacity: 1, scale: 1, transition: { duration: 0.2 } },
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
 };
 
 const Container = styled.section`
@@ -161,7 +167,7 @@ const ProfilePhotoIcons = styled.div`
   }
 `;
 
-const ModalBox = styled(Modal)`
+const ModalBox = styled(motion.div)`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -174,6 +180,7 @@ const ModalBox = styled(Modal)`
   border: 1px solid ${(props) => props.theme.borderColor};
   background-color: ${(props) => props.theme.bgContainerColor};
   overflow: hidden;
+  z-index: 120;
 `;
 
 const ModalHeader = styled.div`
@@ -201,7 +208,7 @@ const ModalHeader = styled.div`
   }
 `;
 
-const ModalMain = styled.div`
+const ModalMain = styled(ScrollBox)`
   padding: 10px 18px;
   padding-bottom: 0;
   overflow-y: scroll;
@@ -357,8 +364,6 @@ const Profile = () => {
     }
   };
 
-  const handleAfterOpenModal = () => {};
-
   const handleCloseModal = (): void => {
     document.body.style.overflow = "auto";
     setModalIsOpen(false);
@@ -368,64 +373,69 @@ const Profile = () => {
 
   return (
     <MainLayout>
-      <ModalBox ariaHideApp={false} isOpen={modalIsOpen} onAfterOpen={handleAfterOpenModal} onRequestClose={handleCloseModal} contentLabel="Example Modal">
-        <ModalHeader>
-          <h1>{modalState === "follower" ? "팔로워" : "팔로잉"}</h1>
-          <button onClick={handleCloseModal}>✕</button>
-        </ModalHeader>
-        <ModalMain>
-          {modalState === "follower" &&
-            seeFollowersData?.seeFollowers.followers?.map((follower) => (
-              <ModalMainContent key={follower?.id}>
-                <ModalMainUser>
-                  <Link to={`/users/${follower?.username}`} onClick={() => setModalIsOpen(false)}>
-                    <Avatar size="38px" avatarUrl={follower?.avatarUrl} />
-                    <ModalMainUserInfo>
-                      <Username size="15px" username={follower?.username} />
-                      <Name size="14px" name={follower?.name} />
-                    </ModalMainUserInfo>
-                  </Link>
-                </ModalMainUser>
-                {follower?.isMe === false && (
-                  <FollowButton isFollowing={follower?.isFollowing} onClick={() => handleToggleFollow(follower?.isFollowing, follower?.username)} type="button">
-                    {followUserLoading === true && followUserData?.followUser.user?.username === follower?.username ? (
-                      <Loading size="12px" />
-                    ) : follower?.isFollowing === true ? (
-                      "팔로잉"
-                    ) : (
-                      "팔로우"
+      {modalIsOpen === true && <ModalBackground onClick={() => setModalIsOpen(false)} />}
+      <AnimatePresence>
+        {modalIsOpen === true ? (
+          <ModalBox variants={modalVariants} initial="start" animate="end" exit="exit">
+            <ModalHeader>
+              <h1>{modalState === "follower" ? "팔로워" : "팔로잉"}</h1>
+              <button onClick={handleCloseModal}>✕</button>
+            </ModalHeader>
+            <ModalMain>
+              {modalState === "follower" &&
+                seeFollowersData?.seeFollowers.followers?.map((follower) => (
+                  <ModalMainContent key={follower?.id}>
+                    <ModalMainUser>
+                      <Link to={`/users/${follower?.username}`} onClick={() => setModalIsOpen(false)}>
+                        <Avatar size="38px" avatarUrl={follower?.avatarUrl} />
+                        <ModalMainUserInfo>
+                          <Username size="15px" username={follower?.username} />
+                          <Name size="14px" name={follower?.name} />
+                        </ModalMainUserInfo>
+                      </Link>
+                    </ModalMainUser>
+                    {follower?.isMe === false && (
+                      <FollowButton isFollowing={follower?.isFollowing} onClick={() => handleToggleFollow(follower?.isFollowing, follower?.username)} type="button">
+                        {followUserLoading === true && followUserData?.followUser.user?.username === follower?.username ? (
+                          <Loading size="12px" />
+                        ) : follower?.isFollowing === true ? (
+                          "팔로잉"
+                        ) : (
+                          "팔로우"
+                        )}
+                      </FollowButton>
                     )}
-                  </FollowButton>
-                )}
-              </ModalMainContent>
-            ))}
-          {modalState === "following" &&
-            seeFollowingData?.seeFollowing.following?.map((following) => (
-              <ModalMainContent key={following?.id}>
-                <ModalMainUser>
-                  <Link to={`/users/${following?.username}`} onClick={() => setModalIsOpen(false)}>
-                    <Avatar size="38px" avatarUrl={following?.avatarUrl} />
-                    <ModalMainUserInfo>
-                      <Username size="15px" username={following?.username} />
-                      <Name size="14px" name={following?.name} />
-                    </ModalMainUserInfo>
-                  </Link>
-                </ModalMainUser>
-                {following?.isMe === false && (
-                  <FollowButton isFollowing={following?.isFollowing} onClick={() => handleToggleFollow(following?.isFollowing, following?.username)} type="button">
-                    {followUserLoading === true && followUserData?.followUser.user?.username === following?.username ? (
-                      <Loading size="12px" />
-                    ) : following?.isFollowing === true ? (
-                      "팔로잉"
-                    ) : (
-                      "팔로우"
+                  </ModalMainContent>
+                ))}
+              {modalState === "following" &&
+                seeFollowingData?.seeFollowing.following?.map((following) => (
+                  <ModalMainContent key={following?.id}>
+                    <ModalMainUser>
+                      <Link to={`/users/${following?.username}`} onClick={() => setModalIsOpen(false)}>
+                        <Avatar size="38px" avatarUrl={following?.avatarUrl} />
+                        <ModalMainUserInfo>
+                          <Username size="15px" username={following?.username} />
+                          <Name size="14px" name={following?.name} />
+                        </ModalMainUserInfo>
+                      </Link>
+                    </ModalMainUser>
+                    {following?.isMe === false && (
+                      <FollowButton isFollowing={following?.isFollowing} onClick={() => handleToggleFollow(following?.isFollowing, following?.username)} type="button">
+                        {followUserLoading === true && followUserData?.followUser.user?.username === following?.username ? (
+                          <Loading size="12px" />
+                        ) : following?.isFollowing === true ? (
+                          "팔로잉"
+                        ) : (
+                          "팔로우"
+                        )}
+                      </FollowButton>
                     )}
-                  </FollowButton>
-                )}
-              </ModalMainContent>
-            ))}
-        </ModalMain>
-      </ModalBox>
+                  </ModalMainContent>
+                ))}
+            </ModalMain>
+          </ModalBox>
+        ) : null}
+      </AnimatePresence>
       <PageTitle title={seeProfileLoading === true ? "로딩중" : username || "페이지를 찾을 수 없습니다."} />
       {seeProfileLoading === false ? (
         <Container>

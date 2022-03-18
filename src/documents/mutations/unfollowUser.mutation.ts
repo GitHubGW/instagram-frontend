@@ -5,6 +5,11 @@ gql`
     unfollowUser(username: $username) {
       ok
       message
+      user {
+        id
+        name
+        username
+      }
     }
   }
 `;

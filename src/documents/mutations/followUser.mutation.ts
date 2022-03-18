@@ -5,6 +5,11 @@ gql`
     followUser(username: $username) {
       ok
       message
+      user {
+        id
+        name
+        username
+      }
     }
   }
 `;
