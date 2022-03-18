@@ -1,3 +1,5 @@
+import { useState } from "react";
+import Picker from "emoji-picker-react";
 import gql from "graphql-tag";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
@@ -26,6 +28,7 @@ const Form = styled.form`
 
 const Emoji = styled.div`
   margin-right: 10px;
+  position: relative;
 
   svg {
     font-size: 25px;
@@ -59,7 +62,14 @@ const Button = styled.button`
   padding: 0;
 `;
 
+const PickerBox = styled.div`
+  position: absolute;
+  top: 30px;
+  left: 0px;
+`;
+
 const CommentForm = ({ photoId }: CommentFormProps) => {
+  const [isEmoji, setIsEmoji] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -115,20 +125,36 @@ const CommentForm = ({ photoId }: CommentFormProps) => {
     },
   });
 
-  const onValid = () => {
+  const onValid = (): void => {
     if (createCommentLoading === true) {
       return;
     }
     if (photoId) {
       const { text } = getValues();
       createCommentMutation({ variables: { photoId, text } });
+      setIsEmoji(false);
     }
+  };
+
+  const handleShowEmoji = (): void => {
+    setIsEmoji((isEmoji: boolean) => !isEmoji);
+  };
+
+  const onEmojiClick = (event: React.MouseEvent, emojiObject: any): void => {
+    const { text } = getValues();
+    setValue("text", text + emojiObject.emoji);
+    setIsEmoji(false);
   };
 
   return (
     <Form onSubmit={handleSubmit(onValid)}>
       <Emoji>
-        <VscSmiley />
+        <VscSmiley onClick={handleShowEmoji} />
+        {isEmoji === true && (
+          <PickerBox>
+            <Picker onEmojiClick={onEmojiClick} />
+          </PickerBox>
+        )}
       </Emoji>
       <Input {...register("text", { required: "댓글을 입력해주세요.", minLength: 1, maxLength: 70 })} type="text" minLength={1} maxLength={70} placeholder="댓글 달기..." />
       <Button onClick={handleSubmit(onValid)} type="submit" disabled={!isValid}>
