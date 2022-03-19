@@ -13,13 +13,13 @@ import { IoHomeOutline, IoHomeSharp, IoPaperPlaneOutline, IoPaperPlaneSharp } fr
 import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icons/bs";
 import { FiSun, FiMoon } from "react-icons/fi";
 import { useForm } from "react-hook-form";
-import { useSearchHashtagsLazyQuery, useSearchUsersLazyQuery } from "../generated/graphql";
+import { useSearchHashtagsLazyQuery, useSearchPhotosLazyQuery, useSearchUsersLazyQuery } from "../generated/graphql";
 import { useState } from "react";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
 import { ScrollBox } from "../shared/shared";
 
-interface SearchedUsers {
+interface SearchedUser {
   __typename?: "User";
   id: number;
   name?: string | null;
@@ -27,11 +27,20 @@ interface SearchedUsers {
   avatarUrl?: string | null;
 }
 
-interface SearchedHashtags {
+interface SearchedHashtag {
   __typename?: "Hashtag";
   id: number;
   name: string;
   totalPhotos?: number | null;
+}
+
+interface SearchedPhoto {
+  __typename?: "Photo";
+  id: number;
+  photoUrl: string;
+  user: { __typename?: "User"; id: number; username: string };
+  totalLikes?: number | null;
+  totalComments?: number | null;
 }
 
 interface FormData {
@@ -136,6 +145,18 @@ const SearchHashtagInfo = styled.div`
   }
 `;
 
+const SearchPhotoInfo = styled.div`
+  ul {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    font-size: 14px;
+    span {
+      margin-right: 10px;
+    }
+  }
+`;
+
 const LoginNav = styled.nav`
   width: 300px;
   display: flex;
@@ -209,17 +230,17 @@ const HashtagIcon = styled.div`
 `;
 
 const Header = () => {
-  const [searchedUsers, setSearchedUsers] = useState<(SearchedUsers | null)[]>([]);
-  const [searchedHashtags, setSearchedHashtags] = useState<(SearchedHashtags | null)[]>([]);
   const loggedInUser = useLoggedInUser();
   const location: Location = useLocation();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
   const isDarkMode: boolean = useReactiveVar(isDarkModeVar);
-  const { register, handleSubmit, watch } = useForm<FormData>({ mode: "onChange", defaultValues: { keyword: "" } });
+  const [searchedUsers, setSearchedUsers] = useState<(SearchedUser | null)[]>([]);
+  const [searchedHashtags, setSearchedHashtags] = useState<(SearchedHashtag | null)[]>([]);
+  const [searchedPhotos, setSearchedPhotos] = useState<(SearchedPhoto | null)[]>([]);
+  const { register, watch } = useForm<FormData>({ mode: "onChange", defaultValues: { keyword: "" } });
   const [searchUsersLazyQuery, { loading: searchUsersLoading }] = useSearchUsersLazyQuery();
   const [searchHashtagsLazyQuery, { loading: searchHashtagsLoading }] = useSearchHashtagsLazyQuery();
-
-  const onValid = (): void => {};
+  const [searchPhotosLazyQuery, { loading: searchPhotosLoading }] = useSearchPhotosLazyQuery();
 
   return (
     <Container>
@@ -227,16 +248,16 @@ const Header = () => {
         <Logo to={routes.home}>
           <img src="/images/instagram_logo.svg" alt="instagram_logo" />
         </Logo>
-        <SearchForm onSubmit={handleSubmit(onValid)}>
+        <SearchForm>
           {watch("keyword") !== "" && (
             <SearchModal>
-              {watch("keyword").match(/@\w/g) === null && watch("keyword").match(/#\w/g) === null ? (
+              {watch("keyword").match(/@\w/g) === null && watch("keyword").match(/#\w/g) === null && watch("keyword") === "" ? (
                 <h1>
                   @이름, #해시태그, 텍스트를 이용해서 <br />
                   유저, 해시태그, 사진을 검색해보세요.
                 </h1>
               ) : null}
-              {searchedUsers.map((searchedUser: SearchedUsers | null) => (
+              {searchedUsers.map((searchedUser: SearchedUser | null) => (
                 <Link key={searchedUser?.id} to={`/users/${searchedUser?.username}`}>
                   <Avatar size="47px" avatarUrl={searchedUser?.avatarUrl} />
                   <div>
@@ -245,7 +266,7 @@ const Header = () => {
                   </div>
                 </Link>
               ))}
-              {searchedHashtags.map((searchedHashtag: SearchedHashtags | null) => (
+              {searchedHashtags.map((searchedHashtag: SearchedHashtag | null) => (
                 <Link key={searchedHashtag?.id} to={`/hashtags/${searchedHashtag?.name.replaceAll("#", "")}`}>
                   <HashtagIcon>
                     <HiOutlineHashtag />
@@ -254,6 +275,18 @@ const Header = () => {
                     <h2>{searchedHashtag?.name}</h2>
                     <h3>게시물 {searchedHashtag?.totalPhotos}</h3>
                   </SearchHashtagInfo>
+                </Link>
+              ))}
+              {searchedPhotos.map((searchedPhoto: SearchedPhoto | null) => (
+                <Link key={searchedPhoto?.id} to={`/photos/${searchedPhoto?.id}`}>
+                  <Avatar size="47px" avatarUrl={searchedPhoto?.photoUrl} />
+                  <SearchPhotoInfo>
+                    <Username size="15px" username={searchedPhoto?.user.username} textDecoration={"false"} />
+                    <ul>
+                      <span>좋아요 {searchedPhoto?.totalLikes}</span>
+                      <span>댓글 {searchedPhoto?.totalComments}</span>
+                    </ul>
+                  </SearchPhotoInfo>
                 </Link>
               ))}
             </SearchModal>
@@ -269,7 +302,7 @@ const Header = () => {
                     const replacedUsername: string = keyword.replaceAll("@", "");
                     const { data } = await searchUsersLazyQuery({ variables: { username: replacedUsername } });
                     if (data?.searchUsers?.users && data?.searchUsers.ok === true) {
-                      setSearchedUsers(data?.searchUsers?.users);
+                      setSearchedUsers(data.searchUsers.users);
                     }
                   } else {
                     setSearchedUsers([]);
@@ -281,10 +314,21 @@ const Header = () => {
                     const replacedHashtag: string = keyword.replaceAll("#", "");
                     const { data } = await searchHashtagsLazyQuery({ variables: { name: replacedHashtag } });
                     if (data?.searchHashtags?.hashtags && data?.searchHashtags.ok === true) {
-                      setSearchedHashtags(data?.searchHashtags?.hashtags);
+                      setSearchedHashtags(data.searchHashtags.hashtags);
                     }
                   } else {
                     setSearchedHashtags([]);
+                  }
+                  return true;
+                },
+                searchingPhoto: async (keyword: string): Promise<boolean> => {
+                  if (keyword.match(/@\w/g) === null && keyword.match(/#\w/g) === null && searchPhotosLoading === false) {
+                    const { data } = await searchPhotosLazyQuery({ variables: { keyword } });
+                    if (data?.searchPhotos?.photos && data?.searchPhotos.ok === true) {
+                      setSearchedPhotos(data.searchPhotos.photos);
+                    }
+                  } else {
+                    setSearchedPhotos([]);
                   }
                   return true;
                 },
