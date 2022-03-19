@@ -3,7 +3,7 @@ import { IoPaperPlaneOutline } from "react-icons/io5";
 import { FaRegBookmark } from "react-icons/fa";
 import { BiMessageRounded } from "react-icons/bi";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-import { useToggleLikePhotoMutation } from "../generated/graphql";
+import { useToggleLikePhotoMutation } from "../../generated/graphql";
 import { useRef } from "react";
 import { ApolloCache } from "@apollo/client";
 

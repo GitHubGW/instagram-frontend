@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import Avatar from "../shared/Avatar";
-import Name from "../shared/Name";
-import Username from "../shared/Username";
+import Avatar from "../../shared/Avatar";
+import Name from "../../shared/Name";
+import Username from "../../shared/Username";
 
 interface PhotoAuthorProps {
   name?: string | null;

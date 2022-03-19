@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { VscSmiley } from "react-icons/vsc";
-import { useCreateCommentMutation } from "../generated/graphql";
+import { useCreateCommentMutation } from "../../generated/graphql";
 import { ApolloCache, Reference } from "@apollo/client";
 
 interface CommentFormProps {

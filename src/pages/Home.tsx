@@ -10,7 +10,7 @@ import Avatar from "../shared/Avatar";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
-import PhotoContainer from "../components/PhotoContainer";
+import PhotoContainer from "../components/photos/PhotoContainer";
 
 const Container = styled.section`
   background-color: ${(props) => props.theme.bgColor};

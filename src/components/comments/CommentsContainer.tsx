@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Comment } from "../generated/graphql";
+import { Comment } from "../../generated/graphql";
 import CommentContent from "./CommentContent";
 
 interface CommentsContainerProps {

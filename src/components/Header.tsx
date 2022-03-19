@@ -7,7 +7,6 @@ import { useReactiveVar } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { handleDisableDarkMode, handleEnableDarkMode, isDarkModeVar, isLoggedInVar } from "../apollo";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
-import { HiOutlineHashtag } from "react-icons/hi";
 import { FaRegCompass, FaCompass } from "react-icons/fa";
 import { IoHomeOutline, IoHomeSharp, IoPaperPlaneOutline, IoPaperPlaneSharp } from "react-icons/io5";
 import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icons/bs";
@@ -15,9 +14,10 @@ import { FiSun, FiMoon } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { useSearchHashtagsLazyQuery, useSearchPhotosLazyQuery, useSearchUsersLazyQuery } from "../generated/graphql";
 import { useState } from "react";
-import Username from "../shared/Username";
-import Name from "../shared/Name";
 import { ScrollBox } from "../shared/shared";
+import SearchUser from "./users/SearchUser";
+import SearchHashtag from "./hashtags/SearchHashtag";
+import SearchPhoto from "./photos/SearchPhoto";
 
 interface SearchedUser {
   __typename?: "User";
@@ -134,29 +134,6 @@ const SearchModal = styled(ScrollBox)`
   }
 `;
 
-const SearchHashtagInfo = styled.div`
-  h2 {
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 5px;
-  }
-  h3 {
-    font-size: 15px;
-  }
-`;
-
-const SearchPhotoInfo = styled.div`
-  ul {
-    margin-top: 5px;
-    display: flex;
-    flex-direction: row;
-    font-size: 14px;
-    span {
-      margin-right: 10px;
-    }
-  }
-`;
-
 const LoginNav = styled.nav`
   width: 300px;
   display: flex;
@@ -217,18 +194,6 @@ const SignupLink = styled(Link)`
   }
 `;
 
-const HashtagIcon = styled.div`
-  width: 47px;
-  height: 47px;
-  border: 1px solid ${(props) => props.theme.borderColor};
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  margin-right: 13px;
-`;
-
 const Header = () => {
   const loggedInUser = useLoggedInUser();
   const location: Location = useLocation();
@@ -258,36 +223,13 @@ const Header = () => {
                 </h1>
               ) : null}
               {searchedUsers.map((searchedUser: SearchedUser | null) => (
-                <Link key={searchedUser?.id} to={`/users/${searchedUser?.username}`}>
-                  <Avatar size="47px" avatarUrl={searchedUser?.avatarUrl} />
-                  <div>
-                    <Username size="15px" username={searchedUser?.username} textDecoration={"false"} />
-                    <Name size="14px" name={searchedUser?.name} />
-                  </div>
-                </Link>
+                <SearchUser key={searchedUser?.id} {...searchedUser} />
               ))}
               {searchedHashtags.map((searchedHashtag: SearchedHashtag | null) => (
-                <Link key={searchedHashtag?.id} to={`/hashtags/${searchedHashtag?.name.replaceAll("#", "")}`}>
-                  <HashtagIcon>
-                    <HiOutlineHashtag />
-                  </HashtagIcon>
-                  <SearchHashtagInfo>
-                    <h2>{searchedHashtag?.name}</h2>
-                    <h3>게시물 {searchedHashtag?.totalPhotos}</h3>
-                  </SearchHashtagInfo>
-                </Link>
+                <SearchHashtag key={searchedHashtag?.id} {...searchedHashtag} />
               ))}
               {searchedPhotos.map((searchedPhoto: SearchedPhoto | null) => (
-                <Link key={searchedPhoto?.id} to={`/photos/${searchedPhoto?.id}`}>
-                  <Avatar size="47px" avatarUrl={searchedPhoto?.photoUrl} />
-                  <SearchPhotoInfo>
-                    <Username size="15px" username={searchedPhoto?.user.username} textDecoration={"false"} />
-                    <ul>
-                      <span>좋아요 {searchedPhoto?.totalLikes}</span>
-                      <span>댓글 {searchedPhoto?.totalComments}</span>
-                    </ul>
-                  </SearchPhotoInfo>
-                </Link>
+                <SearchPhoto key={searchedPhoto?.id} {...searchedPhoto} />
               ))}
             </SearchModal>
           )}

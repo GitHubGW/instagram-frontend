@@ -3,8 +3,8 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { ApolloCache } from "@apollo/client";
 import { Link } from "react-router-dom";
-import { useDeleteCommentMutation, useEditCommentMutation, User } from "../generated/graphql";
-import Username from "../shared/Username";
+import { useDeleteCommentMutation, useEditCommentMutation, User } from "../../generated/graphql";
+import Username from "../../shared/Username";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 
 interface CommentContentProps {
