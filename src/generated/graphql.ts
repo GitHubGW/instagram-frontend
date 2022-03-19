@@ -216,6 +216,7 @@ export type Photo = {
 
 export type Query = {
   __typename?: 'Query';
+  searchHashtags: SearchHashtagsResult;
   searchPhotos: SearchPhotosResult;
   searchUsers: SearchUsersResult;
   seeComments: SeeCommentsResult;
@@ -229,6 +230,11 @@ export type Query = {
   seeProfile: SeeProfileResult;
   seeRoom: SeeRoomResult;
   seeRooms: SeeRoomsResult;
+};
+
+
+export type QuerySearchHashtagsArgs = {
+  name: Scalars['String'];
 };
 
 
@@ -300,6 +306,13 @@ export type Room = {
   totalUnreadMessages: Scalars['Int'];
   updatedAt: Scalars['String'];
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+export type SearchHashtagsResult = {
+  __typename?: 'SearchHashtagsResult';
+  hashtags?: Maybe<Array<Maybe<Hashtag>>>;
+  message: Scalars['String'];
+  ok: Scalars['Boolean'];
 };
 
 export type SearchPhotosResult = {
@@ -547,6 +560,21 @@ export type UnfollowUserMutationVariables = Exact<{
 
 
 export type UnfollowUserMutation = { __typename?: 'Mutation', unfollowUser: { __typename?: 'UnfollowUserResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string } | null } };
+
+export type SearchHashtagsQueryVariables = Exact<{
+  name: Scalars['String'];
+}>;
+
+
+export type SearchHashtagsQuery = { __typename?: 'Query', searchHashtags: { __typename?: 'SearchHashtagsResult', ok: boolean, message: string, hashtags?: Array<{ __typename?: 'Hashtag', id: number, name: string, totalPhotos?: number | null } | null> | null } };
+
+export type SearchUsersQueryVariables = Exact<{
+  username: Scalars['String'];
+  cursor?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type SearchUsersQuery = { __typename?: 'Query', searchUsers: { __typename?: 'SearchUsersResult', ok: boolean, message: string, users?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null } | null> | null } };
 
 export type SeeFeedQueryVariables = Exact<{
   cursor?: InputMaybe<Scalars['Int']>;
@@ -960,6 +988,90 @@ export function useUnfollowUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type UnfollowUserMutationHookResult = ReturnType<typeof useUnfollowUserMutation>;
 export type UnfollowUserMutationResult = Apollo.MutationResult<UnfollowUserMutation>;
 export type UnfollowUserMutationOptions = Apollo.BaseMutationOptions<UnfollowUserMutation, UnfollowUserMutationVariables>;
+export const SearchHashtagsDocument = gql`
+    query SearchHashtags($name: String!) {
+  searchHashtags(name: $name) {
+    ok
+    message
+    hashtags {
+      id
+      name
+      totalPhotos
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchHashtagsQuery__
+ *
+ * To run a query within a React component, call `useSearchHashtagsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchHashtagsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchHashtagsQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useSearchHashtagsQuery(baseOptions: Apollo.QueryHookOptions<SearchHashtagsQuery, SearchHashtagsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchHashtagsQuery, SearchHashtagsQueryVariables>(SearchHashtagsDocument, options);
+      }
+export function useSearchHashtagsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchHashtagsQuery, SearchHashtagsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchHashtagsQuery, SearchHashtagsQueryVariables>(SearchHashtagsDocument, options);
+        }
+export type SearchHashtagsQueryHookResult = ReturnType<typeof useSearchHashtagsQuery>;
+export type SearchHashtagsLazyQueryHookResult = ReturnType<typeof useSearchHashtagsLazyQuery>;
+export type SearchHashtagsQueryResult = Apollo.QueryResult<SearchHashtagsQuery, SearchHashtagsQueryVariables>;
+export const SearchUsersDocument = gql`
+    query SearchUsers($username: String!, $cursor: String) {
+  searchUsers(username: $username, cursor: $cursor) {
+    ok
+    message
+    users {
+      id
+      name
+      username
+      avatarUrl
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchUsersQuery__
+ *
+ * To run a query within a React component, call `useSearchUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchUsersQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useSearchUsersQuery(baseOptions: Apollo.QueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+      }
+export function useSearchUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchUsersQuery, SearchUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchUsersQuery, SearchUsersQueryVariables>(SearchUsersDocument, options);
+        }
+export type SearchUsersQueryHookResult = ReturnType<typeof useSearchUsersQuery>;
+export type SearchUsersLazyQueryHookResult = ReturnType<typeof useSearchUsersLazyQuery>;
+export type SearchUsersQueryResult = Apollo.QueryResult<SearchUsersQuery, SearchUsersQueryVariables>;
 export const SeeFeedDocument = gql`
     query SeeFeed($cursor: Int) {
   seeFeed(cursor: $cursor) {

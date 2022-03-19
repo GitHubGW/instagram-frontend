@@ -389,7 +389,7 @@ const Profile = () => {
                       <Link to={`/users/${follower?.username}`} onClick={() => setModalIsOpen(false)}>
                         <Avatar size="38px" avatarUrl={follower?.avatarUrl} />
                         <ModalMainUserInfo>
-                          <Username size="15px" username={follower?.username} />
+                          <Username size="15px" username={follower?.username} textDecoration={"true"} />
                           <Name size="14px" name={follower?.name} />
                         </ModalMainUserInfo>
                       </Link>
@@ -414,7 +414,7 @@ const Profile = () => {
                       <Link to={`/users/${following?.username}`} onClick={() => setModalIsOpen(false)}>
                         <Avatar size="38px" avatarUrl={following?.avatarUrl} />
                         <ModalMainUserInfo>
-                          <Username size="15px" username={following?.username} />
+                          <Username size="15px" username={following?.username} textDecoration={"true"} />
                           <Name size="14px" name={following?.name} />
                         </ModalMainUserInfo>
                       </Link>
