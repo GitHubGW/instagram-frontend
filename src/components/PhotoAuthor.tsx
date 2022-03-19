@@ -31,7 +31,7 @@ const PhotoAuthor = ({ name, username, avatarUrl }: PhotoAuthorProps) => {
         <Avatar size="37px" avatarUrl={avatarUrl} />
       </Link>
       <Link to={`/users/${username}`}>
-        <Username username={username} size="14px" />
+        <Username username={username} size="14px" textDecoration={"false"} />
         {name && <Name name={name} size="12px" />}
       </Link>
     </Container>

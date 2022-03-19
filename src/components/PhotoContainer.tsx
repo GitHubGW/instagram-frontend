@@ -57,7 +57,7 @@ const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments
       <TotalLikes totalLikes={totalLikes} />
       <CaptionContainer>
         <Link to={`/users/${user?.username}`}>
-          <Username username={user?.username} size="15px" />
+          <Username username={user?.username} size="15px" textDecoration={"true"} />
         </Link>
         <Caption>
           {caption?.split(" ").map((word: string, index: number) =>

@@ -12,13 +12,6 @@ import Username from "../shared/Username";
 import Name from "../shared/Name";
 import PhotoContainer from "../components/PhotoContainer";
 
-const sliderSettings = {
-  infinite: true,
-  speed: 500,
-  slidesToShow: 7,
-  slidesToScroll: 3,
-};
-
 const Container = styled.section`
   background-color: ${(props) => props.theme.bgColor};
   position: relative;
@@ -128,13 +121,12 @@ const FollowButton = styled.button`
 
 const FollowingContainer = styled.div`
   padding: 15px;
-  display: flex;
   margin-bottom: 20px;
   border: 1px solid ${(props) => props.theme.borderColor};
   background-color: ${(props) => props.theme.bgContainerColor};
 
   .slick-prev {
-    z-index: 100;
+    z-index: 50;
     &::before {
       position: relative;
       left: 15px;
@@ -142,31 +134,31 @@ const FollowingContainer = styled.div`
     }
   }
   .slick-next {
-    z-index: 100;
+    z-index: 50;
     &::before {
       position: relative;
       right: 15px;
       color: gray;
     }
   }
-  div {
-    width: 100%;
-    a {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-right: 17px;
-      max-width: 65px;
-      text-align: center;
-      &:last-child {
-        margin-right: 0;
-      }
-
-      h1 {
-        margin-top: 7px;
-        font-size: 14px;
-      }
+  .slick-slide {
+    max-width: 65px;
+    margin-right: 15px;
+  }
+  a {
+    max-width: 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-right: 17px;
+    text-align: center;
+    &:last-child {
+      margin-right: 0;
+    }
+    h1 {
+      margin-top: 7px;
+      font-size: 14px;
     }
   }
 `;
@@ -175,6 +167,12 @@ const Home = () => {
   const loggedInUser = useLoggedInUser();
   const { data: seeFeedData } = useSeeFeedQuery();
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: loggedInUser?.username || "" } });
+  const sliderSettings = {
+    infinite: false,
+    speed: 300,
+    slidesToShow: (seeFollowingData?.seeFollowing.following?.length as number) < 7 ? seeFollowingData?.seeFollowing.following?.length : 7,
+    slidesToScroll: 2,
+  };
 
   return (
     <FeedLayout>
@@ -203,7 +201,7 @@ const Home = () => {
               </Link>
               <UserInfo>
                 <Link to={`/users/${loggedInUser?.username}`}>
-                  <Username username={loggedInUser?.username} size="16px" />
+                  <Username username={loggedInUser?.username} size="16px" textDecoration={"false"} />
                 </Link>
                 <Name name={loggedInUser?.name} size="14px" />
               </UserInfo>
@@ -222,7 +220,7 @@ const Home = () => {
                   </Link>
                   <UserInfo>
                     <Link to={`/users/${loggedInUser?.username}`}>
-                      <Username username={loggedInUser?.username} size="14px" />
+                      <Username username={loggedInUser?.username} size="14px" textDecoration={"false"} />
                     </Link>
                     <Name name={loggedInUser?.name} size="12px" />
                   </UserInfo>

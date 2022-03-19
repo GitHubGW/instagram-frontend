@@ -161,7 +161,7 @@ const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentCon
       {isMe === true && isEditing === true ? (
         <Container>
           <Link to={`/users/${user.username}`}>
-            <Username username={user.username} size="15px" />
+            <Username username={user.username} size="15px" textDecoration={"true"} />
           </Link>
           <Form onSubmit={handleSubmit(onValid)}>
             <Input
@@ -187,7 +187,7 @@ const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentCon
       ) : (
         <Container>
           <Link to={`/users/${user.username}`}>
-            <Username username={user.username} size="15px" />
+            <Username username={user.username} size="15px" textDecoration={"true"} />
           </Link>
           <Text>{text.length < 50 ? text : `${text.slice(0, 38)}...`}</Text>
           {isMe === true && (
