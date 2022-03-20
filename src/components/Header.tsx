@@ -3,14 +3,15 @@ import routes from "../routes";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Avatar from "../shared/Avatar";
 import { Link, useLocation, Location } from "react-router-dom";
-import { useReactiveVar } from "@apollo/client";
+import { ApolloClient, useApolloClient, useReactiveVar } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { handleDisableDarkMode, handleEnableDarkMode, isDarkModeVar, isLoggedInVar } from "../apollo";
+import { handleDisableDarkMode, handleEnableDarkMode, handleLogout, isDarkModeVar, isLoggedInVar } from "../apollo";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { FaRegCompass, FaCompass } from "react-icons/fa";
 import { IoHomeOutline, IoHomeSharp, IoPaperPlaneOutline, IoPaperPlaneSharp } from "react-icons/io5";
 import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icons/bs";
 import { FiSun, FiMoon } from "react-icons/fi";
+import { MdLogout } from "react-icons/md";
 import { useForm } from "react-hook-form";
 import { useSearchHashtagsLazyQuery, useSearchPhotosLazyQuery, useSearchUsersLazyQuery } from "../generated/graphql";
 import { useState } from "react";
@@ -195,6 +196,7 @@ const SignupLink = styled(Link)`
 `;
 
 const Header = () => {
+  const client: ApolloClient<object> = useApolloClient();
   const loggedInUser = useLoggedInUser();
   const location: Location = useLocation();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
@@ -292,6 +294,7 @@ const Header = () => {
             <Link to={`/users/${loggedInUser?.username}`}>
               {isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} /> : <FontAwesomeIcon icon={faUser} />}
             </Link>
+            <MdLogout onClick={() => handleLogout(client)} style={{ cursor: "pointer" }} />
             <DarkModeButton onClick={isDarkMode === true ? handleDisableDarkMode : handleEnableDarkMode} type="button">
               {isDarkMode === true ? <FiSun /> : <FiMoon />}
             </DarkModeButton>

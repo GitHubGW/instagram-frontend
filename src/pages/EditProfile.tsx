@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { NavigateFunction, useNavigate, useParams } from "react-router";
 import styled from "styled-components";
+import { ApolloClient, useApolloClient } from "@apollo/client";
 import { handleLogout } from "../apollo";
 import { SEE_ME } from "../documents/queries/seeMe.query";
 import { EditProfileMutation, useDeleteAccountMutation, useEditProfileMutation } from "../generated/graphql";
@@ -93,6 +94,7 @@ const EditProfileForm = styled.form`
 `;
 
 const EditProfile = () => {
+  const client: ApolloClient<object> = useApolloClient();
   const { username } = useParams<EditProfileParams>();
   const navigate: NavigateFunction = useNavigate();
   const loggedInUser = useLoggedInUser();
@@ -114,7 +116,7 @@ const EditProfile = () => {
   });
   const [deleteAccountMutation, { loading: deleteAccountLoading }] = useDeleteAccountMutation({
     onCompleted: () => {
-      handleLogout();
+      handleLogout(client);
       navigate("/signup");
     },
   });

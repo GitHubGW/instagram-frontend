@@ -9,7 +9,7 @@ import { Button, ModalBackground, ScrollBox } from "../shared/shared";
 import { BsHeartFill } from "react-icons/bs";
 import { FaComment } from "react-icons/fa";
 import useLoggedInUser from "../hooks/useLoggedInUser";
-import { ApolloCache, useApolloClient } from "@apollo/client";
+import { ApolloCache } from "@apollo/client";
 import { useState } from "react";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
@@ -368,8 +368,6 @@ const Profile = () => {
     document.body.style.overflow = "auto";
     setModalIsOpen(false);
   };
-
-  // <button onClick={handleLogout} type="button">로그아웃</button>
 
   return (
     <MainLayout>

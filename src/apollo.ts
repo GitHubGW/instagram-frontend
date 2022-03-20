@@ -12,7 +12,8 @@ export const handleLogin = (token: string): void => {
   isLoggedInVar(true);
 };
 
-export const handleLogout = (): void => {
+export const handleLogout = (client: ApolloClient<object>): void => {
+  client.clearStore();
   localStorage.removeItem(TOKEN);
   isLoggedInVar(false);
 };
