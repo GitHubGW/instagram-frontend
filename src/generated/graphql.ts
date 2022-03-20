@@ -612,6 +612,14 @@ export type SeeMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type SeeMeQuery = { __typename?: 'Query', seeMe: { __typename?: 'seeMeResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string, email: string, avatarUrl?: string | null, bio?: string | null, isMe: boolean } | null } };
 
+export type SeePhotoLikesQueryVariables = Exact<{
+  photoId: Scalars['Int'];
+  cursor?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type SeePhotoLikesQuery = { __typename?: 'Query', seePhotoLikes: { __typename?: 'SeePhotoLikesResult', ok: boolean, message: string, users?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean, isMe: boolean } | null> | null } };
+
 export type SeeProfileQueryVariables = Exact<{
   username: Scalars['String'];
   cursor?: InputMaybe<Scalars['Int']>;
@@ -1328,6 +1336,51 @@ export function useSeeMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SeeM
 export type SeeMeQueryHookResult = ReturnType<typeof useSeeMeQuery>;
 export type SeeMeLazyQueryHookResult = ReturnType<typeof useSeeMeLazyQuery>;
 export type SeeMeQueryResult = Apollo.QueryResult<SeeMeQuery, SeeMeQueryVariables>;
+export const SeePhotoLikesDocument = gql`
+    query SeePhotoLikes($photoId: Int!, $cursor: String) {
+  seePhotoLikes(photoId: $photoId, cursor: $cursor) {
+    ok
+    message
+    users {
+      id
+      name
+      username
+      avatarUrl
+      isFollowing
+      isMe
+    }
+  }
+}
+    `;
+
+/**
+ * __useSeePhotoLikesQuery__
+ *
+ * To run a query within a React component, call `useSeePhotoLikesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSeePhotoLikesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSeePhotoLikesQuery({
+ *   variables: {
+ *      photoId: // value for 'photoId'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useSeePhotoLikesQuery(baseOptions: Apollo.QueryHookOptions<SeePhotoLikesQuery, SeePhotoLikesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SeePhotoLikesQuery, SeePhotoLikesQueryVariables>(SeePhotoLikesDocument, options);
+      }
+export function useSeePhotoLikesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SeePhotoLikesQuery, SeePhotoLikesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SeePhotoLikesQuery, SeePhotoLikesQueryVariables>(SeePhotoLikesDocument, options);
+        }
+export type SeePhotoLikesQueryHookResult = ReturnType<typeof useSeePhotoLikesQuery>;
+export type SeePhotoLikesLazyQueryHookResult = ReturnType<typeof useSeePhotoLikesLazyQuery>;
+export type SeePhotoLikesQueryResult = Apollo.QueryResult<SeePhotoLikesQuery, SeePhotoLikesQueryVariables>;
 export const SeeProfileDocument = gql`
     query SeeProfile($username: String!, $cursor: Int) {
   seeProfile(username: $username) {

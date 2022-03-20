@@ -3,9 +3,10 @@ import { IoPaperPlaneOutline } from "react-icons/io5";
 import { FaRegBookmark } from "react-icons/fa";
 import { BiMessageRounded } from "react-icons/bi";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-import { useToggleLikePhotoMutation } from "../../generated/graphql";
+import { useSeePhotoLikesLazyQuery, useToggleLikePhotoMutation } from "../../generated/graphql";
 import { useRef } from "react";
 import { ApolloCache } from "@apollo/client";
+import { SEE_PHOTO_LIKES } from "../../documents/queries/seePhotoLikes.query";
 
 interface PhotoIconsProps {
   id?: number;
@@ -63,6 +64,7 @@ const LikeButton = styled.span`
 
 const PhotoIcons = ({ id, isLiked }: PhotoIconsProps) => {
   const likeButton = useRef<HTMLSpanElement>(null);
+  const [seePhotoLikesLazyQuery, { loading: seePhotoLikesLoading }] = useSeePhotoLikesLazyQuery();
   const [toggleLikePhotoMutation, { loading: toggleLikePhotoLoading }] = useToggleLikePhotoMutation({
     update(cache: ApolloCache<any>, { data }) {
       if (data?.toggleLikePhoto.ok === false) {
@@ -77,10 +79,11 @@ const PhotoIcons = ({ id, isLiked }: PhotoIconsProps) => {
         },
       });
     },
+    refetchQueries: [{ query: SEE_PHOTO_LIKES, variables: { photoId: id } }],
   });
 
   const handleToggleLike = (isLiked: boolean | undefined) => {
-    if (toggleLikePhotoLoading === true) {
+    if (toggleLikePhotoLoading === true || seePhotoLikesLoading === true) {
       return;
     }
     if (likeButton.current) {
@@ -90,7 +93,6 @@ const PhotoIcons = ({ id, isLiked }: PhotoIconsProps) => {
         likeButton.current.classList.remove("animation");
       }
     }
-
     toggleLikePhotoMutation({ variables: { photoId: id as number } });
   };
 

@@ -54,7 +54,7 @@ const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments
       <PhotoAuthor name={user?.name} username={user?.username} avatarUrl={user?.avatarUrl} />
       <PhotoImage photoUrl={photoUrl} />
       <PhotoIcons id={id} isLiked={isLiked} />
-      <TotalLikes totalLikes={totalLikes} />
+      <TotalLikes photoId={id} totalLikes={totalLikes} />
       <CaptionContainer>
         <Link to={`/users/${user?.username}`}>
           <Username username={user?.username} size="15px" textDecoration={"true"} />
