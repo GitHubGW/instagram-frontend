@@ -356,7 +356,12 @@ const Profile = () => {
     setModalIsOpen(true);
   };
 
-  const handleToggleFollow = (isFollowing: boolean | undefined, username: string | undefined) => {
+  const handleCloseModal = (): void => {
+    document.body.style.overflow = "auto";
+    setModalIsOpen(false);
+  };
+
+  const handleToggleFollow = (isFollowing: boolean | undefined, username: string | undefined): void => {
     if (isFollowing === false) {
       followUserMutation({ variables: { username: username as string } });
     } else if (isFollowing === true) {
@@ -364,14 +369,9 @@ const Profile = () => {
     }
   };
 
-  const handleCloseModal = (): void => {
-    document.body.style.overflow = "auto";
-    setModalIsOpen(false);
-  };
-
   return (
     <MainLayout>
-      {modalIsOpen === true && <ModalBackground onClick={() => setModalIsOpen(false)} />}
+      {modalIsOpen === true && <ModalBackground onClick={handleCloseModal} />}
       <AnimatePresence>
         {modalIsOpen === true ? (
           <ModalBox variants={modalVariants} initial="start" animate="end" exit="exit">

@@ -9,6 +9,7 @@ const Container = styled.span<{ size: string }>`
   font-size: ${(props) => props.size};
   margin-top: 3px;
   color: ${(props) => props.theme.grayTextColor};
+  font-weight: normal;
 `;
 
 const Name = ({ name, size }: NameProps) => {

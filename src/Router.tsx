@@ -11,6 +11,7 @@ import routes from "./routes";
 
 const Router = () => {
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
+  console.log("isLoggedIn", isLoggedIn);
 
   return (
     <BrowserRouter>
@@ -19,7 +20,7 @@ const Router = () => {
         {isLoggedIn === false && <Route path={routes.login} element={<Login />} />}
         {isLoggedIn === false && <Route path={routes.signup} element={<SignUp />} />}
         <Route path={`/users/:username`} element={<Profile />} />
-        <Route path={`/users/:username/edit`} element={<EditProfile />} />
+        {isLoggedIn === true && <Route path={`/users/:username/edit`} element={<EditProfile />} />}
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
