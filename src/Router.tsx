@@ -2,6 +2,7 @@ import { useReactiveVar } from "@apollo/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { isLoggedInVar } from "./apollo";
 import EditProfile from "./pages/EditProfile";
+import Hashtag from "./pages/Hashtag";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
@@ -11,7 +12,6 @@ import routes from "./routes";
 
 const Router = () => {
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
-  console.log("isLoggedIn", isLoggedIn);
 
   return (
     <BrowserRouter>
@@ -21,6 +21,7 @@ const Router = () => {
         {isLoggedIn === false && <Route path={routes.signup} element={<SignUp />} />}
         <Route path={`/users/:username`} element={<Profile />} />
         {isLoggedIn === true && <Route path={`/users/:username/edit`} element={<EditProfile />} />}
+        <Route path={`/hashtags/:name`} element={<Hashtag />} />
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

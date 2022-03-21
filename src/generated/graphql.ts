@@ -607,6 +607,14 @@ export type SeeFollowingQueryVariables = Exact<{
 
 export type SeeFollowingQuery = { __typename?: 'Query', seeFollowing: { __typename?: 'SeeFollowingResult', ok: boolean, message: string, following?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean, isMe: boolean } | null> | null } };
 
+export type SeeHashtagQueryVariables = Exact<{
+  name: Scalars['String'];
+  cursor?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type SeeHashtagQuery = { __typename?: 'Query', seeHashtag: { __typename?: 'SeeHashtagResult', ok: boolean, message: string, hashtag?: { __typename?: 'Hashtag', id: number, name: string, totalPhotos?: number | null, photos?: Array<{ __typename?: 'Photo', id: number, photoUrl: string, totalLikes: number, totalComments: number } | null> | null } | null } };
+
 export type SeeMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1292,6 +1300,54 @@ export function useSeeFollowingLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type SeeFollowingQueryHookResult = ReturnType<typeof useSeeFollowingQuery>;
 export type SeeFollowingLazyQueryHookResult = ReturnType<typeof useSeeFollowingLazyQuery>;
 export type SeeFollowingQueryResult = Apollo.QueryResult<SeeFollowingQuery, SeeFollowingQueryVariables>;
+export const SeeHashtagDocument = gql`
+    query SeeHashtag($name: String!, $cursor: Int) {
+  seeHashtag(name: $name) {
+    ok
+    message
+    hashtag {
+      id
+      name
+      photos(cursor: $cursor) {
+        id
+        photoUrl
+        totalLikes
+        totalComments
+      }
+      totalPhotos
+    }
+  }
+}
+    `;
+
+/**
+ * __useSeeHashtagQuery__
+ *
+ * To run a query within a React component, call `useSeeHashtagQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSeeHashtagQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSeeHashtagQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useSeeHashtagQuery(baseOptions: Apollo.QueryHookOptions<SeeHashtagQuery, SeeHashtagQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SeeHashtagQuery, SeeHashtagQueryVariables>(SeeHashtagDocument, options);
+      }
+export function useSeeHashtagLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SeeHashtagQuery, SeeHashtagQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SeeHashtagQuery, SeeHashtagQueryVariables>(SeeHashtagDocument, options);
+        }
+export type SeeHashtagQueryHookResult = ReturnType<typeof useSeeHashtagQuery>;
+export type SeeHashtagLazyQueryHookResult = ReturnType<typeof useSeeHashtagLazyQuery>;
+export type SeeHashtagQueryResult = Apollo.QueryResult<SeeHashtagQuery, SeeHashtagQueryVariables>;
 export const SeeMeDocument = gql`
     query SeeMe {
   seeMe {
