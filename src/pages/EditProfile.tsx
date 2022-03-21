@@ -9,6 +9,7 @@ import useLoggedInUser from "../hooks/useLoggedInUser";
 import FormError from "../shared/FormError";
 import MainLayout from "../shared/MainLayout";
 import { Input } from "../shared/shared";
+import PageTitle from "../components/PageTitle";
 
 type EditProfileParams = {
   username: string;
@@ -162,6 +163,7 @@ const EditProfile = () => {
 
   return (
     <MainLayout>
+      <PageTitle title={"프로필 편집"} />
       <Container>
         <EditProfileForm onSubmit={handleSubmit(onValid)} method="POST" encType="multipart/form-data">
           <label htmlFor="avatar">

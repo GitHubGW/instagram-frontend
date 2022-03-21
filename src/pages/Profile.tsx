@@ -33,7 +33,7 @@ const Container = styled.section`
 `;
 
 const ProfileHeader = styled.div`
-  padding: 20px 70px;
+  padding: 30px 70px;
   padding-bottom: 40px;
   display: flex;
 `;
@@ -122,13 +122,13 @@ const ProfilePhoto = styled.div`
   cursor: pointer;
 
   img {
-    width: 296px;
-    height: 296px;
+    width: 300px;
+    height: 300px;
     vertical-align: top;
   }
 `;
 
-const BlackBackground = styled.div`
+const Overlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
@@ -477,7 +477,7 @@ const Profile = () => {
           <ProfileMain>
             {seeProfileData?.seeProfile.user?.photos?.map((photo) => (
               <ProfilePhoto key={photo?.id}>
-                <BlackBackground>
+                <Overlay>
                   <ProfilePhotoIcons>
                     <span>
                       <BsHeartFill />
@@ -488,7 +488,7 @@ const Profile = () => {
                       {photo?.totalComments}
                     </span>
                   </ProfilePhotoIcons>
-                </BlackBackground>
+                </Overlay>
                 <img src={photo?.photoUrl} alt="" />
               </ProfilePhoto>
             ))}

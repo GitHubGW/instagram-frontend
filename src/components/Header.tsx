@@ -218,7 +218,7 @@ const Header = () => {
         <SearchForm>
           {watch("keyword") !== "" && (
             <SearchModal>
-              {watch("keyword").match(/@\w/g) === null && watch("keyword").match(/#\w/g) === null && watch("keyword") === "" ? (
+              {searchedUsers.length === 0 && searchedHashtags.length === 0 && searchedPhotos.length === 0 ? (
                 <h1>
                   @이름, #해시태그, 텍스트를 이용해서 <br />
                   유저, 해시태그, 사진을 검색해보세요.
