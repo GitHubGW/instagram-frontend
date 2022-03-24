@@ -21,7 +21,7 @@ interface FormData {
 }
 
 const Container = styled.div`
-  padding-left: 12px;
+  padding-left: 15px;
   margin-bottom: 5px;
   display: flex;
 `;

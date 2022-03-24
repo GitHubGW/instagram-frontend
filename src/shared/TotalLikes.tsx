@@ -25,7 +25,7 @@ const modalVariants: Variants = {
 };
 
 const Container = styled.div`
-  padding: 12px;
+  padding: 12px 15px;
   font-weight: bold;
   font-size: 14px;
   cursor: pointer;

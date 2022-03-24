@@ -13,7 +13,7 @@ interface PhotoAuthorProps {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  padding: 12px;
+  padding: 12px 15px;
 
   a:last-child {
     display: flex;
