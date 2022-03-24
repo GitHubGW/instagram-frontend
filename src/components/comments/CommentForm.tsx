@@ -9,6 +9,7 @@ import { ApolloCache, Reference } from "@apollo/client";
 
 interface CommentFormProps {
   photoId?: number;
+  position: string;
 }
 
 interface FormData {
@@ -21,13 +22,12 @@ interface SeeMeFragmentType {
 
 const Form = styled.form`
   border-top: 1px solid ${(props) => props.theme.borderColor};
-  padding: 12px;
+  padding: 12px 15px;
   display: flex;
-  margin-top: 15px;
+  margin-top: 18px;
 `;
 
 const Emoji = styled.div`
-  margin-right: 10px;
   position: relative;
 
   svg {
@@ -40,7 +40,7 @@ const Input = styled.input`
   padding-left: 10px;
   margin-right: auto;
   font-size: 14px;
-  width: 86%;
+  width: 80%;
   border-radius: 3px;
   background-color: ${(props) => props.theme.bgContainerColor};
   color: ${(props) => props.theme.textColor};
@@ -62,13 +62,13 @@ const Button = styled.button`
   padding: 0;
 `;
 
-const PickerBox = styled.div`
+const PickerBox = styled.div<{ position: string }>`
   position: absolute;
-  top: 30px;
+  top: ${(props) => (props.position === "bottom" ? "30px" : "-330px")};
   left: 0px;
 `;
 
-const CommentForm = ({ photoId }: CommentFormProps) => {
+const CommentForm = ({ photoId, position }: CommentFormProps) => {
   const [isEmoji, setIsEmoji] = useState<boolean>(false);
   const {
     register,
@@ -151,7 +151,7 @@ const CommentForm = ({ photoId }: CommentFormProps) => {
       <Emoji>
         <VscSmiley onClick={handleShowEmoji} />
         {isEmoji === true && (
-          <PickerBox>
+          <PickerBox position={position}>
             <Picker onEmojiClick={onEmojiClick} />
           </PickerBox>
         )}

@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 interface PhotoImageProps {
   photoUrl?: string;
+  handleSeePhotoDetail: () => void;
 }
 
 const Container = styled.div`
@@ -15,9 +16,9 @@ const Image = styled.img`
   cursor: pointer;
 `;
 
-const PhotoImage = ({ photoUrl }: PhotoImageProps) => {
+const PhotoImage = ({ photoUrl, handleSeePhotoDetail }: PhotoImageProps) => {
   return (
-    <Container>
+    <Container onClick={handleSeePhotoDetail}>
       <Image src={photoUrl} alt="" />
     </Container>
   );

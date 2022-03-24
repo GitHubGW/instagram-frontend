@@ -11,6 +11,7 @@ import { SEE_PHOTO_LIKES } from "../../documents/queries/seePhotoLikes.query";
 interface PhotoIconsProps {
   id?: number;
   isLiked?: boolean;
+  handleSeePhotoDetail?: () => void;
 }
 
 const likeAnimation = keyframes`
@@ -34,8 +35,9 @@ const likeAnimation = keyframes`
 const Icons = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 12px;
-  font-size: 25px;
+  padding: 12px 15px;
+  padding-bottom: 0;
+  font-size: 28px;
 
   div {
     display: flex;
@@ -62,7 +64,7 @@ const LikeButton = styled.span`
   }
 `;
 
-const PhotoIcons = ({ id, isLiked }: PhotoIconsProps) => {
+const PhotoIcons = ({ id, isLiked, handleSeePhotoDetail }: PhotoIconsProps) => {
   const likeButton = useRef<HTMLSpanElement>(null);
   const [seePhotoLikesLazyQuery, { loading: seePhotoLikesLoading }] = useSeePhotoLikesLazyQuery();
   const [toggleLikePhotoMutation, { loading: toggleLikePhotoLoading }] = useToggleLikePhotoMutation({
@@ -102,7 +104,7 @@ const PhotoIcons = ({ id, isLiked }: PhotoIconsProps) => {
         <LikeButton ref={likeButton} onClick={() => handleToggleLike(isLiked)}>
           {isLiked === true ? <AiFillHeart style={{ color: "rgb(237, 73, 86)" }} /> : <AiOutlineHeart />}
         </LikeButton>
-        <BiMessageRounded />
+        <BiMessageRounded onClick={handleSeePhotoDetail} />
         <IoPaperPlaneOutline />
       </div>
       <div>
