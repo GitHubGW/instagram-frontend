@@ -29,6 +29,8 @@ const Container = styled.div`
   font-weight: bold;
   font-size: 14px;
   cursor: pointer;
+  height: 42px;
+  max-height: 42px;
 `;
 
 const LikesUser = styled.div`

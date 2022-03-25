@@ -12,6 +12,7 @@ gql`
           id
           username
           avatarUrl
+          isMe
         }
         isMe
         createdAt

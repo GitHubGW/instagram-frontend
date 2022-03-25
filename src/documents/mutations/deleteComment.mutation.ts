@@ -5,6 +5,7 @@ gql`
     deleteComment(commentId: $commentId) {
       ok
       message
+      id
     }
   }
 `;

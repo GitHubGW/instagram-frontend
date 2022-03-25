@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import { VscSmiley } from "react-icons/vsc";
-import { useCreateCommentMutation } from "../../generated/graphql";
+import { useCreateCommentMutation, useSeeCommentsLazyQuery } from "../../generated/graphql";
 import { ApolloCache, Reference } from "@apollo/client";
 
 interface CommentFormProps {
@@ -24,7 +24,7 @@ const Form = styled.form`
   border-top: 1px solid ${(props) => props.theme.borderColor};
   padding: 12px 15px;
   display: flex;
-  margin-top: 18px;
+  margin-top: 20px;
 `;
 
 const Emoji = styled.div`
@@ -70,6 +70,7 @@ const PickerBox = styled.div<{ position: string }>`
 
 const CommentForm = ({ photoId, position }: CommentFormProps) => {
   const [isEmoji, setIsEmoji] = useState<boolean>(false);
+  const [seeCommentsLazyQuery, { loading: seeCommentsLoading }] = useSeeCommentsLazyQuery();
   const {
     register,
     handleSubmit,
@@ -77,7 +78,7 @@ const CommentForm = ({ photoId, position }: CommentFormProps) => {
     setValue,
     formState: { isValid },
   } = useForm<FormData>({ mode: "onChange", defaultValues: { text: "" } });
-  const [createCommentMutation, { loading: createCommentLoading }] = useCreateCommentMutation({
+  const [createCommentMutation] = useCreateCommentMutation({
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.createComment.ok === false) {
         return;
@@ -122,13 +123,13 @@ const CommentForm = ({ photoId, position }: CommentFormProps) => {
           totalComments: (totalComments: number): number => totalComments + 1,
         },
       });
+      if (seeCommentsLoading === false) {
+        seeCommentsLazyQuery({ variables: { photoId: photoId as number } });
+      }
     },
   });
 
   const onValid = (): void => {
-    if (createCommentLoading === true) {
-      return;
-    }
     if (photoId) {
       const { text } = getValues();
       createCommentMutation({ variables: { photoId, text } });

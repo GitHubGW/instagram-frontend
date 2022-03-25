@@ -510,7 +510,7 @@ export type DeleteCommentMutationVariables = Exact<{
 }>;
 
 
-export type DeleteCommentMutation = { __typename?: 'Mutation', deleteComment: { __typename?: 'CommonResult', ok: boolean, message: string } };
+export type DeleteCommentMutation = { __typename?: 'Mutation', deleteComment: { __typename?: 'CommonResult', ok: boolean, message: string, id?: number | null } };
 
 export type EditCommentMutationVariables = Exact<{
   commentId: Scalars['Int'];
@@ -518,7 +518,7 @@ export type EditCommentMutationVariables = Exact<{
 }>;
 
 
-export type EditCommentMutation = { __typename?: 'Mutation', editComment: { __typename?: 'CommonResult', ok: boolean, message: string } };
+export type EditCommentMutation = { __typename?: 'Mutation', editComment: { __typename?: 'CommonResult', ok: boolean, message: string, id?: number | null } };
 
 export type EditProfileMutationVariables = Exact<{
   name?: InputMaybe<Scalars['String']>;
@@ -590,7 +590,7 @@ export type SeeCommentsQueryVariables = Exact<{
 }>;
 
 
-export type SeeCommentsQuery = { __typename?: 'Query', seeComments: { __typename?: 'SeeCommentsResult', ok: boolean, message: string, comments?: Array<{ __typename?: 'Comment', id: number, text: string, isMe: boolean, createdAt: string, user: { __typename?: 'User', id: number, username: string, avatarUrl?: string | null } } | null> | null } };
+export type SeeCommentsQuery = { __typename?: 'Query', seeComments: { __typename?: 'SeeCommentsResult', ok: boolean, message: string, comments?: Array<{ __typename?: 'Comment', id: number, text: string, isMe: boolean, createdAt: string, user: { __typename?: 'User', id: number, username: string, avatarUrl?: string | null, isMe: boolean } } | null> | null } };
 
 export type SeeFeedQueryVariables = Exact<{
   cursor?: InputMaybe<Scalars['Int']>;
@@ -769,6 +769,7 @@ export const DeleteCommentDocument = gql`
   deleteComment(commentId: $commentId) {
     ok
     message
+    id
   }
 }
     `;
@@ -803,6 +804,7 @@ export const EditCommentDocument = gql`
   editComment(commentId: $commentId, text: $text) {
     ok
     message
+    id
   }
 }
     `;
@@ -1170,6 +1172,7 @@ export const SeeCommentsDocument = gql`
         id
         username
         avatarUrl
+        isMe
       }
       isMe
       createdAt

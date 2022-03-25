@@ -5,6 +5,7 @@ gql`
     editComment(commentId: $commentId, text: $text) {
       ok
       message
+      id
     }
   }
 `;

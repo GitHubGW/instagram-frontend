@@ -13,8 +13,11 @@ import PhotoImage from "./PhotoImage";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { ScrollBox } from "../../shared/shared";
 import Avatar from "../../shared/Avatar";
-import { useSeeCommentsLazyQuery } from "../../generated/graphql";
+import { useDeleteCommentMutation, useEditCommentMutation, useSeeCommentsLazyQuery } from "../../generated/graphql";
 import Name from "../../shared/Name";
+import { HiOutlinePencilAlt } from "react-icons/hi";
+import { ApolloCache } from "@apollo/client";
+import { useForm } from "react-hook-form";
 
 interface PhotoContainerProps {
   id?: number;
@@ -26,6 +29,15 @@ interface PhotoContainerProps {
   caption?: string | null;
   comments?: any;
   createdAt?: string;
+}
+
+interface FormData {
+  text: string;
+}
+
+interface EditingComment {
+  commentId: number | undefined;
+  commentText: string;
 }
 
 const modalVariants: Variants = {
@@ -143,6 +155,7 @@ const ModalMainUserInfoCaption = styled.div`
     margin-left: 6px;
     font-weight: 400;
     font-size: 15px;
+    width: 230px;
   }
 `;
 
@@ -204,15 +217,123 @@ const ModalUserInfo = styled.div`
 const ModalPhotoComment = styled.div`
   margin-top: 8px;
   display: flex;
+  position: relative;
 
   p {
     word-break: break-all;
   }
 `;
 
+const Form = styled.form`
+  width: 100%;
+  margin-left: 10px;
+  position: relative;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  background-color: ${(props) => props.theme.bgColor};
+  padding: 13px 12px;
+  padding-right: 65px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: ${(props) => props.theme.textColor};
+
+  &::placeholder {
+    font-size: 13px;
+  }
+`;
+
+const EditingCommentButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  color: white;
+  text-align: center;
+  padding: 5px 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: ${(props) => (props.disabled ? props.theme.inactiveColor : props.theme.activeColor)};
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 3px;
+  right: 0;
+`;
+
+const EditCommentButton = styled.button`
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: transparent;
+  color: ${(props) => props.theme.textColor};
+  font-size: 14px;
+  padding: 0;
+  margin-right: 2px;
+  margin-top: 4px;
+`;
+
+const DeleteCommentButton = styled.button`
+  border: none;
+  outline: none;
+  cursor: pointer;
+  margin-right: 12px;
+  background-color: transparent;
+  color: ${(props) => props.theme.textColor};
+  font-size: 13px;
+`;
+
 const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption, comments, createdAt }: PhotoContainerProps) => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editingComment, setEditingComment] = useState<EditingComment>({ commentId: undefined, commentText: "" });
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    setValue,
+    formState: { isValid },
+  } = useForm<FormData>({ mode: "onChange", defaultValues: { text: editingComment.commentText } });
   const [seeCommentsLazyQuery, { data: seeCommentsData, loading: seeCommentsLoading }] = useSeeCommentsLazyQuery();
+  const [deleteCommentMutation] = useDeleteCommentMutation({
+    update: (cache: ApolloCache<any>, { data }) => {
+      if (data?.deleteComment.ok === false) {
+        return;
+      }
+
+      cache.evict({ id: `Comment:${data?.deleteComment.id}` });
+      cache.gc();
+      cache.modify({
+        id: `Photo:${id}`,
+        fields: {
+          totalComments: (totalComments: number) => totalComments - 1,
+        },
+      });
+      seeCommentsLazyQuery({ variables: { photoId: id as number } });
+    },
+  });
+  const [editCommentMutation] = useEditCommentMutation({
+    update: (cache: ApolloCache<any>, { data }) => {
+      if (data?.editComment.ok === false) {
+        return;
+      }
+
+      const { text } = getValues();
+      cache.modify({
+        id: `Comment:${data?.editComment.id}`,
+        fields: {
+          text: () => text,
+        },
+      });
+      setIsEditing(false);
+      seeCommentsLazyQuery({ variables: { photoId: id as number } });
+    },
+  });
 
   const handleSeePhotoDetail = (): void => {
     document.body.style.overflow = "hidden";
@@ -228,11 +349,30 @@ const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments
     setModalIsOpen(false);
   };
 
+  const onValid = (): void => {
+    const { text } = getValues();
+    editCommentMutation({ variables: { commentId: editingComment.commentId as number, text } });
+  };
+
+  const handleEditComment = (commentId: number | undefined, commentText: string): void => {
+    setValue("text", commentText);
+    setIsEditing((isEditing: boolean) => !isEditing);
+    setEditingComment({ commentId, commentText });
+  };
+
+  const handleDeleteComment = (commentId: number | undefined): void => {
+    deleteCommentMutation({ variables: { commentId: commentId as number } });
+  };
+
   return (
     <Container>
       {modalIsOpen === true && <ModalLikeBackground onClick={handleCloseModal} />}
       <AnimatePresence>
-        {modalIsOpen === true && <ModalCloseButton onClick={handleCloseModal}>✕</ModalCloseButton>}
+        {modalIsOpen === true && (
+          <ModalCloseButton key={"ModalCloseButton"} onClick={handleCloseModal}>
+            ✕
+          </ModalCloseButton>
+        )}
         {modalIsOpen === true ? (
           <ModalBox variants={modalVariants} initial="start" animate="end" exit="exit">
             <ModalMain>
@@ -276,7 +416,31 @@ const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments
                               <Link to={`/users/${comment?.user.username}`}>
                                 <Username size="15px" username={comment?.user?.username} textDecoration={"false"} />
                               </Link>
-                              <p>{comment?.text}</p>
+                              {comment?.user.isMe && isEditing === true && editingComment.commentId === comment.id ? null : <p>{comment?.text}</p>}
+                              {comment?.user.isMe && isEditing === true && editingComment.commentId === comment.id && (
+                                <Form onSubmit={handleSubmit(onValid)}>
+                                  <Input
+                                    {...register("text", { required: "댓글을 입력해주세요.", minLength: 1, maxLength: 70 })}
+                                    minLength={1}
+                                    maxLength={70}
+                                    type="text"
+                                    placeholder="댓글을 입력해주세요."
+                                  />
+                                  <EditingCommentButton disabled={!isValid} type="submit">
+                                    수정
+                                  </EditingCommentButton>
+                                </Form>
+                              )}
+                              {comment?.user.isMe && (
+                                <Buttons>
+                                  <EditCommentButton onClick={() => handleEditComment(comment?.id, comment.text)} type="button">
+                                    <HiOutlinePencilAlt />
+                                  </EditCommentButton>
+                                  <DeleteCommentButton onClick={() => handleDeleteComment(comment?.id)} type="button">
+                                    ✕
+                                  </DeleteCommentButton>
+                                </Buttons>
+                              )}
                             </ModalMainUserInfoCaption>
                             <CreatedAt createdAt={comment?.createdAt} />
                           </ModalPhotoCommentInfo>

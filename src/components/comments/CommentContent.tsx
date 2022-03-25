@@ -93,7 +93,7 @@ const EditingCommentButton = styled.button`
   background-color: ${(props) => (props.disabled ? props.theme.inactiveColor : props.theme.activeColor)};
 `;
 
-const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentContentProps) => {
+const CommentContent = ({ photoId, id, text, user, isMe }: CommentContentProps) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const {
     register,
@@ -101,7 +101,7 @@ const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentCon
     getValues,
     formState: { isValid },
   } = useForm<FormData>({ mode: "onChange", defaultValues: { text } });
-  const [deleteCommentMutation, { loading: deleteCommentLoading }] = useDeleteCommentMutation({
+  const [deleteCommentMutation] = useDeleteCommentMutation({
     variables: { commentId: id },
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.deleteComment.ok === false) {
@@ -118,7 +118,7 @@ const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentCon
       });
     },
   });
-  const [editCommentMutation, { loading: editCommentLoading }] = useEditCommentMutation({
+  const [editCommentMutation] = useEditCommentMutation({
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.editComment.ok === false) {
         return;
@@ -136,9 +136,6 @@ const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentCon
   });
 
   const onValid = (): void => {
-    if (editCommentLoading === true) {
-      return;
-    }
     const { text } = getValues();
     editCommentMutation({ variables: { commentId: id, text } });
   };
@@ -150,9 +147,6 @@ const CommentContent = ({ photoId, id, text, user, isMe, createdAt }: CommentCon
   };
 
   const handleDeleteComment = (): void => {
-    if (deleteCommentLoading === true) {
-      return;
-    }
     deleteCommentMutation();
   };
 
