@@ -642,7 +642,7 @@ export type SeeProfileQueryVariables = Exact<{
 }>;
 
 
-export type SeeProfileQuery = { __typename?: 'Query', seeProfile: { __typename?: 'SeeProfileResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string, bio?: string | null, avatarUrl?: string | null, totalFollowing: number, totalFollowers: number, totalPhotos: number, isFollowing: boolean, isMe: boolean, photos?: Array<{ __typename?: 'Photo', id: number, photoUrl: string, totalLikes: number, totalComments: number } | null> | null, following?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null, followers?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null } | null } };
+export type SeeProfileQuery = { __typename?: 'Query', seeProfile: { __typename?: 'SeeProfileResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string, bio?: string | null, avatarUrl?: string | null, totalFollowing: number, totalFollowers: number, totalPhotos: number, isFollowing: boolean, isMe: boolean, photos?: Array<{ __typename?: 'Photo', id: number, photoUrl: string, isLiked: boolean, totalLikes: number, totalComments: number, caption?: string | null, createdAt: string, user: { __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null } } | null> | null, following?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null, followers?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null } | null } };
 
 export type LikeUpdatesSubscriptionVariables = Exact<{
   photoId: Scalars['Int'];
@@ -1521,9 +1521,18 @@ export const SeeProfileDocument = gql`
       isMe
       photos(cursor: $cursor) {
         id
+        user {
+          id
+          name
+          username
+          avatarUrl
+        }
         photoUrl
+        isLiked
         totalLikes
         totalComments
+        caption
+        createdAt
       }
       following {
         id

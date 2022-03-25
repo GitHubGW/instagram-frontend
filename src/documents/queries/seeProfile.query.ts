@@ -18,9 +18,18 @@ gql`
         isMe
         photos(cursor: $cursor) {
           id
+          user {
+            id
+            name
+            username
+            avatarUrl
+          }
           photoUrl
+          isLiked
           totalLikes
           totalComments
+          caption
+          createdAt
         }
         following {
           id

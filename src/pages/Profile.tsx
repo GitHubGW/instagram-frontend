@@ -17,6 +17,7 @@ import Loading from "../shared/Loading";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
 import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeFollowersQuery, useSeeFollowingQuery, useSeeProfileQuery, useUnfollowUserMutation } from "../generated/graphql";
+import PhotoDetail from "../components/photos/PhotoDetail";
 
 type ProfileParams = {
   username: string;
@@ -120,12 +121,12 @@ const ProfileMain = styled.div`
 const ProfilePhoto = styled.div`
   position: relative;
   cursor: pointer;
+`;
 
-  img {
-    width: 300px;
-    height: 300px;
-    vertical-align: top;
-  }
+const ProfilePhotoImage = styled.img`
+  width: 300px;
+  height: 300px;
+  vertical-align: top;
 `;
 
 const Overlay = styled.div`
@@ -249,8 +250,10 @@ const FollowButton = styled(Button)<{ isFollowing: boolean | undefined }>`
 const Profile = () => {
   const loggedInUser = useLoggedInUser();
   const { username } = useParams<ProfileParams>();
+  const [openingPhotoId, setOpeningPhotoId] = useState<number | undefined>(undefined);
   const [modalState, setModalState] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [photoDetailModalIsOpen, setPhotoDetailModalIsOpen] = useState<boolean>(false);
   const { data: seeProfileData, loading: seeProfileLoading } = useSeeProfileQuery({ variables: { username: username || "" } });
   const [seeFollowersLazyQuery] = useSeeFollowersLazyQuery();
   const { data: seeFollowersData } = useSeeFollowersQuery({ variables: { username: username || "" } });
@@ -369,6 +372,12 @@ const Profile = () => {
     }
   };
 
+  const handleOpenPhotoDetailModal = (photoId: number | undefined): void => {
+    document.body.style.overflow = "hidden";
+    setPhotoDetailModalIsOpen(true);
+    setOpeningPhotoId(photoId);
+  };
+
   return (
     <MainLayout>
       {modalIsOpen === true && <ModalBackground onClick={handleCloseModal} />}
@@ -477,7 +486,20 @@ const Profile = () => {
           <ProfileMain>
             {seeProfileData?.seeProfile.user?.photos?.map((photo) => (
               <ProfilePhoto key={photo?.id}>
-                <Overlay>
+                {openingPhotoId === photo?.id && photoDetailModalIsOpen === true && (
+                  <PhotoDetail
+                    photoDetailModalIsOpen={photoDetailModalIsOpen}
+                    setPhotoDetailModalIsOpen={setPhotoDetailModalIsOpen}
+                    id={photo?.id}
+                    user={photo?.user}
+                    photoUrl={photo?.photoUrl}
+                    isLiked={photo?.isLiked}
+                    totalLikes={photo?.totalLikes}
+                    caption={photo?.caption}
+                    createdAt={photo?.createdAt}
+                  />
+                )}
+                <Overlay onClick={() => handleOpenPhotoDetailModal(photo?.id)}>
                   <ProfilePhotoIcons>
                     <span>
                       <BsHeartFill />
@@ -489,7 +511,7 @@ const Profile = () => {
                     </span>
                   </ProfilePhotoIcons>
                 </Overlay>
-                <img src={photo?.photoUrl} alt="" />
+                <ProfilePhotoImage src={photo?.photoUrl} alt="" />
               </ProfilePhoto>
             ))}
           </ProfileMain>
