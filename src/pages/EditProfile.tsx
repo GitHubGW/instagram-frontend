@@ -10,6 +10,8 @@ import FormError from "../shared/FormError";
 import MainLayout from "../shared/MainLayout";
 import { Input } from "../shared/shared";
 import PageTitle from "../components/PageTitle";
+import Footer from "../components/Footer";
+import { useEffect } from "react";
 
 type EditProfileParams = {
   username: string;
@@ -161,6 +163,12 @@ const EditProfile = () => {
     });
   };
 
+  useEffect(() => {
+    if (username !== loggedInUser?.username) {
+      navigate("/");
+    }
+  });
+
   return (
     <MainLayout>
       <PageTitle title={"프로필 편집"} />
@@ -229,6 +237,7 @@ const EditProfile = () => {
           </div>
         </EditProfileForm>
       </Container>
+      <Footer />
     </MainLayout>
   );
 };

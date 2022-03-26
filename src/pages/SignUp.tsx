@@ -1,6 +1,5 @@
 import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
-import routes from "../routes";
 import { Button, Input } from "../shared/shared";
 import Separator from "../shared/Separator";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -88,7 +87,7 @@ const SignUp = () => {
         return setError("createAccountResult", { message });
       }
       const { username, password } = getValues();
-      navigate(routes.login, { state: { username, password, message: "회원가입에 성공하였습니다. 로그인하세요." } });
+      navigate("/login", { state: { username, password, message: "회원가입에 성공하였습니다. 로그인하세요." } });
     },
   });
 
@@ -164,7 +163,7 @@ const SignUp = () => {
         </FormContent>
         <AccountContent>
           <h1>
-            계정이 있으신가요? <Link to={routes.login}>로그인</Link>
+            계정이 있으신가요? <Link to={"/login"}>로그인</Link>
           </h1>
         </AccountContent>
         <AppDownload />

@@ -8,7 +8,6 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import SignUp from "./pages/SignUp";
-import routes from "./routes";
 
 const Router = () => {
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
@@ -16,9 +15,9 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={routes.home} element={<Home />} />
-        {isLoggedIn === false && <Route path={routes.login} element={<Login />} />}
-        {isLoggedIn === false && <Route path={routes.signup} element={<SignUp />} />}
+        <Route path={"/"} element={<Home />} />
+        {isLoggedIn === false && <Route path={"/login"} element={<Login />} />}
+        {isLoggedIn === false && <Route path={"/signup"} element={<SignUp />} />}
         <Route path={`/users/:username`} element={<Profile />} />
         {isLoggedIn === true && <Route path={`/users/:username/edit`} element={<EditProfile />} />}
         <Route path={`/hashtags/:name`} element={<Hashtag />} />

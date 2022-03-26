@@ -10,7 +10,7 @@ import { BsHeartFill } from "react-icons/bs";
 import { FaComment } from "react-icons/fa";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import { ApolloCache } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
 import Loading from "../shared/Loading";
@@ -377,6 +377,10 @@ const Profile = () => {
     setPhotoDetailModalIsOpen(true);
     setOpeningPhotoId(photoId);
   };
+
+  useEffect(() => {
+    document.body.style.overflow = "auto";
+  }, []);
 
   return (
     <MainLayout>

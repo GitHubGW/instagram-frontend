@@ -153,7 +153,7 @@ const CommentForm = ({ photoId, position }: CommentFormProps) => {
         <VscSmiley onClick={handleShowEmoji} />
         {isEmoji === true && (
           <PickerBox position={position}>
-            <Picker onEmojiClick={onEmojiClick} />
+            <Picker onEmojiClick={onEmojiClick} disableSearchBar={true} />
           </PickerBox>
         )}
       </Emoji>

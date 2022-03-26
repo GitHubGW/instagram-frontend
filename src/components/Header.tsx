@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import routes from "../routes";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Avatar from "../shared/Avatar";
 import { Link, useLocation, Location } from "react-router-dom";
@@ -196,26 +195,28 @@ const SignupLink = styled(Link)`
 `;
 
 const Header = () => {
-  const client: ApolloClient<object> = useApolloClient();
   const loggedInUser = useLoggedInUser();
   const location: Location = useLocation();
+  const client: ApolloClient<object> = useApolloClient();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
   const isDarkMode: boolean = useReactiveVar(isDarkModeVar);
+  const { register, handleSubmit, watch } = useForm<FormData>({ mode: "onChange", defaultValues: { keyword: "" } });
   const [searchedUsers, setSearchedUsers] = useState<(SearchedUser | null)[]>([]);
   const [searchedHashtags, setSearchedHashtags] = useState<(SearchedHashtag | null)[]>([]);
   const [searchedPhotos, setSearchedPhotos] = useState<(SearchedPhoto | null)[]>([]);
-  const { register, watch } = useForm<FormData>({ mode: "onChange", defaultValues: { keyword: "" } });
   const [searchUsersLazyQuery, { loading: searchUsersLoading }] = useSearchUsersLazyQuery();
   const [searchHashtagsLazyQuery, { loading: searchHashtagsLoading }] = useSearchHashtagsLazyQuery();
   const [searchPhotosLazyQuery, { loading: searchPhotosLoading }] = useSearchPhotosLazyQuery();
 
+  const onValid = (): void => {};
+
   return (
     <Container>
       <Content>
-        <Logo to={routes.home}>
+        <Logo to={"/"}>
           <img src="/images/instagram_logo.svg" alt="instagram_logo" />
         </Logo>
-        <SearchForm>
+        <SearchForm onSubmit={handleSubmit(onValid)}>
           {watch("keyword") !== "" && (
             <SearchModal>
               {searchedUsers.length === 0 && searchedHashtags.length === 0 && searchedPhotos.length === 0 ? (
@@ -286,11 +287,11 @@ const Header = () => {
         </SearchForm>
         {isLoggedIn === true ? (
           <LoginNav>
-            <Link to={routes.home}>{location.pathname === routes.home ? <IoHomeSharp /> : <IoHomeOutline />}</Link>
-            <Link to={"/"}>{location.pathname === routes.home ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link>
-            <Link to={"/"}>{location.pathname === routes.home ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
-            <Link to={"/"}>{location.pathname === routes.home ? <FaCompass /> : <FaRegCompass />}</Link>
-            <Link to={"/"}>{location.pathname === routes.home ? <BsHeartFill /> : <BsHeart />}</Link>
+            <Link to={"/"}>{location.pathname === "/" ? <IoHomeSharp /> : <IoHomeOutline />}</Link>
+            <Link to={"/"}>{location.pathname === "/" ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link>
+            <Link to={"/"}>{location.pathname === "/" ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
+            <Link to={"/"}>{location.pathname === "/" ? <FaCompass /> : <FaRegCompass />}</Link>
+            <Link to={"/"}>{location.pathname === "/" ? <BsHeartFill /> : <BsHeart />}</Link>
             <Link to={`/users/${loggedInUser?.username}`}>
               {isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} /> : <FontAwesomeIcon icon={faUser} />}
             </Link>
@@ -301,10 +302,10 @@ const Header = () => {
           </LoginNav>
         ) : (
           <LogoutNav>
-            <LoginLink to={routes.login}>
+            <LoginLink to={"/login"}>
               <span>로그인</span>
             </LoginLink>
-            <SignupLink to={routes.signup}>
+            <SignupLink to={"/signup"}>
               <span>가입하기</span>
             </SignupLink>
           </LogoutNav>
