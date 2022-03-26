@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import PageTitle from "../components/PageTitle";
-import { useFollowUserMutation, useSeeFeedQuery, useSeeFollowingQuery, useSeeRecommendUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
+import { useFollowUserMutation, useSeeFeedQuery, useSeeFollowingQuery, useSeeRecommendPhotosQuery, useSeeRecommendUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
 import FeedLayout from "../shared/FeedLayout";
 import Avatar from "../shared/Avatar";
 import useLoggedInUser from "../hooks/useLoggedInUser";
@@ -14,6 +14,7 @@ import PhotoContainer from "../components/photos/PhotoContainer";
 import { ApolloCache } from "@apollo/client";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
+import { useEffect } from "react";
 
 const Container = styled.section`
   background-color: ${(props) => props.theme.bgColor};
@@ -173,6 +174,7 @@ const Home = () => {
   const { data: seeFeedData } = useSeeFeedQuery();
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: loggedInUser?.username || "" } });
   const { data: seeRecommendUsersData } = useSeeRecommendUsersQuery();
+  const { data: seeRecommendPhotosData } = useSeeRecommendPhotosQuery();
   const [followUserMutation] = useFollowUserMutation({
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.followUser.ok === false) {
@@ -240,6 +242,10 @@ const Home = () => {
     }
   };
 
+  useEffect(() => {
+    document.body.style.overflow = "auto";
+  }, []);
+
   return (
     <FeedLayout>
       <Container>
@@ -257,10 +263,13 @@ const Home = () => {
               </Slider>
             </FollowingContainer>
           )}
-
           {seeFeedData?.seeFeed.photos?.map((photo) => (
             <PhotoContainer key={photo?.id} {...photo} />
           ))}
+          {seeRecommendPhotosData?.seeRecommendPhotos.photos?.map((photo) => (
+            <PhotoContainer key={photo?.id} {...photo} />
+          ))}
+          <br />
         </LeftContainer>
         <RightContainer>
           <AsideContent>
