@@ -4,13 +4,16 @@ import Slider from "react-slick";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import PageTitle from "../components/PageTitle";
-import { useSeeFeedQuery, useSeeFollowingQuery } from "../generated/graphql";
+import { useFollowUserMutation, useSeeFeedQuery, useSeeFollowingQuery, useSeeRecommendUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
 import FeedLayout from "../shared/FeedLayout";
 import Avatar from "../shared/Avatar";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
 import PhotoContainer from "../components/photos/PhotoContainer";
+import { ApolloCache } from "@apollo/client";
+import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
+import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
 
 const Container = styled.section`
   background-color: ${(props) => props.theme.bgColor};
@@ -108,7 +111,7 @@ const UserInfo = styled.div`
   margin-right: auto;
 `;
 
-const FollowButton = styled.button`
+const FollowButton = styled.button<{ isFollowing: boolean }>`
   border: none;
   outline: none;
   cursor: pointer;
@@ -116,7 +119,7 @@ const FollowButton = styled.button`
   font-size: 12px;
   font-weight: bold;
   background-color: transparent;
-  color: ${(props) => props.theme.activeColor};
+  color: ${(props) => (props.isFollowing === true ? props.theme.textColor : props.theme.activeColor)};
 `;
 
 const FollowingContainer = styled.div`
@@ -164,9 +167,64 @@ const FollowingContainer = styled.div`
 `;
 
 const Home = () => {
+  let followUsername: string | undefined;
+  let unfollowUsername: string | undefined;
   const loggedInUser = useLoggedInUser();
   const { data: seeFeedData } = useSeeFeedQuery();
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: loggedInUser?.username || "" } });
+  const { data: seeRecommendUsersData } = useSeeRecommendUsersQuery();
+  const [followUserMutation] = useFollowUserMutation({
+    update: (cache: ApolloCache<any>, { data }) => {
+      if (data?.followUser.ok === false) {
+        return;
+      }
+
+      followUsername = data?.followUser.user?.username;
+      cache.modify({
+        id: `User:${data?.followUser.user?.id}`,
+        fields: {
+          isFollowing: (isFollowing: boolean) => true,
+          totalFollowers: (totalFollowers: number) => totalFollowers + 1,
+        },
+      });
+      cache.modify({
+        id: `User:${loggedInUser?.id}`,
+        fields: {
+          totalFollowing: (totalFollowing: number) => totalFollowing + 1,
+        },
+      });
+    },
+    refetchQueries: [
+      { query: SEE_FOLLOWERS, variables: { username: followUsername } },
+      { query: SEE_FOLLOWING, variables: { username: loggedInUser?.username } },
+    ],
+  });
+  const [unfollowUserMutation] = useUnfollowUserMutation({
+    update: (cache: ApolloCache<any>, { data }) => {
+      if (data?.unfollowUser.ok === false) {
+        return;
+      }
+
+      unfollowUsername = data?.unfollowUser.user?.username;
+      cache.modify({
+        id: `User:${data?.unfollowUser.user?.id}`,
+        fields: {
+          isFollowing: (isFollowing: boolean) => false,
+          totalFollowers: (totalFollowers: number) => totalFollowers - 1,
+        },
+      });
+      cache.modify({
+        id: `User:${loggedInUser?.id}`,
+        fields: {
+          totalFollowing: (totalFollowing: number) => totalFollowing - 1,
+        },
+      });
+    },
+    refetchQueries: [
+      { query: SEE_FOLLOWERS, variables: { username: unfollowUsername } },
+      { query: SEE_FOLLOWING, variables: { username: loggedInUser?.username } },
+    ],
+  });
   const sliderSettings = {
     infinite: false,
     speed: 300,
@@ -174,21 +232,32 @@ const Home = () => {
     slidesToScroll: 2,
   };
 
+  const handleToggleFollow = (isFollowing: boolean | undefined, username: string | undefined): void => {
+    if (isFollowing === false) {
+      followUserMutation({ variables: { username: username as string } });
+    } else if (isFollowing === true) {
+      unfollowUserMutation({ variables: { username: username as string } });
+    }
+  };
+
   return (
     <FeedLayout>
       <Container>
         <PageTitle title="홈" />
         <LeftContainer>
-          <FollowingContainer>
-            <Slider {...sliderSettings}>
-              {seeFollowingData?.seeFollowing?.following?.map((following) => (
-                <Link key={following?.id} to={`/users/${following?.username}`}>
-                  <Avatar size="65px" avatarUrl={following?.avatarUrl} />
-                  <h1>{following?.username}</h1>
-                </Link>
-              ))}
-            </Slider>
-          </FollowingContainer>
+          {seeFollowingData?.seeFollowing.following === null || seeFollowingData?.seeFollowing.following?.length === 0 ? null : (
+            <FollowingContainer>
+              <Slider {...sliderSettings}>
+                {seeFollowingData?.seeFollowing?.following?.map((following) => (
+                  <Link key={following?.id} to={`/users/${following?.username}`}>
+                    <Avatar size="65px" avatarUrl={following?.avatarUrl} />
+                    <h1>{following?.username}</h1>
+                  </Link>
+                ))}
+              </Slider>
+            </FollowingContainer>
+          )}
+
           {seeFeedData?.seeFeed.photos?.map((photo) => (
             <PhotoContainer key={photo?.id} {...photo} />
           ))}
@@ -197,7 +266,7 @@ const Home = () => {
           <AsideContent>
             <AsideHeader>
               <Link to={`/users/${loggedInUser?.username}`}>
-                <Avatar size="55px" avatarUrl={loggedInUser?.avatarUrl} />
+                <Avatar size="55px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} />
               </Link>
               <UserInfo>
                 <Link to={`/users/${loggedInUser?.username}`}>
@@ -214,18 +283,22 @@ const Home = () => {
                 </Link>
               </AsideMainHeader>
               <AsideMainInner>
-                <RecommandContent>
-                  <Link to={`/users/${loggedInUser?.username}`}>
-                    <Avatar size="32px" avatarUrl={loggedInUser?.avatarUrl} />
-                  </Link>
-                  <UserInfo>
-                    <Link to={`/users/${loggedInUser?.username}`}>
-                      <Username username={loggedInUser?.username} size="14px" textDecoration={"false"} />
+                {seeRecommendUsersData?.seeRecommendUsers.users?.map((user) => (
+                  <RecommandContent key={user?.id}>
+                    <Link to={`/users/${user?.username}`}>
+                      <Avatar size="32px" avatarUrl={user?.avatarUrl} />
                     </Link>
-                    <Name name={loggedInUser?.name} size="12px" />
-                  </UserInfo>
-                  <FollowButton type="button">팔로우</FollowButton>
-                </RecommandContent>
+                    <UserInfo>
+                      <Link to={`/users/${user?.username}`}>
+                        <Username username={user?.username} size="14px" textDecoration={"false"} />
+                      </Link>
+                      <Name name={user?.name} size="12px" />
+                    </UserInfo>
+                    <FollowButton onClick={() => handleToggleFollow(user?.isFollowing, user?.username)} isFollowing={user?.isFollowing || false} type="button">
+                      {user?.isFollowing === true ? "팔로잉" : "팔로우"}
+                    </FollowButton>
+                  </RecommandContent>
+                ))}
               </AsideMainInner>
             </AsideMain>
             <NavContent>
