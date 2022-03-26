@@ -637,7 +637,7 @@ export type SeeHashtagQueryVariables = Exact<{
 }>;
 
 
-export type SeeHashtagQuery = { __typename?: 'Query', seeHashtag: { __typename?: 'SeeHashtagResult', ok: boolean, message: string, hashtag?: { __typename?: 'Hashtag', id: number, name: string, totalPhotos?: number | null, photos?: Array<{ __typename?: 'Photo', id: number, photoUrl: string, totalLikes: number, totalComments: number } | null> | null } | null } };
+export type SeeHashtagQuery = { __typename?: 'Query', seeHashtag: { __typename?: 'SeeHashtagResult', ok: boolean, message: string, hashtag?: { __typename?: 'Hashtag', id: number, name: string, totalPhotos?: number | null, photos?: Array<{ __typename?: 'Photo', id: number, photoUrl: string, totalLikes: number, totalComments: number, isLiked: boolean, caption?: string | null, createdAt: string, user: { __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null } } | null> | null } | null } };
 
 export type SeeMeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1403,8 +1403,17 @@ export const SeeHashtagDocument = gql`
       photos(cursor: $cursor) {
         id
         photoUrl
+        user {
+          id
+          name
+          username
+          avatarUrl
+        }
         totalLikes
         totalComments
+        isLiked
+        caption
+        createdAt
       }
       totalPhotos
     }

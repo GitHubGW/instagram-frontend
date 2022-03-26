@@ -11,8 +11,17 @@ gql`
         photos(cursor: $cursor) {
           id
           photoUrl
+          user {
+            id
+            name
+            username
+            avatarUrl
+          }
           totalLikes
           totalComments
+          isLiked
+          caption
+          createdAt
         }
         totalPhotos
       }
