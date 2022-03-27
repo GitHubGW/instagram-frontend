@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, NavigateFunction, useNavigate, PathMatch, useMatch } from "react-router";
 import styled from "styled-components";
 import PageTitle from "../components/PageTitle";
 import { useSeeHashtagQuery } from "../generated/graphql";
@@ -6,8 +6,8 @@ import Avatar from "../shared/Avatar";
 import { BsHeartFill } from "react-icons/bs";
 import { FaComment } from "react-icons/fa";
 import MainLayout from "../shared/MainLayout";
-import { useEffect, useState } from "react";
 import PhotoDetail from "../components/photos/PhotoDetail";
+import { AnimatePresence } from "framer-motion";
 
 type HashtagParams = {
   name: string;
@@ -128,19 +128,13 @@ const HashtagPhotoIcons = styled.div`
 
 const Hashtag = () => {
   const { name } = useParams<HashtagParams>();
-  const [openingPhotoId, setOpeningPhotoId] = useState<number | undefined>(undefined);
-  const [photoDetailModalIsOpen, setPhotoDetailModalIsOpen] = useState<boolean>(false);
+  const navigate: NavigateFunction = useNavigate();
+  const photoPathMath: PathMatch<"id"> | null = useMatch("/hashtags/:name/photos/:id");
   const { data: seeHashtagData, loading: seeHashtagLoading } = useSeeHashtagQuery({ variables: { name: `#${name}` } });
 
-  const handleOpenPhotoDetailModal = (photoId: number | undefined): void => {
-    document.body.style.overflow = "hidden";
-    setPhotoDetailModalIsOpen(true);
-    setOpeningPhotoId(photoId);
+  const handleOpenPhotoDetail = (id: number | undefined): void => {
+    navigate(`/hashtags/${name}/photos/${id}`);
   };
-
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-  }, []);
 
   return (
     <MainLayout>
@@ -169,20 +163,20 @@ const Hashtag = () => {
             {seeHashtagData?.seeHashtag.hashtag?.photos &&
               seeHashtagData?.seeHashtag?.hashtag?.photos.map((photo) => (
                 <HashtagPhoto key={photo?.id}>
-                  {openingPhotoId === photo?.id && photoDetailModalIsOpen === true && (
-                    <PhotoDetail
-                      photoDetailModalIsOpen={photoDetailModalIsOpen}
-                      setPhotoDetailModalIsOpen={setPhotoDetailModalIsOpen}
-                      id={photo?.id}
-                      user={photo?.user}
-                      photoUrl={photo?.photoUrl}
-                      isLiked={photo?.isLiked}
-                      totalLikes={photo?.totalLikes}
-                      caption={photo?.caption}
-                      createdAt={photo?.createdAt}
-                    />
+                  {photoPathMath && photoPathMath.params.id === String(photo?.id) && (
+                    <AnimatePresence>
+                      <PhotoDetail
+                        id={photo?.id}
+                        user={photo?.user}
+                        photoUrl={photo?.photoUrl}
+                        isLiked={photo?.isLiked}
+                        totalLikes={photo?.totalLikes}
+                        caption={photo?.caption}
+                        createdAt={photo?.createdAt}
+                      />
+                    </AnimatePresence>
                   )}
-                  <Overlay onClick={() => handleOpenPhotoDetailModal(photo?.id)}>
+                  <Overlay onClick={() => handleOpenPhotoDetail(photo?.id)}>
                     <HashtagPhotoIcons>
                       <span>
                         <BsHeartFill />

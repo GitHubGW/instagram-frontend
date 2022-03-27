@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 interface TotalCommentsProps {
   totalComments?: number;
-  handleSeePhotoDetail: () => void;
+  handleOpenPhotoDetail: () => void;
 }
 
 const Container = styled.div`
@@ -15,8 +15,8 @@ const Container = styled.div`
   cursor: pointer;
 `;
 
-const TotalComments = ({ totalComments, handleSeePhotoDetail }: TotalCommentsProps) => {
-  return <Container onClick={handleSeePhotoDetail}>댓글 {totalComments?.toLocaleString("ko-KR")}개 모두 보기</Container>;
+const TotalComments = ({ totalComments, handleOpenPhotoDetail }: TotalCommentsProps) => {
+  return <Container onClick={handleOpenPhotoDetail}>댓글 {totalComments?.toLocaleString("ko-KR")}개 모두 보기</Container>;
 };
 
 export default TotalComments;

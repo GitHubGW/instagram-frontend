@@ -25,7 +25,7 @@ const SearchPhotoInfo = styled.div`
 
 const SearchPhoto = ({ id, photoUrl, user, totalLikes, totalComments }: SearchPhotoProps) => {
   return (
-    <Link to={`/users/${user.username}`}>
+    <Link to={`/photos/${id}`}>
       <Avatar size="47px" avatarUrl={photoUrl} />
       <SearchPhotoInfo>
         <Username size="15px" username={user.username} textDecoration={"false"} />

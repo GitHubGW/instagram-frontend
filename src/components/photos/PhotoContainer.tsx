@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useMatch, PathMatch, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
 import CreatedAt from "../../shared/CreatedAt";
 import Username from "../../shared/Username";
@@ -11,6 +11,7 @@ import PhotoIcons from "./PhotoIcons";
 import PhotoAuthor from "./PhotoAuthor";
 import PhotoImage from "./PhotoImage";
 import PhotoDetail from "./PhotoDetail";
+import { AnimatePresence } from "framer-motion";
 
 interface PhotoContainerProps {
   id?: number;
@@ -50,31 +51,23 @@ const Caption = styled.span`
 `;
 
 const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments, caption, comments, createdAt }: PhotoContainerProps) => {
-  const [photoDetailModalIsOpen, setPhotoDetailModalIsOpen] = useState<boolean>(false);
+  const navigate: NavigateFunction = useNavigate();
+  const photoPathMath: PathMatch<"id"> | null = useMatch("/photos/:id");
 
-  const handleOpenPhotoDetailModal = (): void => {
-    document.body.style.overflow = "hidden";
-    setPhotoDetailModalIsOpen(true);
+  const handleOpenPhotoDetail = (id: number | undefined): void => {
+    navigate(`/photos/${id}`);
   };
 
   return (
     <Container>
-      {photoDetailModalIsOpen === true && (
-        <PhotoDetail
-          photoDetailModalIsOpen={photoDetailModalIsOpen}
-          setPhotoDetailModalIsOpen={setPhotoDetailModalIsOpen}
-          id={id}
-          user={user}
-          photoUrl={photoUrl}
-          isLiked={isLiked}
-          totalLikes={totalLikes}
-          caption={caption}
-          createdAt={createdAt}
-        />
-      )}
+      <AnimatePresence>
+        {photoPathMath && photoPathMath.params.id === String(id) && (
+          <PhotoDetail id={id} user={user} photoUrl={photoUrl} isLiked={isLiked} totalLikes={totalLikes} caption={caption} createdAt={createdAt} />
+        )}
+      </AnimatePresence>
       <PhotoAuthor name={user?.name} username={user?.username} avatarUrl={user?.avatarUrl} />
-      <PhotoImage photoUrl={photoUrl} handleSeePhotoDetail={handleOpenPhotoDetailModal} />
-      <PhotoIcons id={id} isLiked={isLiked} handleSeePhotoDetail={handleOpenPhotoDetailModal} />
+      <PhotoImage photoUrl={photoUrl} handleSeePhotoDetail={() => handleOpenPhotoDetail(id)} />
+      <PhotoIcons id={id} isLiked={isLiked} handleSeePhotoDetail={() => handleOpenPhotoDetail(id)} />
       <TotalLikes photoId={id} totalLikes={totalLikes} />
       <CaptionContainer>
         <Link to={`/users/${user?.username}`}>
@@ -96,7 +89,7 @@ const PhotoContainer = ({ id, user, photoUrl, isLiked, totalLikes, totalComments
           )}
         </Caption>
       </CaptionContainer>
-      <TotalComments totalComments={totalComments} handleSeePhotoDetail={handleOpenPhotoDetailModal} />
+      <TotalComments totalComments={totalComments} handleOpenPhotoDetail={() => handleOpenPhotoDetail(id)} />
       <CommentsContainer photoId={id} comments={comments} />
       <CreatedAt createdAt={createdAt} />
       <CommentForm photoId={id} position="bottom" />

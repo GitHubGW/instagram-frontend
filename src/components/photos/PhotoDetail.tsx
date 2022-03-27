@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
 import CreatedAt from "../../shared/CreatedAt";
 import Username from "../../shared/Username";
@@ -16,8 +16,6 @@ import { ApolloCache } from "@apollo/client";
 import { useForm } from "react-hook-form";
 
 interface PhotoDetailProps {
-  photoDetailModalIsOpen: boolean;
-  setPhotoDetailModalIsOpen: (value: boolean) => void;
   id?: number;
   user?: { name?: string | null; username: string; avatarUrl?: string | null };
   photoUrl?: string;
@@ -260,7 +258,8 @@ const DeleteCommentButton = styled.button`
   font-size: 13px;
 `;
 
-const PhotoDetail = ({ photoDetailModalIsOpen, setPhotoDetailModalIsOpen, id, user, photoUrl, isLiked, totalLikes, caption, createdAt }: PhotoDetailProps) => {
+const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, createdAt }: PhotoDetailProps) => {
+  const navigate: NavigateFunction = useNavigate();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<EditingComment>({ commentId: undefined, commentText: "" });
   const {
@@ -307,11 +306,6 @@ const PhotoDetail = ({ photoDetailModalIsOpen, setPhotoDetailModalIsOpen, id, us
     },
   });
 
-  const handleCloseModal = (): void => {
-    document.body.style.overflow = "auto";
-    setPhotoDetailModalIsOpen(false);
-  };
-
   const onValid = (): void => {
     const { text } = getValues();
     editCommentMutation({ variables: { commentId: editingComment.commentId as number, text } });
@@ -327,101 +321,109 @@ const PhotoDetail = ({ photoDetailModalIsOpen, setPhotoDetailModalIsOpen, id, us
     deleteCommentMutation({ variables: { commentId: commentId as number } });
   };
 
+  const handleCloseModal = (): void => {
+    navigate(-1);
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
     <>
-      {photoDetailModalIsOpen === true && <ModalLikeBackground onClick={handleCloseModal}></ModalLikeBackground>}
+      <ModalLikeBackground onClick={handleCloseModal}></ModalLikeBackground>
       <AnimatePresence>
-        {photoDetailModalIsOpen === true && (
-          <ModalCloseButton key={"ModalCloseButton"} onClick={handleCloseModal}>
-            ✕
-          </ModalCloseButton>
-        )}
-        {photoDetailModalIsOpen === true ? (
-          <ModalBox variants={modalVariants} initial="start" animate="end" exit="exit">
-            <ModalMain>
-              <ModalMainContent>
-                <ModalMainPhoto>
-                  <img src={photoUrl} alt="" />
-                </ModalMainPhoto>
-                <ModalMainInfo>
-                  <ModalMainInfoTop>
-                    <Link to={`/users/${user?.username}`}>
-                      <Avatar size="32px" avatarUrl={user?.avatarUrl} />
-                      <ModalMainUserInfo>
-                        <Username size="15px" username={user?.username} textDecoration={"false"} />
-                        <Name size="13px" name={user?.name} />
-                      </ModalMainUserInfo>
-                    </Link>
-                  </ModalMainInfoTop>
-                  <ModalMainInfoCenter>
-                    <MainUserInfo>
-                      <MainUserAvatar>
-                        <Link to={`/users/${user?.username}`}>
-                          <Avatar size="32px" avatarUrl={user?.avatarUrl} />
-                        </Link>
-                        <ModalUserInfo>
-                          <ModalMainUserInfoCaption>
-                            <Link to={`/users/${user?.username}`}>
-                              <Username size="15px" username={user?.username} textDecoration={"false"} />
-                            </Link>
-                            <p>{caption}</p>
-                          </ModalMainUserInfoCaption>
-                          <CreatedAt createdAt={createdAt} />
-                        </ModalUserInfo>
-                      </MainUserAvatar>
-                      {seeCommentsData?.seeComments.comments?.map((comment) => (
-                        <ModalPhotoComment key={comment?.id}>
-                          <Link to={`/users/${comment?.user.username}`}>
-                            <Avatar size="32px" avatarUrl={comment?.user.avatarUrl} />
+        <ModalCloseButton key={"ModalCloseButton"} onClick={handleCloseModal}>
+          ✕
+        </ModalCloseButton>
+        <ModalBox variants={modalVariants} initial="start" animate="end" exit="exit">
+          <ModalMain>
+            <ModalMainContent>
+              <ModalMainPhoto>
+                <img src={photoUrl} alt="" />
+              </ModalMainPhoto>
+              <ModalMainInfo>
+                <ModalMainInfoTop>
+                  <Link to={`/users/${user?.username}`}>
+                    <Avatar size="32px" avatarUrl={user?.avatarUrl} />
+                    <ModalMainUserInfo>
+                      <Username size="15px" username={user?.username} textDecoration={"false"} />
+                      <Name size="13px" name={user?.name} />
+                    </ModalMainUserInfo>
+                  </Link>
+                </ModalMainInfoTop>
+                <ModalMainInfoCenter>
+                  <MainUserInfo>
+                    <MainUserAvatar>
+                      <Link to={`/users/${user?.username}`}>
+                        <Avatar size="32px" avatarUrl={user?.avatarUrl} />
+                      </Link>
+                      <ModalUserInfo>
+                        <ModalMainUserInfoCaption>
+                          <Link to={`/users/${user?.username}`}>
+                            <Username size="15px" username={user?.username} textDecoration={"false"} />
                           </Link>
-                          <ModalPhotoCommentInfo>
-                            <ModalMainUserInfoCaption>
-                              <Link to={`/users/${comment?.user.username}`}>
-                                <Username size="15px" username={comment?.user?.username} textDecoration={"false"} />
-                              </Link>
-                              {comment?.user.isMe && isEditing === true && editingComment.commentId === comment.id ? null : <p>{comment?.text}</p>}
-                              {comment?.user.isMe && isEditing === true && editingComment.commentId === comment.id && (
-                                <Form onSubmit={handleSubmit(onValid)}>
-                                  <Input
-                                    {...register("text", { required: "댓글을 입력해주세요.", minLength: 1, maxLength: 70 })}
-                                    minLength={1}
-                                    maxLength={70}
-                                    type="text"
-                                    placeholder="댓글을 입력해주세요."
-                                  />
-                                  <EditingCommentButton disabled={!isValid} type="submit">
-                                    수정
-                                  </EditingCommentButton>
-                                </Form>
-                              )}
-                              {comment?.user.isMe && (
-                                <Buttons>
-                                  <EditCommentButton onClick={() => handleEditComment(comment?.id, comment.text)} type="button">
-                                    <HiOutlinePencilAlt />
-                                  </EditCommentButton>
-                                  <DeleteCommentButton onClick={() => handleDeleteComment(comment?.id)} type="button">
-                                    ✕
-                                  </DeleteCommentButton>
-                                </Buttons>
-                              )}
-                            </ModalMainUserInfoCaption>
-                            <CreatedAt createdAt={comment?.createdAt} />
-                          </ModalPhotoCommentInfo>
-                        </ModalPhotoComment>
-                      ))}
-                    </MainUserInfo>
-                  </ModalMainInfoCenter>
-                  <ModalMainInfoBottom>
-                    <PhotoIcons id={id} isLiked={isLiked} />
-                    <TotalLikes photoId={id} totalLikes={totalLikes} />
-                    <CreatedAt createdAt={createdAt} />
-                    <CommentForm photoId={id} position="top" />
-                  </ModalMainInfoBottom>
-                </ModalMainInfo>
-              </ModalMainContent>
-            </ModalMain>
-          </ModalBox>
-        ) : null}
+                          <p>{caption}</p>
+                        </ModalMainUserInfoCaption>
+                        <CreatedAt createdAt={createdAt} />
+                      </ModalUserInfo>
+                    </MainUserAvatar>
+                    {seeCommentsData?.seeComments.comments?.map((comment) => (
+                      <ModalPhotoComment key={comment?.id}>
+                        <Link to={`/users/${comment?.user.username}`}>
+                          <Avatar size="32px" avatarUrl={comment?.user.avatarUrl} />
+                        </Link>
+                        <ModalPhotoCommentInfo>
+                          <ModalMainUserInfoCaption>
+                            <Link to={`/users/${comment?.user.username}`}>
+                              <Username size="15px" username={comment?.user?.username} textDecoration={"false"} />
+                            </Link>
+                            {comment?.user.isMe && isEditing === true && editingComment.commentId === comment.id ? null : <p>{comment?.text}</p>}
+                            {comment?.user.isMe && isEditing === true && editingComment.commentId === comment.id && (
+                              <Form onSubmit={handleSubmit(onValid)}>
+                                <Input
+                                  {...register("text", { required: "댓글을 입력해주세요.", minLength: 1, maxLength: 70 })}
+                                  minLength={1}
+                                  maxLength={70}
+                                  type="text"
+                                  placeholder="댓글을 입력해주세요."
+                                />
+                                <EditingCommentButton disabled={!isValid} type="submit">
+                                  수정
+                                </EditingCommentButton>
+                              </Form>
+                            )}
+                            {comment?.user.isMe && (
+                              <Buttons>
+                                <EditCommentButton onClick={() => handleEditComment(comment?.id, comment.text)} type="button">
+                                  <HiOutlinePencilAlt />
+                                </EditCommentButton>
+                                <DeleteCommentButton onClick={() => handleDeleteComment(comment?.id)} type="button">
+                                  ✕
+                                </DeleteCommentButton>
+                              </Buttons>
+                            )}
+                          </ModalMainUserInfoCaption>
+                          <CreatedAt createdAt={comment?.createdAt} />
+                        </ModalPhotoCommentInfo>
+                      </ModalPhotoComment>
+                    ))}
+                  </MainUserInfo>
+                </ModalMainInfoCenter>
+                <ModalMainInfoBottom>
+                  <PhotoIcons id={id} isLiked={isLiked} />
+                  <TotalLikes photoId={id} totalLikes={totalLikes} />
+                  <CreatedAt createdAt={createdAt} />
+                  <CommentForm photoId={id} position="top" />
+                </ModalMainInfoBottom>
+              </ModalMainInfo>
+            </ModalMainContent>
+          </ModalMain>
+        </ModalBox>
       </AnimatePresence>
     </>
   );

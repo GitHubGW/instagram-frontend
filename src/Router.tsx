@@ -15,12 +15,20 @@ const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={"/"} element={<Home />} />
-        {isLoggedIn === false && <Route path={"/login"} element={<Login />} />}
-        {isLoggedIn === false && <Route path={"/signup"} element={<SignUp />} />}
-        <Route path={`/users/:username`} element={<Profile />} />
-        {isLoggedIn === true && <Route path={`/users/:username/edit`} element={<EditProfile />} />}
-        <Route path={`/hashtags/:name`} element={<Hashtag />} />
+        <Route path="/" element={<Home />}>
+          <Route path="photos/:id" element={<Home />} />
+        </Route>
+        {isLoggedIn === false && <Route path="/login" element={<Login />} />}
+        {isLoggedIn === false && <Route path="/signup" element={<SignUp />} />}
+        <Route path="users/:username" element={<Profile />}>
+          <Route path="photos/:id" element={<Profile />} />
+          <Route path="followers" element={<Profile />} />
+          <Route path="following" element={<Profile />} />
+        </Route>
+        {isLoggedIn === true && <Route path="/users/:username/edit" element={<EditProfile />} />}
+        <Route path="hashtags/:name" element={<Hashtag />}>
+          <Route path="photos/:id" element={<Hashtag />} />
+        </Route>
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

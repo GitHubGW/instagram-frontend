@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useParams } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, NavigateFunction, useNavigate, PathMatch, useMatch } from "react-router-dom";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import PageTitle from "../components/PageTitle";
 import Avatar from "../shared/Avatar";
@@ -10,7 +10,6 @@ import { BsHeartFill } from "react-icons/bs";
 import { FaComment } from "react-icons/fa";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import { ApolloCache } from "@apollo/client";
-import { useEffect, useState } from "react";
 import Username from "../shared/Username";
 import Name from "../shared/Name";
 import Loading from "../shared/Loading";
@@ -248,12 +247,12 @@ const FollowButton = styled(Button)<{ isFollowing: boolean | undefined }>`
 `;
 
 const Profile = () => {
+  const navigate: NavigateFunction = useNavigate();
+  const followersPathMath: PathMatch<"username"> | null = useMatch("/users/:username/followers");
+  const followingPathMath: PathMatch<"username"> | null = useMatch("/users/:username/following");
+  const photoPathMath: PathMatch<"id"> | null = useMatch("/users/:username/photos/:id");
   const loggedInUser = useLoggedInUser();
   const { username } = useParams<ProfileParams>();
-  const [openingPhotoId, setOpeningPhotoId] = useState<number | undefined>(undefined);
-  const [modalState, setModalState] = useState<string>("");
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
-  const [photoDetailModalIsOpen, setPhotoDetailModalIsOpen] = useState<boolean>(false);
   const { data: seeProfileData, loading: seeProfileLoading } = useSeeProfileQuery({ variables: { username: username || "" } });
   const [seeFollowersLazyQuery] = useSeeFollowersLazyQuery();
   const { data: seeFollowersData } = useSeeFollowersQuery({ variables: { username: username || "" } });
@@ -349,19 +348,17 @@ const Profile = () => {
 
   const handleSeeFollowers = (): void => {
     document.body.style.overflow = "hidden";
-    setModalState("follower");
-    setModalIsOpen(true);
+    navigate(`/users/${username}/followers`);
   };
 
   const handleSeeFollowing = (): void => {
     document.body.style.overflow = "hidden";
-    setModalState("following");
-    setModalIsOpen(true);
+    navigate(`/users/${username}/following`);
   };
 
   const handleCloseModal = (): void => {
     document.body.style.overflow = "auto";
-    setModalIsOpen(false);
+    navigate(-1);
   };
 
   const handleToggleFollow = (isFollowing: boolean | undefined, username: string | undefined): void => {
@@ -372,32 +369,26 @@ const Profile = () => {
     }
   };
 
-  const handleOpenPhotoDetailModal = (photoId: number | undefined): void => {
-    document.body.style.overflow = "hidden";
-    setPhotoDetailModalIsOpen(true);
-    setOpeningPhotoId(photoId);
+  const handleOpenPhotoDetail = (id: number | undefined): void => {
+    navigate(`/users/${username}/photos/${id}`);
   };
-
-  useEffect(() => {
-    document.body.style.overflow = "auto";
-  }, []);
 
   return (
     <MainLayout>
-      {modalIsOpen === true && <ModalBackground onClick={handleCloseModal} />}
-      <AnimatePresence>
-        {modalIsOpen === true ? (
+      {(followersPathMath !== null || followingPathMath !== null) && (
+        <AnimatePresence>
+          <ModalBackground onClick={handleCloseModal} />
           <ModalBox variants={modalVariants} initial="start" animate="end" exit="exit">
             <ModalHeader>
-              <h1>{modalState === "follower" ? "팔로워" : "팔로잉"}</h1>
+              <h1>{followersPathMath ? "팔로워" : "팔로잉"}</h1>
               <button onClick={handleCloseModal}>✕</button>
             </ModalHeader>
             <ModalMain>
-              {modalState === "follower" &&
+              {followersPathMath &&
                 seeFollowersData?.seeFollowers.followers?.map((follower) => (
                   <ModalMainContent key={follower?.id}>
                     <ModalMainUser>
-                      <Link to={`/users/${follower?.username}`} onClick={() => setModalIsOpen(false)}>
+                      <Link to={`/users/${follower?.username}`}>
                         <Avatar size="38px" avatarUrl={follower?.avatarUrl} />
                         <ModalMainUserInfo>
                           <Username size="15px" username={follower?.username} textDecoration={"true"} />
@@ -418,11 +409,11 @@ const Profile = () => {
                     )}
                   </ModalMainContent>
                 ))}
-              {modalState === "following" &&
+              {followingPathMath &&
                 seeFollowingData?.seeFollowing.following?.map((following) => (
                   <ModalMainContent key={following?.id}>
                     <ModalMainUser>
-                      <Link to={`/users/${following?.username}`} onClick={() => setModalIsOpen(false)}>
+                      <Link to={`/users/${following?.username}`}>
                         <Avatar size="38px" avatarUrl={following?.avatarUrl} />
                         <ModalMainUserInfo>
                           <Username size="15px" username={following?.username} textDecoration={"true"} />
@@ -445,8 +436,9 @@ const Profile = () => {
                 ))}
             </ModalMain>
           </ModalBox>
-        ) : null}
-      </AnimatePresence>
+        </AnimatePresence>
+      )}
+
       <PageTitle title={seeProfileLoading === true ? "로딩중" : username || "페이지를 찾을 수 없습니다."} />
       {seeProfileLoading === false ? (
         <Container>
@@ -490,20 +482,20 @@ const Profile = () => {
           <ProfileMain>
             {seeProfileData?.seeProfile.user?.photos?.map((photo) => (
               <ProfilePhoto key={photo?.id}>
-                {openingPhotoId === photo?.id && photoDetailModalIsOpen === true && (
-                  <PhotoDetail
-                    photoDetailModalIsOpen={photoDetailModalIsOpen}
-                    setPhotoDetailModalIsOpen={setPhotoDetailModalIsOpen}
-                    id={photo?.id}
-                    user={photo?.user}
-                    photoUrl={photo?.photoUrl}
-                    isLiked={photo?.isLiked}
-                    totalLikes={photo?.totalLikes}
-                    caption={photo?.caption}
-                    createdAt={photo?.createdAt}
-                  />
+                {photoPathMath && photoPathMath.params.id === String(photo?.id) && (
+                  <AnimatePresence>
+                    <PhotoDetail
+                      id={photo?.id}
+                      user={photo?.user}
+                      photoUrl={photo?.photoUrl}
+                      isLiked={photo?.isLiked}
+                      totalLikes={photo?.totalLikes}
+                      caption={photo?.caption}
+                      createdAt={photo?.createdAt}
+                    />
+                  </AnimatePresence>
                 )}
-                <Overlay onClick={() => handleOpenPhotoDetailModal(photo?.id)}>
+                <Overlay onClick={() => handleOpenPhotoDetail(photo?.id)}>
                   <ProfilePhotoIcons>
                     <span>
                       <BsHeartFill />
