@@ -84,7 +84,7 @@ const PhotoIcons = ({ id, isLiked, handleSeePhotoDetail }: PhotoIconsProps) => {
     refetchQueries: [{ query: SEE_PHOTO_LIKES, variables: { photoId: id } }],
   });
 
-  const handleToggleLike = (isLiked: boolean | undefined) => {
+  const handleToggleLikePhoto = (isLiked: boolean | undefined) => {
     if (toggleLikePhotoLoading === true || seePhotoLikesLoading === true) {
       return;
     }
@@ -101,7 +101,7 @@ const PhotoIcons = ({ id, isLiked, handleSeePhotoDetail }: PhotoIconsProps) => {
   return (
     <Icons>
       <div>
-        <LikeButton ref={likeButton} onClick={() => handleToggleLike(isLiked)}>
+        <LikeButton ref={likeButton} onClick={() => handleToggleLikePhoto(isLiked)}>
           {isLiked === true ? <AiFillHeart style={{ color: "rgb(237, 73, 86)" }} /> : <AiOutlineHeart />}
         </LikeButton>
         <BiMessageRounded onClick={handleSeePhotoDetail} />

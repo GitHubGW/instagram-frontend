@@ -9,11 +9,12 @@ import PhotoIcons from "./PhotoIcons";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { ScrollBox } from "../../shared/shared";
 import Avatar from "../../shared/Avatar";
-import { useDeleteCommentMutation, useEditCommentMutation, useSeeCommentsLazyQuery, useSeeCommentsQuery } from "../../generated/graphql";
+import { useDeleteCommentMutation, useDeletePhotoMutation, useEditCommentMutation, useSeeCommentsLazyQuery, useSeeCommentsQuery } from "../../generated/graphql";
 import Name from "../../shared/Name";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { ApolloCache } from "@apollo/client";
 import { useForm } from "react-hook-form";
+import useLoggedInUser from "../../hooks/useLoggedInUser";
 
 interface PhotoDetailProps {
   id?: number;
@@ -96,6 +97,7 @@ const ModalMainPhoto = styled.div`
   max-width: 1300px;
   max-height: 1300px;
   min-height: 450px;
+  border-right: 1px solid ${(props) => props.theme.borderColor};
 
   img {
     width: 100%;
@@ -135,10 +137,22 @@ const ModalMainInfoTop = styled.div`
   margin-right: auto;
   padding: 15px;
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
+  position: relative;
 
   a {
     display: flex;
     align-items: center;
+  }
+  button {
+    position: absolute;
+    right: 10px;
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+    color: ${(props) => props.theme.errorColor};
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
   }
 `;
 
@@ -181,6 +195,7 @@ const ModalUserInfo = styled.div`
 
   p {
     word-break: break-all;
+    line-height: 1.4;
   }
 `;
 
@@ -259,6 +274,7 @@ const DeleteCommentButton = styled.button`
 `;
 
 const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, createdAt }: PhotoDetailProps) => {
+  const loggedInUser = useLoggedInUser();
   const navigate: NavigateFunction = useNavigate();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<EditingComment>({ commentId: undefined, commentText: "" });
@@ -305,6 +321,30 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
       seeCommentsLazyQuery({ variables: { photoId: id as number } });
     },
   });
+  const [deletePhotoMutation, { loading: deletePhotoLoading }] = useDeletePhotoMutation({
+    update: (cache: ApolloCache<any>, { data }) => {
+      if (data?.deletePhoto.ok === false) {
+        return;
+      }
+
+      cache.evict({ id: `Photo:${data?.deletePhoto.id}` });
+      cache.gc();
+      cache.modify({
+        id: `User:${loggedInUser?.id}`,
+        fields: {
+          totalPhotos: (totalPhotos: number) => totalPhotos - 1,
+        },
+      });
+      handleCloseModal();
+    },
+  });
+
+  const handleDeletePhoto = (): void => {
+    if (deletePhotoLoading === true) {
+      return;
+    }
+    deletePhotoMutation({ variables: { photoId: id as number } });
+  };
 
   const onValid = (): void => {
     const { text } = getValues();
@@ -355,6 +395,11 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
                       <Name size="13px" name={user?.name} />
                     </ModalMainUserInfo>
                   </Link>
+                  {user?.username === loggedInUser?.username && (
+                    <button type="button" onClick={handleDeletePhoto}>
+                      삭제
+                    </button>
+                  )}
                 </ModalMainInfoTop>
                 <ModalMainInfoCenter>
                   <MainUserInfo>
