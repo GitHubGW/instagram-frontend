@@ -1,5 +1,7 @@
 import { ApolloClient, ApolloLink, createHttpLink, GraphQLRequest, InMemoryCache, makeVar, NormalizedCacheObject } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { createUploadLink } from "apollo-upload-client";
+import { onError } from "@apollo/client/link/error";
 
 const TOKEN: string = "TOKEN";
 const DARK_MODE: string = "DARK_MODE";
@@ -32,13 +34,26 @@ const httpLink: ApolloLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
 });
 
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    console.log(`GraphQL Error`, graphQLErrors);
+  }
+  if (networkError) {
+    console.log(`Network Error`, networkError);
+  }
+});
+
+const uploadLink: ApolloLink = createUploadLink({
+  uri: process.env.NODE_ENV === "production" ? "" : "http://localhost:4000/graphql",
+});
+
 const authLink: ApolloLink = setContext((operation: GraphQLRequest, prevContext: any) => {
   const token: string | null = localStorage.getItem(TOKEN);
   return { headers: { ...prevContext.headers, token } };
 });
 
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: authLink.concat(onErrorLink).concat(uploadLink),
   cache: new InMemoryCache(),
 });
 
