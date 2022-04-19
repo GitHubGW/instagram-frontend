@@ -17,6 +17,7 @@ import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
 import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeFollowersQuery, useSeeFollowingQuery, useSeeProfileQuery, useUnfollowUserMutation } from "../generated/graphql";
 import PhotoDetail from "../components/photos/PhotoDetail";
+import UploadPhoto from "./UploadPhoto";
 
 type ProfileParams = {
   username: string;
@@ -251,6 +252,7 @@ const Profile = () => {
   const followersPathMath: PathMatch<"username"> | null = useMatch("/users/:username/followers");
   const followingPathMath: PathMatch<"username"> | null = useMatch("/users/:username/following");
   const photoPathMath: PathMatch<"id"> | null = useMatch("/users/:username/photos/:id");
+  const uploadPhotoPathMath: PathMatch<"username"> | null = useMatch(`/users/:username/photos/upload`);
   const loggedInUser = useLoggedInUser();
   const { username } = useParams<ProfileParams>();
   const { data: seeProfileData, loading: seeProfileLoading } = useSeeProfileQuery({ variables: { username: username || "" } });
@@ -375,6 +377,7 @@ const Profile = () => {
 
   return (
     <MainLayout>
+      <AnimatePresence>{uploadPhotoPathMath && <UploadPhoto />}</AnimatePresence>
       {(followersPathMath !== null || followingPathMath !== null) && (
         <AnimatePresence>
           <ModalBackground onClick={handleCloseModal} />

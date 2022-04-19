@@ -1,7 +1,7 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import { Link } from "react-router-dom";
+import { Link, PathMatch, useMatch } from "react-router-dom";
 import styled from "styled-components";
 import PageTitle from "../components/PageTitle";
 import { useFollowUserMutation, useSeeFeedQuery, useSeeFollowingQuery, useSeeRecommendPhotosQuery, useSeeRecommendUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
@@ -15,6 +15,8 @@ import { ApolloCache } from "@apollo/client";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
 import { useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import UploadPhoto from "./UploadPhoto";
 
 const Container = styled.section`
   background-color: ${(props) => props.theme.bgColor};
@@ -170,6 +172,7 @@ const FollowingContainer = styled.div`
 const Home = () => {
   let followUsername: string | undefined;
   let unfollowUsername: string | undefined;
+  const uploadPhotoPathMath: PathMatch<string> | null = useMatch("/photos/upload");
   const loggedInUser = useLoggedInUser();
   const { data: seeFeedData } = useSeeFeedQuery();
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: loggedInUser?.username || "" } });
@@ -248,6 +251,7 @@ const Home = () => {
 
   return (
     <FeedLayout>
+      <AnimatePresence>{uploadPhotoPathMath && uploadPhotoPathMath.pathname === "/photos/upload" && <UploadPhoto />}</AnimatePresence>
       <Container>
         <PageTitle title="홈" />
         <LeftContainer>

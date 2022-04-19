@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { NavigateFunction, useNavigate, useParams } from "react-router";
+import { NavigateFunction, PathMatch, useMatch, useNavigate, useParams } from "react-router";
 import styled from "styled-components";
 import { ApolloClient, useApolloClient } from "@apollo/client";
 import { handleLogout } from "../apollo";
@@ -12,6 +12,8 @@ import { Input } from "../shared/shared";
 import PageTitle from "../components/PageTitle";
 import Footer from "../components/Footer";
 import { useEffect } from "react";
+import UploadPhoto from "./UploadPhoto";
+import { AnimatePresence } from "framer-motion";
 
 type EditProfileParams = {
   username: string;
@@ -100,6 +102,7 @@ const EditProfile = () => {
   const client: ApolloClient<object> = useApolloClient();
   const { username } = useParams<EditProfileParams>();
   const navigate: NavigateFunction = useNavigate();
+  const uploadPhotoPathMath: PathMatch<"username"> | null = useMatch(`/users/:username/edit/photos/upload`);
   const loggedInUser = useLoggedInUser();
   const {
     register,
@@ -171,6 +174,7 @@ const EditProfile = () => {
 
   return (
     <MainLayout>
+      <AnimatePresence>{uploadPhotoPathMath && <UploadPhoto />}</AnimatePresence>
       <PageTitle title={"프로필 편집"} />
       <Container>
         <EditProfileForm onSubmit={handleSubmit(onValid)} method="POST" encType="multipart/form-data">

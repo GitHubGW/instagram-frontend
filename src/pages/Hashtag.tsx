@@ -8,6 +8,7 @@ import { FaComment } from "react-icons/fa";
 import MainLayout from "../shared/MainLayout";
 import PhotoDetail from "../components/photos/PhotoDetail";
 import { AnimatePresence } from "framer-motion";
+import UploadPhoto from "./UploadPhoto";
 
 type HashtagParams = {
   name: string;
@@ -130,6 +131,7 @@ const Hashtag = () => {
   const { name } = useParams<HashtagParams>();
   const navigate: NavigateFunction = useNavigate();
   const photoPathMath: PathMatch<"id"> | null = useMatch("/hashtags/:name/photos/:id");
+  const uploadPhotoPathMath: PathMatch<"name"> | null = useMatch(`/hashtags/:name/photos/upload`);
   const { data: seeHashtagData, loading: seeHashtagLoading } = useSeeHashtagQuery({ variables: { name: `#${name}` } });
 
   const handleOpenPhotoDetail = (id: number | undefined): void => {
@@ -138,6 +140,7 @@ const Hashtag = () => {
 
   return (
     <MainLayout>
+      <AnimatePresence>{uploadPhotoPathMath && <UploadPhoto />}</AnimatePresence>
       <PageTitle title={`#${name} 해시태그`} />
       {seeHashtagLoading === false ? (
         <Container>

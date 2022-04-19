@@ -6,7 +6,6 @@ import { ApolloClient, useApolloClient, useReactiveVar } from "@apollo/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { handleDisableDarkMode, handleEnableDarkMode, handleLogout, isDarkModeVar, isLoggedInVar } from "../apollo";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
-import { FaRegCompass, FaCompass } from "react-icons/fa";
 import { IoHomeOutline, IoHomeSharp, IoPaperPlaneOutline, IoPaperPlaneSharp } from "react-icons/io5";
 import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icons/bs";
 import { FiSun, FiMoon } from "react-icons/fi";
@@ -288,10 +287,9 @@ const Header = () => {
         {isLoggedIn === true ? (
           <LoginNav>
             <Link to={"/"}>{location.pathname === "/" ? <IoHomeSharp /> : <IoHomeOutline />}</Link>
-            <Link to={"/"}>{location.pathname === "/" ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link>
-            <Link to={"/"}>{location.pathname === "/" ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
-            <Link to={"/"}>{location.pathname === "/" ? <FaCompass /> : <FaRegCompass />}</Link>
-            <Link to={"/"}>{location.pathname === "/" ? <BsHeartFill /> : <BsHeart />}</Link>
+            <Link to={`/rooms/${loggedInUser?.username}`}>{location.pathname === `/rooms/${loggedInUser?.username}` ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link>
+            <Link to={"photos/upload"}>{location.pathname.includes("/photos/upload") === true ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
+            <Link to={"/likes"}>{location.pathname === "/likes" ? <BsHeartFill /> : <BsHeart />}</Link>
             <Link to={`/users/${loggedInUser?.username}`}>
               {isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} /> : <FontAwesomeIcon icon={faUser} />}
             </Link>
