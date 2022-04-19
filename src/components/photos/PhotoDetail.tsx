@@ -9,12 +9,20 @@ import PhotoIcons from "./PhotoIcons";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { ScrollBox } from "../../shared/shared";
 import Avatar from "../../shared/Avatar";
-import { useDeleteCommentMutation, useDeletePhotoMutation, useEditCommentMutation, useSeeCommentsLazyQuery, useSeeCommentsQuery } from "../../generated/graphql";
 import Name from "../../shared/Name";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { ApolloCache } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import useLoggedInUser from "../../hooks/useLoggedInUser";
+import Loading from "../../shared/Loading";
+import {
+  useDeleteCommentMutation,
+  useDeletePhotoMutation,
+  useEditCommentMutation,
+  useEditPhotoMutation,
+  useSeeCommentsLazyQuery,
+  useSeeCommentsQuery,
+} from "../../generated/graphql";
 
 interface PhotoDetailProps {
   id?: number;
@@ -28,6 +36,10 @@ interface PhotoDetailProps {
 }
 
 interface FormData {
+  text: string;
+}
+
+interface EditPhotoFormData {
   text: string;
 }
 
@@ -122,6 +134,8 @@ const ModalMainUserInfoCaption = styled.div`
   margin-left: 13px;
   margin-bottom: 0px;
   margin-top: 5px;
+  width: 100%;
+  align-items: center;
 
   p {
     margin-left: 6px;
@@ -143,16 +157,25 @@ const ModalMainInfoTop = styled.div`
     display: flex;
     align-items: center;
   }
+`;
+
+const PhotoActionButtons = styled.div`
+  position: absolute;
+  right: 10px;
+
   button {
-    position: absolute;
-    right: 10px;
     font-weight: bold;
     border: none;
     background-color: transparent;
-    color: ${(props) => props.theme.errorColor};
     text-align: center;
     padding: 8px;
     cursor: pointer;
+    &:first-child {
+      color: ${(props) => props.theme.activeColor};
+    }
+    &:last-child {
+      color: ${(props) => props.theme.errorColor};
+    }
   }
 `;
 
@@ -273,10 +296,45 @@ const DeleteCommentButton = styled.button`
   font-size: 13px;
 `;
 
+const EditingPhotoForm = styled.form`
+  width: 100%;
+  margin-left: 5px;
+  position: relative;
+`;
+
+const EditingPhotoInput = styled.input`
+  width: 97%;
+  background-color: ${(props) => props.theme.bgColor};
+  padding: 13px 12px;
+  padding-right: 65px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: ${(props) => props.theme.textColor};
+
+  &::placeholder {
+    font-size: 13px;
+  }
+`;
+
+const EditingPhotoButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 15px;
+  border: none;
+  color: white;
+  text-align: center;
+  padding: 5px 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: ${(props) => (props.disabled ? props.theme.inactiveColor : props.theme.activeColor)};
+`;
+
 const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, createdAt }: PhotoDetailProps) => {
   const loggedInUser = useLoggedInUser();
   const navigate: NavigateFunction = useNavigate();
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isEditingPhoto, setIsEditingPhoto] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<EditingComment>({ commentId: undefined, commentText: "" });
   const {
     register,
@@ -285,6 +343,11 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
     setValue,
     formState: { isValid },
   } = useForm<FormData>({ mode: "onChange", defaultValues: { text: editingComment.commentText } });
+  const {
+    register: editPhotoRegister,
+    handleSubmit: editPhotoHandleSubmit,
+    getValues: editPhotoGetValues,
+  } = useForm<EditPhotoFormData>({ mode: "onChange", defaultValues: { text: caption as string } });
   const { data: seeCommentsData } = useSeeCommentsQuery({ variables: { photoId: id as number } });
   const [seeCommentsLazyQuery] = useSeeCommentsLazyQuery();
   const [deleteCommentMutation] = useDeleteCommentMutation({
@@ -338,12 +401,42 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
       handleCloseModal();
     },
   });
+  const [editPhotoMutation, { loading: editPhotoLoading }] = useEditPhotoMutation({
+    update: (cache: ApolloCache<any>, { data }) => {
+      if (data?.editPhoto.ok === false) {
+        return;
+      }
+      const { text } = editPhotoGetValues();
+      cache.modify({
+        id: `Photo:${data?.editPhoto.id}`,
+        fields: {
+          caption: () => text,
+        },
+      });
+      setIsEditingPhoto(false);
+    },
+  });
+
+  const handleEditPhoto = (): void => {
+    setIsEditingPhoto((isEditingPhoto: boolean) => !isEditingPhoto);
+  };
 
   const handleDeletePhoto = (): void => {
     if (deletePhotoLoading === true) {
       return;
     }
     deletePhotoMutation({ variables: { photoId: id as number } });
+  };
+
+  const onEditPhotoValid = (): void => {
+    if (editPhotoLoading === true) {
+      return;
+    }
+    const { text } = editPhotoGetValues();
+    if (text === "") {
+      return;
+    }
+    editPhotoMutation({ variables: { photoId: id as number, caption: text } });
   };
 
   const onValid = (): void => {
@@ -396,9 +489,14 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
                     </ModalMainUserInfo>
                   </Link>
                   {user?.username === loggedInUser?.username && (
-                    <button type="button" onClick={handleDeletePhoto}>
-                      삭제
-                    </button>
+                    <PhotoActionButtons>
+                      <button type="button" onClick={handleEditPhoto}>
+                        수정
+                      </button>
+                      <button type="button" onClick={handleDeletePhoto}>
+                        {deletePhotoLoading === true ? <Loading size="14px" /> : "삭제"}
+                      </button>
+                    </PhotoActionButtons>
                   )}
                 </ModalMainInfoTop>
                 <ModalMainInfoCenter>
@@ -412,7 +510,22 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
                           <Link to={`/users/${user?.username}`}>
                             <Username size="15px" username={user?.username} textDecoration={"false"} />
                           </Link>
-                          <p>{caption}</p>
+                          {isEditingPhoto === true ? (
+                            <EditingPhotoForm onSubmit={editPhotoHandleSubmit(onEditPhotoValid)}>
+                              <EditingPhotoInput
+                                {...editPhotoRegister("text", { required: true, maxLength: 100 })}
+                                type="text"
+                                placeholder="사진 문구 입력..."
+                                required
+                                maxLength={100}
+                              />
+                              <EditingPhotoButton onClick={editPhotoHandleSubmit(onEditPhotoValid)} type="submit">
+                                {editPhotoLoading === true ? <Loading size="16px" /> : "수정"}
+                              </EditingPhotoButton>
+                            </EditingPhotoForm>
+                          ) : (
+                            <p>{caption}</p>
+                          )}
                         </ModalMainUserInfoCaption>
                         <CreatedAt createdAt={createdAt} />
                       </ModalUserInfo>
@@ -444,12 +557,16 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
                             )}
                             {comment?.user.isMe && (
                               <Buttons>
-                                <EditCommentButton onClick={() => handleEditComment(comment?.id, comment.text)} type="button">
-                                  <HiOutlinePencilAlt />
-                                </EditCommentButton>
-                                <DeleteCommentButton onClick={() => handleDeleteComment(comment?.id)} type="button">
-                                  ✕
-                                </DeleteCommentButton>
+                                {isEditing === false && (
+                                  <>
+                                    <EditCommentButton onClick={() => handleEditComment(comment?.id, comment.text)} type="button">
+                                      <HiOutlinePencilAlt />
+                                    </EditCommentButton>
+                                    <DeleteCommentButton onClick={() => handleDeleteComment(comment?.id)} type="button">
+                                      ✕
+                                    </DeleteCommentButton>
+                                  </>
+                                )}
                               </Buttons>
                             )}
                           </ModalMainUserInfoCaption>

@@ -545,6 +545,14 @@ export type EditCommentMutationVariables = Exact<{
 
 export type EditCommentMutation = { __typename?: 'Mutation', editComment: { __typename?: 'CommonResult', ok: boolean, message: string, id?: number | null } };
 
+export type EditPhotoMutationVariables = Exact<{
+  photoId: Scalars['Int'];
+  caption: Scalars['String'];
+}>;
+
+
+export type EditPhotoMutation = { __typename?: 'Mutation', editPhoto: { __typename?: 'CommonResult', ok: boolean, message: string, id?: number | null } };
+
 export type EditProfileMutationVariables = Exact<{
   name?: InputMaybe<Scalars['String']>;
   username?: InputMaybe<Scalars['String']>;
@@ -913,6 +921,42 @@ export function useEditCommentMutation(baseOptions?: Apollo.MutationHookOptions<
 export type EditCommentMutationHookResult = ReturnType<typeof useEditCommentMutation>;
 export type EditCommentMutationResult = Apollo.MutationResult<EditCommentMutation>;
 export type EditCommentMutationOptions = Apollo.BaseMutationOptions<EditCommentMutation, EditCommentMutationVariables>;
+export const EditPhotoDocument = gql`
+    mutation EditPhoto($photoId: Int!, $caption: String!) {
+  editPhoto(photoId: $photoId, caption: $caption) {
+    ok
+    message
+    id
+  }
+}
+    `;
+export type EditPhotoMutationFn = Apollo.MutationFunction<EditPhotoMutation, EditPhotoMutationVariables>;
+
+/**
+ * __useEditPhotoMutation__
+ *
+ * To run a mutation, you first call `useEditPhotoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditPhotoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editPhotoMutation, { data, loading, error }] = useEditPhotoMutation({
+ *   variables: {
+ *      photoId: // value for 'photoId'
+ *      caption: // value for 'caption'
+ *   },
+ * });
+ */
+export function useEditPhotoMutation(baseOptions?: Apollo.MutationHookOptions<EditPhotoMutation, EditPhotoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditPhotoMutation, EditPhotoMutationVariables>(EditPhotoDocument, options);
+      }
+export type EditPhotoMutationHookResult = ReturnType<typeof useEditPhotoMutation>;
+export type EditPhotoMutationResult = Apollo.MutationResult<EditPhotoMutation>;
+export type EditPhotoMutationOptions = Apollo.BaseMutationOptions<EditPhotoMutation, EditPhotoMutationVariables>;
 export const EditProfileDocument = gql`
     mutation EditProfile($name: String, $username: String, $email: String, $password: String, $bio: String, $avatar: Upload) {
   editProfile(
