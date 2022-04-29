@@ -5,6 +5,7 @@ gql`
     seeFeed(cursor: $cursor) {
       ok
       message
+      lastPhotoId
       photos {
         id
         photoUrl

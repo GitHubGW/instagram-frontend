@@ -1,5 +1,6 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useCallback, useEffect } from "react";
 import Slider from "react-slick";
 import { Link, PathMatch, useMatch } from "react-router-dom";
 import styled from "styled-components";
@@ -14,7 +15,6 @@ import PhotoContainer from "../components/photos/PhotoContainer";
 import { ApolloCache } from "@apollo/client";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
-import { useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import UploadPhoto from "./UploadPhoto";
 
@@ -174,10 +174,11 @@ const Home = () => {
   let unfollowUsername: string | undefined;
   const uploadPhotoPathMath: PathMatch<string> | null = useMatch("/photos/upload");
   const loggedInUser = useLoggedInUser();
-  const { data: seeFeedData } = useSeeFeedQuery();
+  const { data: seeFeedData, fetchMore } = useSeeFeedQuery();
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: loggedInUser?.username || "" } });
   const { data: seeRecommendUsersData } = useSeeRecommendUsersQuery();
   const { data: seeRecommendPhotosData } = useSeeRecommendPhotosQuery();
+
   const [followUserMutation] = useFollowUserMutation({
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.followUser.ok === false) {
@@ -245,6 +246,24 @@ const Home = () => {
     }
   };
 
+  const handleScroll = useCallback(async (): Promise<void> => {
+    const scrollTop: number = document.documentElement.scrollTop;
+    const innerHeight: number = window.innerHeight;
+    const scrollHeight: number = document.body.scrollHeight;
+
+    if (seeFeedData?.seeFeed.lastPhotoId === null) {
+      return;
+    }
+    if (scrollTop + innerHeight >= scrollHeight) {
+      await fetchMore({ variables: { cursor: seeFeedData?.seeFeed.lastPhotoId } });
+    }
+  }, [fetchMore, seeFeedData?.seeFeed.lastPhotoId]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
   useEffect(() => {
     document.body.style.overflow = "auto";
   }, []);
@@ -267,10 +286,10 @@ const Home = () => {
               </Slider>
             </FollowingContainer>
           )}
-          {seeFeedData?.seeFeed.photos?.map((photo) => (
+          {/* {seeRecommendPhotosData?.seeRecommendPhotos.photos?.map((photo) => (
             <PhotoContainer key={photo?.id} {...photo} />
-          ))}
-          {seeRecommendPhotosData?.seeRecommendPhotos.photos?.map((photo) => (
+          ))} */}
+          {seeFeedData?.seeFeed.photos?.map((photo) => (
             <PhotoContainer key={photo?.id} {...photo} />
           ))}
           <br />

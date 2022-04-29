@@ -79,7 +79,24 @@ const splitLink: ApolloLink = split(
 
 const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
   link: splitLink,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          seeFeed: {
+            keyArgs: false,
+            merge(existing, incoming) {
+              if (existing) {
+                const result = { ...existing, ...incoming, photos: [...existing.photos, ...incoming.photos] };
+                return result;
+              }
+              return incoming;
+            },
+          },
+        },
+      },
+    },
+  }),
 });
 
 export default client;
