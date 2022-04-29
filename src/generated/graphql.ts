@@ -232,6 +232,7 @@ export type Query = {
   seeRecommendUsers: SeeRecommendUsersResult;
   seeRoom: SeeRoomResult;
   seeRooms: SeeRoomsResult;
+  seeUsers: SeeUsersResult;
 };
 
 
@@ -368,6 +369,13 @@ export type SeeHashtagResult = {
   ok: Scalars['Boolean'];
 };
 
+export type SeeMeResult = {
+  __typename?: 'SeeMeResult';
+  message: Scalars['String'];
+  ok: Scalars['Boolean'];
+  user?: Maybe<User>;
+};
+
 export type SeePhotoLikesResult = {
   __typename?: 'SeePhotoLikesResult';
   message: Scalars['String'];
@@ -417,8 +425,16 @@ export type SeeRoomsResult = {
   rooms?: Maybe<Array<Maybe<Room>>>;
 };
 
+export type SeeUsersResult = {
+  __typename?: 'SeeUsersResult';
+  message: Scalars['String'];
+  ok: Scalars['Boolean'];
+  users?: Maybe<Array<Maybe<User>>>;
+};
+
 export type SendMessageResult = {
   __typename?: 'SendMessageResult';
+  id?: Maybe<Scalars['Int']>;
   message: Scalars['String'];
   ok: Scalars['Boolean'];
   room?: Maybe<Room>;
@@ -489,13 +505,6 @@ export type User = {
 
 export type UserPhotosArgs = {
   cursor?: InputMaybe<Scalars['Int']>;
-};
-
-export type SeeMeResult = {
-  __typename?: 'seeMeResult';
-  message: Scalars['String'];
-  ok: Scalars['Boolean'];
-  user?: Maybe<User>;
 };
 
 export type CreateAccountMutationVariables = Exact<{
@@ -667,7 +676,7 @@ export type SeeHashtagQuery = { __typename?: 'Query', seeHashtag: { __typename?:
 export type SeeMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SeeMeQuery = { __typename?: 'Query', seeMe: { __typename?: 'seeMeResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string, email: string, avatarUrl?: string | null, bio?: string | null, isMe: boolean } | null } };
+export type SeeMeQuery = { __typename?: 'Query', seeMe: { __typename?: 'SeeMeResult', ok: boolean, message: string, user?: { __typename?: 'User', id: number, name?: string | null, username: string, email: string, avatarUrl?: string | null, bio?: string | null, isMe: boolean } | null } };
 
 export type SeePhotoLikesQueryVariables = Exact<{
   photoId: Scalars['Int'];
@@ -695,12 +704,38 @@ export type SeeRecommendUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type SeeRecommendUsersQuery = { __typename?: 'Query', seeRecommendUsers: { __typename?: 'SeeRecommendUsersResult', ok: boolean, message: string, users?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean, isMe: boolean } | null> | null } };
 
+export type SeeUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SeeUsersQuery = { __typename?: 'Query', seeUsers: { __typename?: 'SeeUsersResult', ok: boolean, message: string, users?: Array<{ __typename?: 'User', id: number, username: string, avatarUrl?: string | null, isFollowing: boolean, name?: string | null, email: string, bio?: string | null, isMe: boolean, following?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null, followers?: Array<{ __typename?: 'User', id: number, name?: string | null, username: string, avatarUrl?: string | null, isFollowing: boolean } | null> | null } | null> | null } };
+
+export type CommentUpdatesSubscriptionVariables = Exact<{
+  photoId: Scalars['Int'];
+}>;
+
+
+export type CommentUpdatesSubscription = { __typename?: 'Subscription', commentUpdates?: { __typename?: 'Comment', id: number, text: string, isMe: boolean, createdAt: string, user: { __typename?: 'User', id: number, name?: string | null, username: string, email: string, avatarUrl?: string | null }, photo: { __typename?: 'Photo', id: number, photoUrl: string, caption?: string | null, totalLikes: number, totalComments: number, isMe: boolean, isLiked: boolean } } | null };
+
+export type FollowUpdatesSubscriptionVariables = Exact<{
+  userId: Scalars['Int'];
+}>;
+
+
+export type FollowUpdatesSubscription = { __typename?: 'Subscription', followUpdates?: { __typename?: 'User', id: number, name?: string | null, username: string, email: string, avatarUrl?: string | null, totalFollowing: number, totalFollowers: number, totalPhotos: number, isFollowing: boolean, isMe: boolean, createdAt: string, updatedAt: string } | null };
+
 export type LikeUpdatesSubscriptionVariables = Exact<{
   photoId: Scalars['Int'];
 }>;
 
 
 export type LikeUpdatesSubscription = { __typename?: 'Subscription', likeUpdates?: { __typename?: 'Like', id: number, createdAt: string, photo: { __typename?: 'Photo', id: number, photoUrl: string }, user: { __typename?: 'User', id: number, username: string, avatarUrl?: string | null } } | null };
+
+export type MessageUpdatesSubscriptionVariables = Exact<{
+  roomId: Scalars['Int'];
+}>;
+
+
+export type MessageUpdatesSubscription = { __typename?: 'Subscription', messageUpdates?: { __typename?: 'Message', id: number, text: string, read: boolean, user: { __typename?: 'User', id: number, name?: string | null, username: string, email: string, avatarUrl?: string | null }, room: { __typename?: 'Room', id: number, totalUnreadMessages: number, latestMessage?: { __typename?: 'Message', id: number, text: string } | null } } | null };
 
 
 export const CreateAccountDocument = gql`
@@ -1876,6 +1911,155 @@ export function useSeeRecommendUsersLazyQuery(baseOptions?: Apollo.LazyQueryHook
 export type SeeRecommendUsersQueryHookResult = ReturnType<typeof useSeeRecommendUsersQuery>;
 export type SeeRecommendUsersLazyQueryHookResult = ReturnType<typeof useSeeRecommendUsersLazyQuery>;
 export type SeeRecommendUsersQueryResult = Apollo.QueryResult<SeeRecommendUsersQuery, SeeRecommendUsersQueryVariables>;
+export const SeeUsersDocument = gql`
+    query SeeUsers {
+  seeUsers {
+    ok
+    message
+    users {
+      id
+      username
+      avatarUrl
+      isFollowing
+      name
+      email
+      bio
+      isMe
+      following {
+        id
+        name
+        username
+        avatarUrl
+        isFollowing
+      }
+      followers {
+        id
+        name
+        username
+        avatarUrl
+        isFollowing
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useSeeUsersQuery__
+ *
+ * To run a query within a React component, call `useSeeUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSeeUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSeeUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSeeUsersQuery(baseOptions?: Apollo.QueryHookOptions<SeeUsersQuery, SeeUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SeeUsersQuery, SeeUsersQueryVariables>(SeeUsersDocument, options);
+      }
+export function useSeeUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SeeUsersQuery, SeeUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SeeUsersQuery, SeeUsersQueryVariables>(SeeUsersDocument, options);
+        }
+export type SeeUsersQueryHookResult = ReturnType<typeof useSeeUsersQuery>;
+export type SeeUsersLazyQueryHookResult = ReturnType<typeof useSeeUsersLazyQuery>;
+export type SeeUsersQueryResult = Apollo.QueryResult<SeeUsersQuery, SeeUsersQueryVariables>;
+export const CommentUpdatesDocument = gql`
+    subscription CommentUpdates($photoId: Int!) {
+  commentUpdates(photoId: $photoId) {
+    id
+    text
+    user {
+      id
+      name
+      username
+      email
+      avatarUrl
+    }
+    photo {
+      id
+      photoUrl
+      caption
+      totalLikes
+      totalComments
+      isMe
+      isLiked
+    }
+    isMe
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useCommentUpdatesSubscription__
+ *
+ * To run a query within a React component, call `useCommentUpdatesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useCommentUpdatesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCommentUpdatesSubscription({
+ *   variables: {
+ *      photoId: // value for 'photoId'
+ *   },
+ * });
+ */
+export function useCommentUpdatesSubscription(baseOptions: Apollo.SubscriptionHookOptions<CommentUpdatesSubscription, CommentUpdatesSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<CommentUpdatesSubscription, CommentUpdatesSubscriptionVariables>(CommentUpdatesDocument, options);
+      }
+export type CommentUpdatesSubscriptionHookResult = ReturnType<typeof useCommentUpdatesSubscription>;
+export type CommentUpdatesSubscriptionResult = Apollo.SubscriptionResult<CommentUpdatesSubscription>;
+export const FollowUpdatesDocument = gql`
+    subscription FollowUpdates($userId: Int!) {
+  followUpdates(userId: $userId) {
+    id
+    name
+    username
+    email
+    avatarUrl
+    totalFollowing
+    totalFollowers
+    totalPhotos
+    isFollowing
+    isMe
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useFollowUpdatesSubscription__
+ *
+ * To run a query within a React component, call `useFollowUpdatesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useFollowUpdatesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFollowUpdatesSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useFollowUpdatesSubscription(baseOptions: Apollo.SubscriptionHookOptions<FollowUpdatesSubscription, FollowUpdatesSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<FollowUpdatesSubscription, FollowUpdatesSubscriptionVariables>(FollowUpdatesDocument, options);
+      }
+export type FollowUpdatesSubscriptionHookResult = ReturnType<typeof useFollowUpdatesSubscription>;
+export type FollowUpdatesSubscriptionResult = Apollo.SubscriptionResult<FollowUpdatesSubscription>;
 export const LikeUpdatesDocument = gql`
     subscription LikeUpdates($photoId: Int!) {
   likeUpdates(photoId: $photoId) {
@@ -1916,3 +2100,50 @@ export function useLikeUpdatesSubscription(baseOptions: Apollo.SubscriptionHookO
       }
 export type LikeUpdatesSubscriptionHookResult = ReturnType<typeof useLikeUpdatesSubscription>;
 export type LikeUpdatesSubscriptionResult = Apollo.SubscriptionResult<LikeUpdatesSubscription>;
+export const MessageUpdatesDocument = gql`
+    subscription MessageUpdates($roomId: Int!) {
+  messageUpdates(roomId: $roomId) {
+    id
+    text
+    read
+    user {
+      id
+      name
+      username
+      email
+      avatarUrl
+    }
+    room {
+      id
+      totalUnreadMessages
+      latestMessage {
+        id
+        text
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useMessageUpdatesSubscription__
+ *
+ * To run a query within a React component, call `useMessageUpdatesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useMessageUpdatesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMessageUpdatesSubscription({
+ *   variables: {
+ *      roomId: // value for 'roomId'
+ *   },
+ * });
+ */
+export function useMessageUpdatesSubscription(baseOptions: Apollo.SubscriptionHookOptions<MessageUpdatesSubscription, MessageUpdatesSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<MessageUpdatesSubscription, MessageUpdatesSubscriptionVariables>(MessageUpdatesDocument, options);
+      }
+export type MessageUpdatesSubscriptionHookResult = ReturnType<typeof useMessageUpdatesSubscription>;
+export type MessageUpdatesSubscriptionResult = Apollo.SubscriptionResult<MessageUpdatesSubscription>;

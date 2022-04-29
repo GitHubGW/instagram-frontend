@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import SeeUsers from "./pages/SeeUsers";
 import SignUp from "./pages/SignUp";
 
 const Router = () => {
@@ -19,6 +20,7 @@ const Router = () => {
           {isLoggedIn === true && <Route path="photos/upload" element={<Home />} />}
           <Route path="photos/:id" element={<Home />} />
         </Route>
+        <Route path="/users/all" element={<SeeUsers />} />
         <Route path="users/:username" element={<Profile />}>
           {isLoggedIn === true && <Route path="photos/upload" element={<Profile />} />}
           <Route path="photos/:id" element={<Profile />} />

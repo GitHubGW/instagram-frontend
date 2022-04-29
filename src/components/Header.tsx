@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import Avatar from "../shared/Avatar";
 import { Link, useLocation, Location } from "react-router-dom";
@@ -11,12 +11,13 @@ import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icon
 import { FiSun, FiMoon } from "react-icons/fi";
 import { MdLogout } from "react-icons/md";
 import { useForm } from "react-hook-form";
-import { useSearchHashtagsLazyQuery, useSearchPhotosLazyQuery, useSearchUsersLazyQuery } from "../generated/graphql";
-import { useState } from "react";
+import { useFollowUpdatesSubscription, useSearchHashtagsLazyQuery, useSearchPhotosLazyQuery, useSearchUsersLazyQuery } from "../generated/graphql";
+import { useEffect, useRef, useState } from "react";
 import { ScrollBox } from "../shared/shared";
 import SearchUser from "./users/SearchUser";
 import SearchHashtag from "./hashtags/SearchHashtag";
 import SearchPhoto from "./photos/SearchPhoto";
+import Username from "../shared/Username";
 
 interface SearchedUser {
   __typename?: "User";
@@ -45,6 +46,24 @@ interface SearchedPhoto {
 interface FormData {
   keyword: string;
 }
+
+const likeAnimation = keyframes`
+  0% {
+    opacity:1;
+    transform:scale(1);
+  }
+  15% {
+    opacity:0.9;
+    transform:scale(1.3);
+  }
+  30% {
+    transform:scale(.95);
+  }
+  45%, 80% {
+    opacity:0.9;
+    transform:scale(1);
+  }
+`;
 
 const Container = styled.header`
   border-bottom: 1px solid ${(props) => props.theme.borderColor};
@@ -103,7 +122,7 @@ const SearchModal = styled(ScrollBox)`
   overflow-y: scroll;
   padding: 10px 0;
 
-  h1 {
+  p {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -134,7 +153,7 @@ const SearchModal = styled(ScrollBox)`
 `;
 
 const LoginNav = styled.nav`
-  width: 300px;
+  width: 280px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -193,21 +212,101 @@ const SignupLink = styled(Link)`
   }
 `;
 
+const HeartContainer = styled.div`
+  position: relative;
+  height: 24px;
+  margin-left: 3px;
+  cursor: pointer;
+
+  &.animation {
+    animation-name: ${likeAnimation};
+    animation-duration: 1000ms;
+    animation-timing-function: ease-in-out;
+  }
+`;
+
+const HeartAlram = styled.span`
+  width: 4px;
+  height: 4px;
+  display: inline-block;
+  border-radius: 50px;
+  background-color: tomato;
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translate(-50%);
+`;
+
+const HeartModalContainer = styled.div`
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translate(-50%);
+  width: 340px;
+  height: 250px;
+  overflow-y: auto;
+  max-height: 250px;
+  background-color: ${(props) => props.theme.bgColor};
+  z-index: 100;
+  border-radius: 5px;
+  border: 1px solid gray;
+`;
+
+const HeartModal = styled.div``;
+
+const AlramContainer = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #f5f5f5;
+`;
+
+const NoHeartModalContainer = styled(HeartModalContainer)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  h3 {
+    font-size: 14px;
+  }
+`;
+
+const AlramUserContainer = styled.div`
+  margin-left: 10px;
+`;
+
+const AlramUserSpan = styled.span`
+  font-size: 14px;
+`;
+
 const Header = () => {
+  const heartAlram = useRef<HTMLDivElement>(null);
   const loggedInUser = useLoggedInUser();
   const location: Location = useLocation();
   const client: ApolloClient<object> = useApolloClient();
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);
   const isDarkMode: boolean = useReactiveVar(isDarkModeVar);
   const { register, handleSubmit, watch } = useForm<FormData>({ mode: "onChange", defaultValues: { keyword: "" } });
+  const [heartClicked, setHeartClicked] = useState<boolean>(false);
   const [searchedUsers, setSearchedUsers] = useState<(SearchedUser | null)[]>([]);
   const [searchedHashtags, setSearchedHashtags] = useState<(SearchedHashtag | null)[]>([]);
   const [searchedPhotos, setSearchedPhotos] = useState<(SearchedPhoto | null)[]>([]);
   const [searchUsersLazyQuery, { loading: searchUsersLoading }] = useSearchUsersLazyQuery();
   const [searchHashtagsLazyQuery, { loading: searchHashtagsLoading }] = useSearchHashtagsLazyQuery();
   const [searchPhotosLazyQuery, { loading: searchPhotosLoading }] = useSearchPhotosLazyQuery();
+  const { data: followUpdatesData } = useFollowUpdatesSubscription({ variables: { userId: loggedInUser?.id as number } });
 
   const onValid = (): void => {};
+
+  const handleHeartClick = () => {
+    setHeartClicked((heartClicked) => !heartClicked);
+  };
+
+  useEffect(() => {
+    if (followUpdatesData && heartAlram.current) {
+      heartAlram.current.classList.add("animation");
+    }
+  }, [followUpdatesData]);
 
   return (
     <Container>
@@ -219,10 +318,10 @@ const Header = () => {
           {watch("keyword") !== "" && (
             <SearchModal>
               {searchedUsers.length === 0 && searchedHashtags.length === 0 && searchedPhotos.length === 0 ? (
-                <h1>
+                <p>
                   @이름, #해시태그, 텍스트를 이용해서 <br />
                   유저, 해시태그, 사진을 검색해보세요.
-                </h1>
+                </p>
               ) : null}
               {searchedUsers.map((searchedUser: SearchedUser | null) => (
                 <SearchUser key={searchedUser?.id} {...searchedUser} />
@@ -287,9 +386,38 @@ const Header = () => {
         {isLoggedIn === true ? (
           <LoginNav>
             <Link to={"/"}>{location.pathname === "/" ? <IoHomeSharp /> : <IoHomeOutline />}</Link>
-            <Link to={`/rooms/${loggedInUser?.username}`}>{location.pathname === `/rooms/${loggedInUser?.username}` ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link>
+            {/* <Link to={`/rooms/${loggedInUser?.username}`}>{location.pathname === `/rooms/${loggedInUser?.username}` ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link> */}
             <Link to={"photos/upload"}>{location.pathname.includes("/photos/upload") === true ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
-            <Link to={"/likes"}>{location.pathname === "/likes" ? <BsHeartFill /> : <BsHeart />}</Link>
+            <HeartContainer ref={heartAlram}>
+              {heartClicked === true ? (
+                <BsHeartFill onClick={handleHeartClick} style={{ color: "rgb(237, 73, 86)" }} />
+              ) : followUpdatesData ? (
+                <BsHeartFill onClick={handleHeartClick} style={{ color: "rgb(237, 73, 86)" }} />
+              ) : (
+                <BsHeart onClick={handleHeartClick} />
+              )}
+              {followUpdatesData ? <HeartAlram></HeartAlram> : null}
+              {heartClicked === true && followUpdatesData ? (
+                <HeartModalContainer>
+                  <HeartModal>
+                    <AlramContainer>
+                      <Avatar size="44px" avatarUrl={followUpdatesData?.followUpdates?.avatarUrl || "/images/basic_user.jpeg"} />
+                      <Link to={`/users/${followUpdatesData.followUpdates?.username}`}>
+                        <AlramUserContainer>
+                          <Username size="15px" username={followUpdatesData?.followUpdates?.username || ""} textDecoration={"false"} />
+                          <AlramUserSpan>님이 회원님을 팔로우하기 시작했습니다.</AlramUserSpan>
+                        </AlramUserContainer>
+                      </Link>
+                    </AlramContainer>
+                  </HeartModal>
+                </HeartModalContainer>
+              ) : null}
+              {heartClicked === true && followUpdatesData === undefined ? (
+                <NoHeartModalContainer>
+                  <h3>새로운 알림이 없습니다.</h3>
+                </NoHeartModalContainer>
+              ) : null}
+            </HeartContainer>
             <Link to={`/users/${loggedInUser?.username}`}>
               {isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} /> : <FontAwesomeIcon icon={faUser} />}
             </Link>

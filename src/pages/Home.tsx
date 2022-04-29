@@ -291,7 +291,7 @@ const Home = () => {
             <AsideMain>
               <AsideMainHeader>
                 <h1>회원님을 위한 추천</h1>
-                <Link to="/">
+                <Link to="/users/all">
                   <span>모두 보기</span>
                 </Link>
               </AsideMainHeader>
