@@ -11,7 +11,7 @@ import MainLayout from "../shared/MainLayout";
 import { Input } from "../shared/shared";
 import PageTitle from "../components/PageTitle";
 import Footer from "../components/Footer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import UploadPhoto from "./UploadPhoto";
 import { AnimatePresence } from "framer-motion";
 
@@ -25,7 +25,7 @@ interface FormData {
   email: string;
   password: string;
   bio?: string;
-  avatar: any;
+  avatar: FileList;
   editProfileResult?: string;
 }
 
@@ -104,12 +104,14 @@ const EditProfile = () => {
   const navigate: NavigateFunction = useNavigate();
   const uploadPhotoPathMath: PathMatch<"username"> | null = useMatch(`/users/:username/edit/photos/upload`);
   const loggedInUser = useLoggedInUser();
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
   const {
     register,
     handleSubmit,
     getValues,
     clearErrors,
     formState: { errors, isValid },
+    watch,
   } = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
@@ -120,6 +122,7 @@ const EditProfile = () => {
       bio: loggedInUser?.bio || "",
     },
   });
+  const watchingAvatarFile: FileList = watch("avatar");
   const [deleteAccountMutation, { loading: deleteAccountLoading }] = useDeleteAccountMutation({
     onCompleted: () => {
       handleLogout(client);
@@ -161,10 +164,18 @@ const EditProfile = () => {
         username: username === "" ? undefined : username,
         password: password === "" ? undefined : password,
         bio: bio === "" ? undefined : bio,
-        avatar: avatar === "" ? undefined : avatar,
+        avatar: avatar ? avatar[0] : undefined,
       },
     });
   };
+
+  useEffect(() => {
+    if (watchingAvatarFile && watchingAvatarFile.length > 0) {
+      const avatarFile: File = watchingAvatarFile[0];
+      const objectUrl: string = URL.createObjectURL(avatarFile);
+      setAvatarPreview(objectUrl);
+    }
+  }, [watchingAvatarFile]);
 
   useEffect(() => {
     if (username !== loggedInUser?.username) {
@@ -179,9 +190,9 @@ const EditProfile = () => {
       <Container>
         <EditProfileForm onSubmit={handleSubmit(onValid)} method="POST" encType="multipart/form-data">
           <label htmlFor="avatar">
-            <Avatar src={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} alt="" />
+            {avatarPreview === "" ? <Avatar src={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} alt="" /> : <Avatar src={avatarPreview} alt="" />}
             <ChangeAvatarButton>프로필 사진 변경</ChangeAvatarButton>
-            <input id="avatar" name="avatar" type="file" accept="image/*" style={{ display: "none" }} />
+            <input {...register("avatar")} id="avatar" type="file" accept="image/*" style={{ display: "none" }} />
           </label>
           <label htmlFor="email">
             <span>이메일</span>

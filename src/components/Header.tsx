@@ -419,7 +419,7 @@ const Header = () => {
               ) : null}
             </HeartContainer>
             <Link to={`/users/${loggedInUser?.username}`}>
-              {isLoggedIn === true ? <Avatar size="26px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} /> : <FontAwesomeIcon icon={faUser} />}
+              {isLoggedIn === true ? <Avatar size="30px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} /> : <FontAwesomeIcon icon={faUser} />}
             </Link>
             <MdLogout onClick={() => handleLogout(client)} style={{ cursor: "pointer" }} />
             <DarkModeButton onClick={isDarkMode === true ? handleDisableDarkMode : handleEnableDarkMode} type="button">

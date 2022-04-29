@@ -149,7 +149,7 @@ const UploadPhoto = () => {
   const navigate: NavigateFunction = useNavigate();
   const [photoPreview, setPhotoPreview] = useState<string>("");
   const { register, handleSubmit, getValues, watch } = useForm<FormData>({ defaultValues: { text: "" } });
-  const watchingPhotoFile = watch("photo");
+  const watchingPhotoFile: FileList = watch("photo");
   const [uploadPhotoMutation, { loading: uploadPhotoLoading }] = useUploadPhotoMutation({
     update: (cache: ApolloCache<any>, { data }) => {
       if (data?.uploadPhoto.ok === false) {
@@ -192,7 +192,6 @@ const UploadPhoto = () => {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-
     return () => {
       document.body.style.overflow = "auto";
     };

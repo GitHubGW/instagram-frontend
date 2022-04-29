@@ -255,8 +255,8 @@ const Profile = () => {
   const uploadPhotoPathMath: PathMatch<"username"> | null = useMatch(`/users/:username/photos/upload`);
   const loggedInUser = useLoggedInUser();
   const { username } = useParams<ProfileParams>();
-  const { data: seeProfileData, loading: seeProfileLoading } = useSeeProfileQuery({ variables: { username: username || "" } });
   const [seeFollowersLazyQuery] = useSeeFollowersLazyQuery();
+  const { data: seeProfileData, loading: seeProfileLoading } = useSeeProfileQuery({ variables: { username: username || "" } });
   const { data: seeFollowersData } = useSeeFollowersQuery({ variables: { username: username || "" } });
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: username || "" } });
   const [followUserMutation, { data: followUserData, loading: followUserLoading }] = useFollowUserMutation({
@@ -453,7 +453,7 @@ const Profile = () => {
               <ProfileUser>
                 <span>{seeProfileData?.seeProfile.user?.username}</span>
                 {seeProfileData?.seeProfile.user?.isMe === true && <Link to={`/users/${loggedInUser?.username}/edit`}>프로필 편집</Link>}
-                {seeProfileData?.seeProfile.user?.isMe === false && seeProfileData.seeProfile.user.isFollowing === true && <Link to="/">메세지 보내기</Link>}
+                {/* {seeProfileData?.seeProfile.user?.isMe === false && seeProfileData.seeProfile.user.isFollowing === true && <Link to="/">메세지 보내기</Link>} */}
                 {seeProfileData?.seeProfile.user?.isMe === false && seeProfileData.seeProfile.user.isFollowing === true && (
                   <Button onClick={handleUnfollowUser} type="button">
                     {unfollowUserLoading === true && unfollowUserData?.unfollowUser.user?.username === username ? <Loading size="12px" /> : "팔로우 취소"}
