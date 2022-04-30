@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
-import Avatar from "../../shared/Avatar";
 import Name from "../../shared/Name";
+import Avatar from "../../shared/Avatar";
 import Username from "../../shared/Username";
+import { Link } from "react-router-dom";
 
 interface SearchUserProps {
   username?: string | null;

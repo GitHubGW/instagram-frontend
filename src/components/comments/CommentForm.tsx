@@ -1,11 +1,11 @@
-import { useState } from "react";
-import Picker from "emoji-picker-react";
 import gql from "graphql-tag";
 import styled from "styled-components";
+import Picker from "emoji-picker-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { VscSmiley } from "react-icons/vsc";
-import { useCreateCommentMutation, useSeeCommentsLazyQuery } from "../../generated/graphql";
 import { ApolloCache, Reference } from "@apollo/client";
+import { useCreateCommentMutation, useSeeCommentsLazyQuery } from "../../generated/graphql";
 
 interface CommentFormProps {
   photoId?: number;

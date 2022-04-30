@@ -1,17 +1,17 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { useFollowUserMutation, useSeePhotoLikesQuery, useUnfollowUserMutation } from "../generated/graphql";
+import Name from "./Name";
 import Avatar from "./Avatar";
 import Username from "./Username";
+import Loading from "./Loading";
+import useLoggedInUser from "../hooks/useLoggedInUser";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ApolloCache } from "@apollo/client";
 import { Button, ScrollBox } from "../shared/shared";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import { ApolloCache } from "@apollo/client";
-import Loading from "./Loading";
-import Name from "./Name";
-import useLoggedInUser from "../hooks/useLoggedInUser";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
+import { useFollowUserMutation, useSeePhotoLikesQuery, useUnfollowUserMutation } from "../generated/graphql";
 
 interface TotalLikesProps {
   photoId?: number;

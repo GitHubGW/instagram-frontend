@@ -1,22 +1,22 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useCallback, useEffect } from "react";
 import Slider from "react-slick";
-import { Link, PathMatch, useMatch } from "react-router-dom";
 import styled from "styled-components";
-import PageTitle from "../components/PageTitle";
-import { useFollowUserMutation, useSeeFeedQuery, useSeeFollowingQuery, useSeeRecommendPhotosQuery, useSeeRecommendUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
-import FeedLayout from "../shared/FeedLayout";
 import Avatar from "../shared/Avatar";
-import useLoggedInUser from "../hooks/useLoggedInUser";
-import Username from "../shared/Username";
 import Name from "../shared/Name";
+import UploadPhoto from "./UploadPhoto";
+import Username from "../shared/Username";
+import FeedLayout from "../shared/FeedLayout";
+import PageTitle from "../components/PageTitle";
+import useLoggedInUser from "../hooks/useLoggedInUser";
 import PhotoContainer from "../components/photos/PhotoContainer";
 import { ApolloCache } from "@apollo/client";
+import { useCallback, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import { Link, PathMatch, useMatch } from "react-router-dom";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
-import { AnimatePresence } from "framer-motion";
-import UploadPhoto from "./UploadPhoto";
+import { useFollowUserMutation, useSeeFeedQuery, useSeeFollowingQuery, useSeeRecommendPhotosQuery, useSeeRecommendUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
 
 const Container = styled.section`
   background-color: ${(props) => props.theme.bgColor};
@@ -286,9 +286,9 @@ const Home = () => {
               </Slider>
             </FollowingContainer>
           )}
-          {/* {seeRecommendPhotosData?.seeRecommendPhotos.photos?.map((photo) => (
+          {seeRecommendPhotosData?.seeRecommendPhotos.photos?.map((photo) => (
             <PhotoContainer key={photo?.id} {...photo} />
-          ))} */}
+          ))}
           {seeFeedData?.seeFeed.photos?.map((photo) => (
             <PhotoContainer key={photo?.id} {...photo} />
           ))}

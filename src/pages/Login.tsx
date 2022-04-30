@@ -1,17 +1,17 @@
-import { Link, useNavigate, NavigateFunction, useLocation, Location } from "react-router-dom";
 import styled from "styled-components";
-import { handleLogin } from "../apollo";
 import Separator from "../shared/Separator";
+import FormError from "../shared/FormError";
+import AuthLayout from "../shared/AuthLayout";
+import AppDownload from "../shared/AppDownload";
+import PageTitle from "../components/PageTitle";
+import Notification from "../shared/Notification";
+import { handleLogin } from "../apollo";
+import { useForm } from "react-hook-form";
+import { Button, Input } from "../shared/shared";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
-import AuthLayout from "../shared/AuthLayout";
-import PageTitle from "../components/PageTitle";
-import { useForm } from "react-hook-form";
-import FormError from "../shared/FormError";
 import { LoginMutation, useLoginMutation } from "../generated/graphql";
-import Notification from "../shared/Notification";
-import AppDownload from "../shared/AppDownload";
-import { Button, Input } from "../shared/shared";
+import { Link, useNavigate, NavigateFunction, useLocation, Location } from "react-router-dom";
 
 interface LoginState {
   username?: string;

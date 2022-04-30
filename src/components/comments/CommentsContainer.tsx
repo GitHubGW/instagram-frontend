@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import { Comment } from "../../generated/graphql";
 import CommentContent from "./CommentContent";
+import { Comment } from "../../generated/graphql";
 
 interface CommentsContainerProps {
   photoId?: number;

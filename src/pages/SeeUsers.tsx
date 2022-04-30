@@ -1,15 +1,15 @@
-import { ApolloCache } from "@apollo/client";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
-import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
-import useLoggedInUser from "../hooks/useLoggedInUser";
+import Name from "../shared/Name";
 import Avatar from "../shared/Avatar";
 import Loading from "../shared/Loading";
-import MainLayout from "../shared/MainLayout";
-import Name from "../shared/Name";
-import { Button } from "../shared/shared";
 import Username from "../shared/Username";
+import MainLayout from "../shared/MainLayout";
+import useLoggedInUser from "../hooks/useLoggedInUser";
+import { Link } from "react-router-dom";
+import { Button } from "../shared/shared";
+import { ApolloCache } from "@apollo/client";
+import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
+import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
 
 const LoadingContainer = styled.section`
   background-color: ${(props) => props.theme.bgColor};

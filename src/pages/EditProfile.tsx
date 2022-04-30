@@ -1,19 +1,19 @@
-import { useForm } from "react-hook-form";
-import { NavigateFunction, PathMatch, useMatch, useNavigate, useParams } from "react-router";
 import styled from "styled-components";
-import { ApolloClient, useApolloClient } from "@apollo/client";
-import { handleLogout } from "../apollo";
-import { SEE_ME } from "../documents/queries/seeMe.query";
-import { EditProfileMutation, useDeleteAccountMutation, useEditProfileMutation } from "../generated/graphql";
-import useLoggedInUser from "../hooks/useLoggedInUser";
+import UploadPhoto from "./UploadPhoto";
+import Footer from "../components/Footer";
 import FormError from "../shared/FormError";
 import MainLayout from "../shared/MainLayout";
-import { Input } from "../shared/shared";
 import PageTitle from "../components/PageTitle";
-import Footer from "../components/Footer";
+import useLoggedInUser from "../hooks/useLoggedInUser";
+import { handleLogout } from "../apollo";
+import { useForm } from "react-hook-form";
+import { Input } from "../shared/shared";
 import { useEffect, useState } from "react";
-import UploadPhoto from "./UploadPhoto";
 import { AnimatePresence } from "framer-motion";
+import { SEE_ME } from "../documents/queries/seeMe.query";
+import { ApolloClient, useApolloClient } from "@apollo/client";
+import { NavigateFunction, PathMatch, useMatch, useNavigate, useParams } from "react-router";
+import { EditProfileMutation, useDeleteAccountMutation, useEditProfileMutation } from "../generated/graphql";
 
 type EditProfileParams = {
   username: string;

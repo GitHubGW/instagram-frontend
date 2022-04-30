@@ -1,7 +1,7 @@
-import { ApolloClient, useApolloClient, useReactiveVar } from "@apollo/client";
 import { useEffect } from "react";
-import { handleLogout, isLoggedInVar } from "../apollo";
 import { useSeeMeQuery } from "../generated/graphql";
+import { handleLogout, isLoggedInVar } from "../apollo";
+import { ApolloClient, useApolloClient, useReactiveVar } from "@apollo/client";
 
 const useLoggedInUser = () => {
   const client: ApolloClient<object> = useApolloClient();

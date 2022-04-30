@@ -1,17 +1,17 @@
 import React from "react";
-import { Link, useMatch, PathMatch, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
-import CreatedAt from "../../shared/CreatedAt";
-import Username from "../../shared/Username";
-import TotalLikes from "../../shared/TotalLikes";
-import TotalComments from "../../shared/TotalComments";
-import CommentForm from "../comments/CommentForm";
-import CommentsContainer from "../comments/CommentsContainer";
 import PhotoIcons from "./PhotoIcons";
-import PhotoAuthor from "./PhotoAuthor";
 import PhotoImage from "./PhotoImage";
+import PhotoAuthor from "./PhotoAuthor";
 import PhotoDetail from "./PhotoDetail";
+import Username from "../../shared/Username";
+import CreatedAt from "../../shared/CreatedAt";
+import TotalLikes from "../../shared/TotalLikes";
+import CommentForm from "../comments/CommentForm";
+import TotalComments from "../../shared/TotalComments";
+import CommentsContainer from "../comments/CommentsContainer";
 import { AnimatePresence } from "framer-motion";
+import { Link, useMatch, PathMatch, useNavigate, NavigateFunction } from "react-router-dom";
 
 interface PhotoContainerProps {
   id?: number;

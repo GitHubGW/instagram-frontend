@@ -1,12 +1,12 @@
 import styled, { keyframes } from "styled-components";
-import { IoPaperPlaneOutline } from "react-icons/io5";
-import { FaRegBookmark } from "react-icons/fa";
-import { BiMessageRounded } from "react-icons/bi";
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-import { useSeePhotoLikesLazyQuery, useToggleLikePhotoMutation } from "../../generated/graphql";
 import { useRef } from "react";
 import { ApolloCache } from "@apollo/client";
+import { FaRegBookmark } from "react-icons/fa";
+import { BiMessageRounded } from "react-icons/bi";
+import { IoPaperPlaneOutline } from "react-icons/io5";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { SEE_PHOTO_LIKES } from "../../documents/queries/seePhotoLikes.query";
+import { useSeePhotoLikesLazyQuery, useToggleLikePhotoMutation } from "../../generated/graphql";
 
 interface PhotoIconsProps {
   id?: number;

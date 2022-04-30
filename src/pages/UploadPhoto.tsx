@@ -1,16 +1,16 @@
-import { AnimatePresence, motion, Variants } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate, NavigateFunction } from "react-router";
 import styled from "styled-components";
+import Avatar from "../shared/Avatar";
+import Loading from "../shared/Loading";
+import Username from "../shared/Username";
 import PageTitle from "../components/PageTitle";
 import useLoggedInUser from "../hooks/useLoggedInUser";
-import Avatar from "../shared/Avatar";
-import Username from "../shared/Username";
+import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { BiImageAdd } from "react-icons/bi";
-import { useUploadPhotoMutation } from "../generated/graphql";
-import Loading from "../shared/Loading";
 import { ApolloCache } from "@apollo/client";
+import { useNavigate, NavigateFunction } from "react-router";
+import { useUploadPhotoMutation } from "../generated/graphql";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 
 interface FormData {
   photo: FileList;

@@ -1,23 +1,23 @@
 import styled from "styled-components";
-import { useParams } from "react-router";
-import { Link, NavigateFunction, useNavigate, PathMatch, useMatch } from "react-router-dom";
-import { AnimatePresence, motion, Variants } from "framer-motion";
-import PageTitle from "../components/PageTitle";
-import Avatar from "../shared/Avatar";
-import MainLayout from "../shared/MainLayout";
-import { Button, ModalBackground, ScrollBox } from "../shared/shared";
-import { BsHeartFill } from "react-icons/bs";
-import { FaComment } from "react-icons/fa";
-import useLoggedInUser from "../hooks/useLoggedInUser";
-import { ApolloCache } from "@apollo/client";
-import Username from "../shared/Username";
 import Name from "../shared/Name";
+import Avatar from "../shared/Avatar";
+import UploadPhoto from "./UploadPhoto";
 import Loading from "../shared/Loading";
+import Username from "../shared/Username";
+import MainLayout from "../shared/MainLayout";
+import PageTitle from "../components/PageTitle";
+import useLoggedInUser from "../hooks/useLoggedInUser";
+import PhotoDetail from "../components/photos/PhotoDetail";
+import { useParams } from "react-router";
+import { FaComment } from "react-icons/fa";
+import { BsHeartFill } from "react-icons/bs";
+import { ApolloCache } from "@apollo/client";
+import { AnimatePresence, motion, Variants } from "framer-motion";
+import { Button, ModalBackground, ScrollBox } from "../shared/shared";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
+import { Link, NavigateFunction, useNavigate, PathMatch, useMatch } from "react-router-dom";
 import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeFollowersQuery, useSeeFollowingQuery, useSeeProfileQuery, useUnfollowUserMutation } from "../generated/graphql";
-import PhotoDetail from "../components/photos/PhotoDetail";
-import UploadPhoto from "./UploadPhoto";
 
 type ProfileParams = {
   username: string;

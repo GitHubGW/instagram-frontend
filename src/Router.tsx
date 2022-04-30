@@ -1,14 +1,14 @@
-import { useReactiveVar } from "@apollo/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { isLoggedInVar } from "./apollo";
-import EditProfile from "./pages/EditProfile";
-import Hashtag from "./pages/Hashtag";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
-import Profile from "./pages/Profile";
-import SeeUsers from "./pages/SeeUsers";
 import SignUp from "./pages/SignUp";
+import Hashtag from "./pages/Hashtag";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
+import SeeUsers from "./pages/SeeUsers";
+import EditProfile from "./pages/EditProfile";
+import { isLoggedInVar } from "./apollo";
+import { useReactiveVar } from "@apollo/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const Router = () => {
   const isLoggedIn: boolean = useReactiveVar(isLoggedInVar);

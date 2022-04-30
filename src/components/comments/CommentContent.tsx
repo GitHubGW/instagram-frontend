@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import { ApolloCache } from "@apollo/client";
-import { Link } from "react-router-dom";
-import { useDeleteCommentMutation, useEditCommentMutation, User } from "../../generated/graphql";
 import Username from "../../shared/Username";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { ApolloCache } from "@apollo/client";
 import { HiOutlinePencilAlt } from "react-icons/hi";
+import { useDeleteCommentMutation, useEditCommentMutation, User } from "../../generated/graphql";
 
 interface CommentContentProps {
   photoId?: number;

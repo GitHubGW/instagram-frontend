@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
-import CreatedAt from "../../shared/CreatedAt";
+import PhotoIcons from "./PhotoIcons";
+import Name from "../../shared/Name";
+import Avatar from "../../shared/Avatar";
+import Loading from "../../shared/Loading";
 import Username from "../../shared/Username";
+import CreatedAt from "../../shared/CreatedAt";
 import TotalLikes from "../../shared/TotalLikes";
 import CommentForm from "../comments/CommentForm";
-import PhotoIcons from "./PhotoIcons";
-import { AnimatePresence, motion, Variants } from "framer-motion";
-import { ScrollBox } from "../../shared/shared";
-import Avatar from "../../shared/Avatar";
-import Name from "../../shared/Name";
-import { HiOutlinePencilAlt } from "react-icons/hi";
-import { ApolloCache } from "@apollo/client";
-import { useForm } from "react-hook-form";
 import useLoggedInUser from "../../hooks/useLoggedInUser";
-import Loading from "../../shared/Loading";
+import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { ApolloCache } from "@apollo/client";
+import { ScrollBox } from "../../shared/shared";
+import { HiOutlinePencilAlt } from "react-icons/hi";
+import { AnimatePresence, motion, Variants } from "framer-motion";
+import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import {
   useDeleteCommentMutation,
   useDeletePhotoMutation,

@@ -1,15 +1,15 @@
-import { Link, useNavigate, NavigateFunction } from "react-router-dom";
 import styled from "styled-components";
-import { Button, Input } from "../shared/shared";
+import FormError from "../shared/FormError";
 import Separator from "../shared/Separator";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 import AuthLayout from "../shared/AuthLayout";
 import PageTitle from "../components/PageTitle";
-import { useForm } from "react-hook-form";
-import FormError from "../shared/FormError";
-import { CreateAccountMutation, useCreateAccountMutation } from "../generated/graphql";
 import AppDownload from "../shared/AppDownload";
+import { useForm } from "react-hook-form";
+import { Button, Input } from "../shared/shared";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
+import { Link, useNavigate, NavigateFunction } from "react-router-dom";
+import { CreateAccountMutation, useCreateAccountMutation } from "../generated/graphql";
 
 interface FormData {
   email: string;

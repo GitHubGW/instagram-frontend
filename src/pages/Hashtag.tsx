@@ -1,14 +1,14 @@
-import { useParams, NavigateFunction, useNavigate, PathMatch, useMatch } from "react-router";
 import styled from "styled-components";
-import PageTitle from "../components/PageTitle";
-import { useSeeHashtagQuery } from "../generated/graphql";
 import Avatar from "../shared/Avatar";
-import { BsHeartFill } from "react-icons/bs";
-import { FaComment } from "react-icons/fa";
 import MainLayout from "../shared/MainLayout";
-import PhotoDetail from "../components/photos/PhotoDetail";
-import { AnimatePresence } from "framer-motion";
 import UploadPhoto from "./UploadPhoto";
+import PageTitle from "../components/PageTitle";
+import PhotoDetail from "../components/photos/PhotoDetail";
+import { FaComment } from "react-icons/fa";
+import { BsHeartFill } from "react-icons/bs";
+import { AnimatePresence } from "framer-motion";
+import { useSeeHashtagQuery } from "../generated/graphql";
+import { useParams, NavigateFunction, useNavigate, PathMatch, useMatch } from "react-router";
 
 type HashtagParams = {
   name: string;

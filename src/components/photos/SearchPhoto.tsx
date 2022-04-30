@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../../shared/Avatar";
 import Username from "../../shared/Username";
+import { Link } from "react-router-dom";
 
 interface SearchPhotoProps {
   id?: number;

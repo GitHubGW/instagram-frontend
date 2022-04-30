@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Footer from "../components/Footer";
 import PageTitle from "../components/PageTitle";
 import MainLayout from "../shared/MainLayout";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   margin-top: 90px;
