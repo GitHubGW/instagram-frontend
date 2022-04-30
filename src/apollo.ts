@@ -52,13 +52,13 @@ const errorLink: ApolloLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const uploadHttpLink: ApolloLink = createUploadLink({
-  uri: process.env.NODE_ENV === "production" ? "" : "http://localhost:4000/graphql",
+  uri: process.env.NODE_ENV === "production" ? "https://instagram-gw.herokuapp.com/graphql" : "http://localhost:4000/graphql",
 });
 
 const uploadHttpLinks: ApolloLink = authLink.concat(errorLink).concat(uploadHttpLink);
 
 const wsLink: WebSocketLink = new WebSocketLink({
-  uri: "ws://localhost:4000/graphql",
+  uri: process.env.NODE_ENV === "production" ? "ws://instagram-gw.herokuapp.com/graphql" : "ws://localhost:4000/graphql",
   options: {
     reconnect: true,
     connectionParams: () => ({
