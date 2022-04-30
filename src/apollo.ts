@@ -58,7 +58,7 @@ const uploadHttpLink: ApolloLink = createUploadLink({
 const uploadHttpLinks: ApolloLink = authLink.concat(errorLink).concat(uploadHttpLink);
 
 const wsLink: WebSocketLink = new WebSocketLink({
-  uri: process.env.NODE_ENV === "production" ? "ws://instagram-gw.herokuapp.com/graphql" : "ws://localhost:4000/graphql",
+  uri: process.env.NODE_ENV === "production" ? "wss://instagram-gw.herokuapp.com/graphql" : "ws://localhost:4000/graphql",
   options: {
     reconnect: true,
     connectionParams: () => ({
