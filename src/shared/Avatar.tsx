@@ -13,7 +13,7 @@ const Image = styled.img<{ size: string }>`
 `;
 
 const Avatar = ({ size, avatarUrl }: AvatarProps) => {
-  return <Image size={size} src={avatarUrl || ""} alt="" />;
+  return <Image size={size} src={avatarUrl || "/images/basic_user.jpeg"} alt="" />;
 };
 
 export default Avatar;

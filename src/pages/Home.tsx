@@ -279,7 +279,7 @@ const Home = () => {
               <Slider {...sliderSettings}>
                 {seeFollowingData?.seeFollowing?.following?.map((following) => (
                   <Link key={following?.id} to={`/users/${following?.username}`}>
-                    <Avatar size="65px" avatarUrl={following?.avatarUrl} />
+                    <Avatar size="65px" avatarUrl={following?.avatarUrl || "/images/basic_user.jpeg"} />
                     <h1>{following?.username}</h1>
                   </Link>
                 ))}
@@ -318,7 +318,7 @@ const Home = () => {
                 {seeRecommendUsersData?.seeRecommendUsers.users?.map((user) => (
                   <RecommandContent key={user?.id}>
                     <Link to={`/users/${user?.username}`}>
-                      <Avatar size="32px" avatarUrl={user?.avatarUrl} />
+                      <Avatar size="32px" avatarUrl={user?.avatarUrl || "/images/basic_user.jpeg"} />
                     </Link>
                     <UserInfo>
                       <Link to={`/users/${user?.username}`}>

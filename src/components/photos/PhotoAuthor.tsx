@@ -28,7 +28,7 @@ const PhotoAuthor = ({ name, username, avatarUrl }: PhotoAuthorProps) => {
   return (
     <Container>
       <Link to={`/users/${username}`}>
-        <Avatar size="37px" avatarUrl={avatarUrl} />
+        <Avatar size="37px" avatarUrl={avatarUrl || "/images/basic_user.jpeg"} />
       </Link>
       <Link to={`/users/${username}`}>
         <Username username={username} size="14px" textDecoration={"false"} />

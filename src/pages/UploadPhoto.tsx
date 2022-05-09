@@ -226,7 +226,7 @@ const UploadPhoto = () => {
             </ModalPhoto>
             <ModalPhotoInfo>
               <UserInfoContainer>
-                <Avatar size="27px" avatarUrl={loggedInUser?.avatarUrl} />
+                <Avatar size="27px" avatarUrl={loggedInUser?.avatarUrl || "/images/basic_user.jpeg"} />
                 <Username size="16px" textDecoration="none" username={loggedInUser?.username} />
               </UserInfoContainer>
               <Textarea

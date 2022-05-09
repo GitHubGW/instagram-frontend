@@ -143,7 +143,7 @@ const SeeUsers = () => {
               <MainContent key={user?.id}>
                 <MainUser>
                   <Link to={`/users/${user?.username}`}>
-                    <Avatar size="38px" avatarUrl={user?.avatarUrl} />
+                    <Avatar size="38px" avatarUrl={user?.avatarUrl || "/images/basic_user.jpeg"} />
                     <MainUserInfo>
                       <Username size="15px" username={user?.username} textDecoration={"true"} />
                       <Name size="14px" name={user?.name} />

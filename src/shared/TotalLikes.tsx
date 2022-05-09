@@ -235,7 +235,7 @@ const TotalLikes = ({ photoId, totalLikes }: TotalLikesProps) => {
                   <ModalMainContent key={user?.id}>
                     <ModalMainUser>
                       <Link to={`/users/${user?.username}`} onClick={() => setModalIsOpen(false)}>
-                        <Avatar size="38px" avatarUrl={user?.avatarUrl} />
+                        <Avatar size="38px" avatarUrl={user?.avatarUrl || "/images/basic_user.jpeg"} />
                         <ModalMainUserInfo>
                           <Username size="15px" username={user?.username} textDecoration={"true"} />
                           <Name size="14px" name={user?.name} />
@@ -256,7 +256,7 @@ const TotalLikes = ({ photoId, totalLikes }: TotalLikesProps) => {
       {totalLikes && totalLikes >= 2 ? (
         <LikesUser>
           <div onClick={handleSeePhotoLikes}>
-            <Avatar size="20px" avatarUrl={seePhotoLikesData?.seePhotoLikes.users && seePhotoLikesData?.seePhotoLikes.users[0]?.avatarUrl} />
+            <Avatar size="20px" avatarUrl={(seePhotoLikesData?.seePhotoLikes.users && seePhotoLikesData?.seePhotoLikes.users[0]?.avatarUrl) || "/images/basic_user.jpeg"} />
           </div>
           <Link to={`/users/${seePhotoLikesData?.seePhotoLikes.users && seePhotoLikesData?.seePhotoLikes.users[0]?.username}`}>
             <Username size="14px" username={seePhotoLikesData?.seePhotoLikes.users && seePhotoLikesData?.seePhotoLikes.users[0]?.username} textDecoration={"true"} />

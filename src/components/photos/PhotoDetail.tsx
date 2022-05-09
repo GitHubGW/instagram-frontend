@@ -482,7 +482,7 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
               <ModalMainInfo>
                 <ModalMainInfoTop>
                   <Link to={`/users/${user?.username}`}>
-                    <Avatar size="32px" avatarUrl={user?.avatarUrl} />
+                    <Avatar size="32px" avatarUrl={user?.avatarUrl || "/images/basic_user.jpeg"} />
                     <ModalMainUserInfo>
                       <Username size="15px" username={user?.username} textDecoration={"false"} />
                       <Name size="13px" name={user?.name} />
@@ -503,7 +503,7 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
                   <MainUserInfo>
                     <MainUserAvatar>
                       <Link to={`/users/${user?.username}`}>
-                        <Avatar size="32px" avatarUrl={user?.avatarUrl} />
+                        <Avatar size="32px" avatarUrl={user?.avatarUrl || "/images/basic_user.jpeg"} />
                       </Link>
                       <ModalUserInfo>
                         <ModalMainUserInfoCaption>
@@ -533,7 +533,7 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
                     {seeCommentsData?.seeComments.comments?.map((comment) => (
                       <ModalPhotoComment key={comment?.id}>
                         <Link to={`/users/${comment?.user.username}`}>
-                          <Avatar size="32px" avatarUrl={comment?.user.avatarUrl} />
+                          <Avatar size="32px" avatarUrl={comment?.user.avatarUrl || "/images/basic_user.jpeg"} />
                         </Link>
                         <ModalPhotoCommentInfo>
                           <ModalMainUserInfoCaption>

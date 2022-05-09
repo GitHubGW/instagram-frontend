@@ -12,7 +12,7 @@ interface SearchUserProps {
 const SearchUser = ({ username, avatarUrl, name }: SearchUserProps) => {
   return (
     <Link to={`/users/${username}`}>
-      <Avatar size="47px" avatarUrl={avatarUrl} />
+      <Avatar size="47px" avatarUrl={avatarUrl || "/images/basic_user.jpeg"} />
       <div>
         <Username size="15px" username={username} textDecoration={"false"} />
         <Name size="14px" name={name} />
