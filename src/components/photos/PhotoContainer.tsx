@@ -35,6 +35,7 @@ const CaptionContainer = styled.div`
   padding: 12px 15px;
   padding-top: 0;
   padding-bottom: 10px;
+  overflow: hidden;
 `;
 
 const Caption = styled.span`
