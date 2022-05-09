@@ -230,10 +230,10 @@ const UploadPhoto = () => {
                 <Username size="16px" textDecoration="none" username={loggedInUser?.username} />
               </UserInfoContainer>
               <Textarea
-                {...register("text", { required: "100자 이내의 사진 문구를 입력해주세요.", minLength: 1, maxLength: 100 })}
+                {...register("text", { required: "200자 이내의 사진 문구를 입력해주세요.", minLength: 1, maxLength: 200 })}
                 placeholder="사진 문구..."
                 minLength={1}
-                maxLength={100}
+                maxLength={200}
                 cols={100}
                 required
               />
