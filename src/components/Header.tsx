@@ -12,10 +12,10 @@ import { ScrollBox } from "../shared/shared";
 import { MdLogout } from "react-icons/md";
 import { FiSun, FiMoon } from "react-icons/fi";
 import { faUser } from "@fortawesome/free-regular-svg-icons";
+import { IoHomeOutline, IoHomeSharp } from "react-icons/io5";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ApolloClient, useApolloClient, useReactiveVar } from "@apollo/client";
 import { BsPlusSquare, BsPlusSquareFill, BsHeart, BsHeartFill } from "react-icons/bs";
-import { IoHomeOutline, IoHomeSharp, IoPaperPlaneOutline, IoPaperPlaneSharp } from "react-icons/io5";
 import { handleDisableDarkMode, handleEnableDarkMode, handleLogout, isDarkModeVar, isLoggedInVar } from "../apollo";
 import { useFollowUpdatesSubscription, useSearchHashtagsLazyQuery, useSearchPhotosLazyQuery, useSearchUsersLazyQuery } from "../generated/graphql";
 
@@ -319,8 +319,8 @@ const Header = () => {
             <SearchModal>
               {searchedUsers.length === 0 && searchedHashtags.length === 0 && searchedPhotos.length === 0 ? (
                 <p>
-                  @이름, #해시태그, 텍스트를 이용해서 <br />
-                  유저, 해시태그, 사진을 검색해보세요.
+                  @이름, #해시태그를 이용해서 <br />
+                  유저, 해시태그를 검색해보세요.
                 </p>
               ) : null}
               {searchedUsers.map((searchedUser: SearchedUser | null) => (
@@ -329,9 +329,11 @@ const Header = () => {
               {searchedHashtags.map((searchedHashtag: SearchedHashtag | null) => (
                 <SearchHashtag key={searchedHashtag?.id} {...searchedHashtag} />
               ))}
+              {/* 
               {searchedPhotos.map((searchedPhoto: SearchedPhoto | null) => (
                 <SearchPhoto key={searchedPhoto?.id} {...searchedPhoto} />
-              ))}
+              ))} 
+              */}
             </SearchModal>
           )}
           <SearchInput
@@ -340,6 +342,7 @@ const Header = () => {
               minLength: 1,
               maxLength: 30,
               validate: {
+                // 유저 검색
                 searchingUser: async (keyword: string): Promise<boolean> => {
                   if (keyword.match(/@\w/g) !== null && searchUsersLoading === false) {
                     const replacedUsername: string = keyword.replaceAll("@", "");
@@ -352,6 +355,7 @@ const Header = () => {
                   }
                   return true;
                 },
+                // 해시태그 검색
                 searchingHashtag: async (keyword: string): Promise<boolean> => {
                   if (keyword.match(/#\w/g) !== null && searchHashtagsLoading === false) {
                     const replacedHashtag: string = keyword.replaceAll("#", "");
@@ -364,6 +368,8 @@ const Header = () => {
                   }
                   return true;
                 },
+                /*
+                // 사진 검색
                 searchingPhoto: async (keyword: string): Promise<boolean> => {
                   if (keyword.match(/@\w/g) === null && keyword.match(/#\w/g) === null && searchPhotosLoading === false) {
                     const { data } = await searchPhotosLazyQuery({ variables: { keyword } });
@@ -375,6 +381,7 @@ const Header = () => {
                   }
                   return true;
                 },
+                */
               },
             })}
             minLength={1}
@@ -386,7 +393,6 @@ const Header = () => {
         {isLoggedIn === true ? (
           <LoginNav>
             <Link to={"/"}>{location.pathname === "/" ? <IoHomeSharp /> : <IoHomeOutline />}</Link>
-            {/* <Link to={`/rooms/${loggedInUser?.username}`}>{location.pathname === `/rooms/${loggedInUser?.username}` ? <IoPaperPlaneSharp /> : <IoPaperPlaneOutline />}</Link> */}
             <Link to={"photos/upload"}>{location.pathname.includes("/photos/upload") === true ? <BsPlusSquareFill /> : <BsPlusSquare />}</Link>
             <HeartContainer ref={heartAlram}>
               {heartClicked === true ? (

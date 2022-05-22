@@ -33,13 +33,14 @@ const Container = styled.div`
 
 const CaptionContainer = styled.div`
   padding: 12px 15px;
-  padding-top: 0;
+  padding-top: 5px;
   padding-bottom: 10px;
   overflow: hidden;
 `;
 
 const Caption = styled.span`
   margin-left: 5px;
+  line-height: 1.3;
 
   a {
     color: ${(props) => props.theme.hashtagColor};

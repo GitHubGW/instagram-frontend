@@ -137,7 +137,7 @@ const ModalMainUserInfoCaption = styled.div`
   width: 100%;
 
   a {
-    margin-top: 2px;
+    margin-top: 4px;
   }
   p {
     margin-left: 6px;
