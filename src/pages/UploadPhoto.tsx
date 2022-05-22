@@ -102,6 +102,7 @@ const ModalPhoto = styled.div`
   align-items: center;
   padding: 0 10px;
   box-sizing: border-box;
+  overflow: hidden;
 
   label {
     color: lightgray;
