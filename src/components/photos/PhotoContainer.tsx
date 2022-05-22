@@ -40,7 +40,7 @@ const CaptionContainer = styled.div`
 
 const Caption = styled.span`
   margin-left: 5px;
-  line-height: 1.3;
+  line-height: 1.2;
 
   a {
     color: ${(props) => props.theme.hashtagColor};

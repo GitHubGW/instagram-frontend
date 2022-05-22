@@ -219,7 +219,7 @@ const ModalUserInfo = styled.div`
 
   p {
     word-break: break-all;
-    line-height: 1.4;
+    line-height: 1.2;
   }
 `;
 
