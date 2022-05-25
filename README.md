@@ -173,6 +173,9 @@
 - `Front-end`는 `Netlify`에, `Back-end`는 `Heroku`에 배포하였습니다.
 - `Database`는 `Heroku PostgreSQL`에 배포하였습니다.
 - `GraphQL Code Generator`를 이용해 `GraphQL Schema`로부터 타입 및 코드를 생성하였습니다.
+- `Front-end`: https://github.com/GitHubGW/instagram-frontend
+- `Back-end`: https://github.com/GitHubGW/instagram-backend
+- `App`: https://github.com/GitHubGW/instagram-app
 
 ## Pages
 
@@ -197,7 +200,7 @@
 
 > Hashtag
 
-- 해시태그 사진
+- 해시태그
 
 ## Features
 
