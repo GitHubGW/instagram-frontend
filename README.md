@@ -37,6 +37,16 @@
 - `Prisma`
 - `JsonWebToken`
 
+### App
+
+- `React Native`
+- `Expo`
+- `Typescript`
+- `Apollo Client`
+- `React Navigation`
+- `Styled Components`
+- `GraphQL Code Generator`
+
 ### Deploy
 
 - `Netlify`
@@ -128,7 +138,37 @@
   <br /><br />
   <img height="700" src="./previews/11.gif" />
 
-> 11. 기타
+> 11. 회원가입, 로그인, 로그아웃 (앱)
+
+- 유저는 이메일, 성명, 사용자 이름, 비밀번호를 입력해 회원가입을 할 수 있습니다.
+- 유저는 사용자 이름, 비밀번호를 입력해 로그인할 수 있습니다.
+- 성공적으로 로그인 시, `JsonWebToken`을 받게 되고 해당 토큰을 `AsyncStorage`에 저장합니다.
+- 앱 로딩 시, `AsyncStorage`로부터 토큰을 가져와 로그인 여부를 확인합니다.
+- 로그아웃 시, `Reactive variables`를 변경하고, `AsyncStorage`에 저장된 토큰과 스토어에 저장된 데이터를 제거합니다.
+  <br /><br />
+  <img height="700" src="./previews/12.gif" />
+  <img height="700" src="./previews/13.gif" />
+
+> 12. 프로필 (앱)
+
+- 프로필 페이지에서 유저 정보, 사진, 팔로워, 팔로우를 확인할 수 있습니다.
+- 사진을 클릭하여 사진 상세정보를 확인할 수 있습니다.
+- 사진을 업로드한 유저, 캡션, 댓글, 좋아요 등을 확인할 수 있습니다.
+  <br /><br />
+  <img height="700" src="./previews/14.gif" />
+  <img height="700" src="./previews/15.gif" />
+
+> 14. 사진 검색, 사진 선택 및 사진 촬영 (앱)
+
+- **캡션** 으로 사진을 검색할 수 있습니다. (ex: food)
+- 유저는 휴대폰 앨범에 있는 사진들을 선택하거나, 사진 촬영을 통해 촬영한 사진을 업로드할 수 있습니다.
+- `expo-media-library`를 통해 미디어 라이브러리에 대한 접근 권한을 설정합니다.
+- `expo-camera`를 통해 카메라의 type, zoom, ratio, whiteBalance등을 설정합니다.
+  <br /><br />
+  <img height="700" src="./previews/16.gif" />
+  <img height="700" src="./previews/17.gif" />
+
+> 15. 기타
 
 - `Front-end`는 `Netlify`에, `Back-end`는 `Heroku`에 배포하였습니다.
 - `Database`는 `Heroku PostgreSQL`에 배포하였습니다.
