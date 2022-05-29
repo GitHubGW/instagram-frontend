@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSeeMeQuery } from "../generated/graphql";
-import { handleLogout, isLoggedInVar } from "../apollo";
+import { isLoggedInVar } from "../apollo";
 import { ApolloClient, useApolloClient, useReactiveVar } from "@apollo/client";
 
 const useLoggedInUser = () => {
@@ -10,8 +10,7 @@ const useLoggedInUser = () => {
 
   useEffect(() => {
     if (seeMeData?.seeMe.user === null) {
-      console.log("로그인되어 있지 않습니다.", seeMeData);
-      // handleLogout(client);
+      isLoggedInVar(false);
     }
   }, [seeMeData, client]);
 
