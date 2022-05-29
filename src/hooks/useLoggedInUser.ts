@@ -10,8 +10,8 @@ const useLoggedInUser = () => {
 
   useEffect(() => {
     if (seeMeData?.seeMe.user === null) {
-      console.log("유효하지 않은 토큰입니다. 로그아웃 처리되었습니다.");
-      handleLogout(client);
+      console.log("로그인되어 있지 않습니다.", seeMeData);
+      // handleLogout(client);
     }
   }, [seeMeData, client]);
 
