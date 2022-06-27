@@ -11,7 +11,6 @@ import PhotoDetail from "../components/photos/PhotoDetail";
 import { useParams } from "react-router";
 import { FaComment } from "react-icons/fa";
 import { BsHeartFill } from "react-icons/bs";
-import { ApolloCache } from "@apollo/client";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { Button, ModalBackground, ScrollBox } from "../shared/shared";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
@@ -260,7 +259,7 @@ const Profile = () => {
   const { data: seeFollowersData } = useSeeFollowersQuery({ variables: { username: username || "" } });
   const { data: seeFollowingData } = useSeeFollowingQuery({ variables: { username: username || "" } });
   const [followUserMutation, { data: followUserData, loading: followUserLoading }] = useFollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.followUser.ok === false) {
         return;
       }
@@ -297,7 +296,7 @@ const Profile = () => {
     ],
   });
   const [unfollowUserMutation, { data: unfollowUserData, loading: unfollowUserLoading }] = useUnfollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.unfollowUser.ok === false) {
         return;
       }

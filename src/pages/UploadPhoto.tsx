@@ -7,7 +7,6 @@ import useLoggedInUser from "../hooks/useLoggedInUser";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { BiImageAdd } from "react-icons/bi";
-import { ApolloCache } from "@apollo/client";
 import { useNavigate, NavigateFunction } from "react-router";
 import { useUploadPhotoMutation } from "../generated/graphql";
 import { AnimatePresence, motion, Variants } from "framer-motion";
@@ -152,7 +151,7 @@ const UploadPhoto = () => {
   const { register, handleSubmit, getValues, watch } = useForm<FormData>({ defaultValues: { text: "" } });
   const watchingPhotoFile: FileList = watch("photo");
   const [uploadPhotoMutation, { loading: uploadPhotoLoading }] = useUploadPhotoMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.uploadPhoto.ok === false) {
         return;
       }

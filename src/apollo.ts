@@ -37,7 +37,7 @@ const httpLink: ApolloLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
 });
 
-const authLink: ApolloLink = setContext((operation: GraphQLRequest, prevContext: any) => {
+const authLink: ApolloLink = setContext((operation: GraphQLRequest, prevContext) => {
   const token: string | null = localStorage.getItem(TOKEN);
   return { headers: { ...prevContext.headers, token } };
 });

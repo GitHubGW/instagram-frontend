@@ -6,7 +6,6 @@ import Loading from "./Loading";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ApolloCache } from "@apollo/client";
 import { Button, ScrollBox } from "../shared/shared";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { SEE_FOLLOWERS } from "../documents/queries/seeFollowers.query";
@@ -149,7 +148,7 @@ const TotalLikes = ({ photoId, totalLikes }: TotalLikesProps) => {
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
   const { data: seePhotoLikesData } = useSeePhotoLikesQuery({ variables: { photoId: photoId as number } });
   const [followUserMutation, { loading: followUserLoading }] = useFollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.followUser.ok === false) {
         return;
       }
@@ -175,7 +174,7 @@ const TotalLikes = ({ photoId, totalLikes }: TotalLikesProps) => {
     ],
   });
   const [unfollowUserMutation] = useUnfollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.unfollowUser.ok === false) {
         return;
       }

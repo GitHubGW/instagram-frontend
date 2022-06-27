@@ -4,7 +4,7 @@ import Picker from "emoji-picker-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { VscSmiley } from "react-icons/vsc";
-import { ApolloCache, Reference } from "@apollo/client";
+import { Reference } from "@apollo/client";
 import { useCreateCommentMutation, useSeeCommentsLazyQuery } from "../../generated/graphql";
 
 interface CommentFormProps {
@@ -79,7 +79,7 @@ const CommentForm = ({ photoId, position }: CommentFormProps) => {
     formState: { isValid },
   } = useForm<FormData>({ mode: "onChange", defaultValues: { text: "" } });
   const [createCommentMutation] = useCreateCommentMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.createComment.ok === false) {
         return;
       }

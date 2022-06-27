@@ -10,7 +10,6 @@ import CommentForm from "../comments/CommentForm";
 import useLoggedInUser from "../../hooks/useLoggedInUser";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { ApolloCache } from "@apollo/client";
 import { ScrollBox } from "../../shared/shared";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { AnimatePresence, motion, Variants } from "framer-motion";
@@ -352,7 +351,7 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
   const { data: seeCommentsData } = useSeeCommentsQuery({ variables: { photoId: id as number } });
   const [seeCommentsLazyQuery] = useSeeCommentsLazyQuery();
   const [deleteCommentMutation] = useDeleteCommentMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.deleteComment.ok === false) {
         return;
       }
@@ -369,7 +368,7 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
     },
   });
   const [editCommentMutation] = useEditCommentMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.editComment.ok === false) {
         return;
       }
@@ -386,7 +385,7 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
     },
   });
   const [deletePhotoMutation, { loading: deletePhotoLoading }] = useDeletePhotoMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.deletePhoto.ok === false) {
         return;
       }
@@ -403,7 +402,7 @@ const PhotoDetail = ({ id, user, photoUrl, isLiked, totalLikes, caption, created
     },
   });
   const [editPhotoMutation, { loading: editPhotoLoading }] = useEditPhotoMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.editPhoto.ok === false) {
         return;
       }

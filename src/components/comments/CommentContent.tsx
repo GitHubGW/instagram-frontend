@@ -3,7 +3,6 @@ import Username from "../../shared/Username";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { ApolloCache } from "@apollo/client";
 import { HiOutlinePencilAlt } from "react-icons/hi";
 import { useDeleteCommentMutation, useEditCommentMutation, User } from "../../generated/graphql";
 
@@ -103,7 +102,7 @@ const CommentContent = ({ photoId, id, text, user, isMe }: CommentContentProps) 
   } = useForm<FormData>({ mode: "onChange", defaultValues: { text } });
   const [deleteCommentMutation] = useDeleteCommentMutation({
     variables: { commentId: id },
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.deleteComment.ok === false) {
         return;
       }
@@ -119,7 +118,7 @@ const CommentContent = ({ photoId, id, text, user, isMe }: CommentContentProps) 
     },
   });
   const [editCommentMutation] = useEditCommentMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.editComment.ok === false) {
         return;
       }

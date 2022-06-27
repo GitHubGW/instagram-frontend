@@ -7,7 +7,6 @@ import MainLayout from "../shared/MainLayout";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import { Link } from "react-router-dom";
 import { Button } from "../shared/shared";
-import { ApolloCache } from "@apollo/client";
 import { SEE_FOLLOWING } from "../documents/queries/seeFollowing.query";
 import { useFollowUserMutation, useSeeFollowersLazyQuery, useSeeUsersQuery, useUnfollowUserMutation } from "../generated/graphql";
 
@@ -75,7 +74,7 @@ const SeeUsers = () => {
   const { data: seeUsersData, loading: seeUsersLoading } = useSeeUsersQuery();
   const [seeFollowersLazyQuery] = useSeeFollowersLazyQuery();
   const [followUserMutation] = useFollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.followUser.ok === false) {
         return;
       }
@@ -98,7 +97,7 @@ const SeeUsers = () => {
     refetchQueries: [{ query: SEE_FOLLOWING, variables: { username: loggedInUser?.username } }],
   });
   const [unfollowUserMutation] = useUnfollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.unfollowUser.ok === false) {
         return;
       }

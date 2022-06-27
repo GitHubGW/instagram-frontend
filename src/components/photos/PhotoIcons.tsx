@@ -1,6 +1,5 @@
 import styled, { keyframes } from "styled-components";
 import { useRef } from "react";
-import { ApolloCache } from "@apollo/client";
 import { FaRegBookmark } from "react-icons/fa";
 import { BiMessageRounded } from "react-icons/bi";
 import { IoPaperPlaneOutline } from "react-icons/io5";
@@ -68,7 +67,7 @@ const PhotoIcons = ({ id, isLiked, handleSeePhotoDetail }: PhotoIconsProps) => {
   const likeButton = useRef<HTMLSpanElement>(null);
   const [seePhotoLikesLazyQuery, { loading: seePhotoLikesLoading }] = useSeePhotoLikesLazyQuery();
   const [toggleLikePhotoMutation, { loading: toggleLikePhotoLoading }] = useToggleLikePhotoMutation({
-    update(cache: ApolloCache<any>, { data }) {
+    update(cache, { data }) {
       if (data?.toggleLikePhoto.ok === false) {
         return;
       }

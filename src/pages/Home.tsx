@@ -10,7 +10,6 @@ import FeedLayout from "../shared/FeedLayout";
 import PageTitle from "../components/PageTitle";
 import useLoggedInUser from "../hooks/useLoggedInUser";
 import PhotoContainer from "../components/photos/PhotoContainer";
-import { ApolloCache } from "@apollo/client";
 import { useCallback, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Link, PathMatch, useMatch } from "react-router-dom";
@@ -180,7 +179,7 @@ const Home = () => {
   const { data: seeRecommendPhotosData } = useSeeRecommendPhotosQuery();
 
   const [followUserMutation] = useFollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.followUser.ok === false) {
         return;
       }
@@ -206,7 +205,7 @@ const Home = () => {
     ],
   });
   const [unfollowUserMutation] = useUnfollowUserMutation({
-    update: (cache: ApolloCache<any>, { data }) => {
+    update: (cache, { data }) => {
       if (data?.unfollowUser.ok === false) {
         return;
       }
